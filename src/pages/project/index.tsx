@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Settings } from '../../interfaces';
-import { readSettingsFileSync, writeSettingsFileSync } from './settingsFile';
+import { readSettingsFileSync, writeSettingsFileSync } from '../../utils/settingsFile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPause, faForward, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { faCirclePlay, faFolder, faFloppyDisk } from '@fortawesome/free-regular-svg-icons'
@@ -9,12 +9,10 @@ import { basename } from 'path';
 import ProjectSetting from './settings';
 import ProjectMain from './main';
 
-import './index.css';
 import { prepareCommand } from '../../command';
 import { ipcRenderer } from 'electron-better-ipc';
 import { ChildProcess } from 'child_process';
 import { getOutputFolder } from './projectFolder';
-import Main from './main';
 
 export default () => {
     let [searchParams] = useSearchParams();
@@ -68,7 +66,7 @@ export default () => {
                 <div className='flex flex-row gap-2 pr-2 w-1/2 justify-end items-center'>
                     <button
                         className={
-                            'top-bar-button hover:border-cyan-500 hover:bg-cyan-200 '
+                            'top-bar-button w-1/4 hover:border-cyan-500 hover:bg-cyan-200 '
                             + 'active:bg-cyan-700 active:text-white active:border-cyan-800 '
                             + (openSetting ? 'border-cyan-200 bg-cyan-100' : '')
                         }
@@ -81,7 +79,7 @@ export default () => {
                     </button>
                     {settings && openSetting && (
                         <button
-                            className='top-bar-button hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
+                            className='top-bar-button w-1/4 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
                             onClick={() => {
                                 if (settings) writeSettingsFileSync(path, settings)
                                 setOpenSetting(false);
@@ -94,7 +92,7 @@ export default () => {
                         </button>
                     )}
                     <button
-                        className='top-bar-button process-button'
+                        className='top-bar-button w-1/4 top-bar-button-colored'
                         disabled={executing}
                         onClick={async () => {
 
@@ -112,14 +110,14 @@ export default () => {
                         <div>{executing ? 'Executing...' : 'Execute'}</div>
                         <div></div>
                     </button>
-                    <button className='top-bar-button process-button'>
+                    <button className='top-bar-button w-1/4 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faPause} className='top-bar-button-icon' />
                         </div>
                         <div>Pause</div>
                         <div></div>
                     </button>
-                    <button className='top-bar-button process-button'>
+                    <button className='top-bar-button w-1/4 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faForward} className='top-bar-button-icon' />
                         </div>
@@ -140,7 +138,7 @@ export default () => {
                         </div>
                     )}
                     <div className='pt-2 grow flex flex-col'>
-                        <Main log={log} projectPath={path} />
+                        <ProjectMain log={log} projectPath={path} />
                     </div>
                 </>
             )}

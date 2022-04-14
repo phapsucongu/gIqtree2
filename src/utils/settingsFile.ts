@@ -1,9 +1,13 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { defaultSettings, Settings } from '../../interfaces';
+import { defaultSettings, Settings } from '../interfaces';
 
 const filename = 'settings.json';
+
+export function hasSettingsFileSync(projectPath: string) {
+    return existsSync(join(projectPath, filename));
+}
 
 export function readSettingsFileSync(projectPath: string) {
     let path = join(projectPath, filename);

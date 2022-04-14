@@ -5,11 +5,12 @@ import { faXmark, faList } from '@fortawesome/free-solid-svg-icons'
 import { faWindowMaximize, faWindowMinimize, faSquarePlus, faFolderOpen, faWindowRestore } from '@fortawesome/free-regular-svg-icons';
 import './titlebar.css';
 
-import { BrowserWindow, dialog } from '@electron/remote';
+import { dialog } from '@electron/remote';
 import { Link } from 'react-router-dom';
+import { useWindow } from '../hooks/useWindow';
 
 export default () => {
-    let window = BrowserWindow.getFocusedWindow();
+    let window = useWindow();
     let [maximized, setMaximized] = useState(window?.isMaximized || false);
     let [_, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
@@ -33,12 +34,17 @@ export default () => {
                     <FontAwesomeIcon icon={faList} className="top-link-icon" />
                     <div>Dashboard</div>
                 </Link>
-                <div className='titlebar-button flex top-link'>
+                <button
+                    className='titlebar-button flex top-link'
+                    onClick={() => {
+                        navigate('/new');
+                        navigate(0);
+                    }}>
                     <FontAwesomeIcon icon={faSquarePlus} className="top-link-icon" />
                     <div className='self-center'>
                         New
                     </div>
-                </div>
+                </button>
                 <button
                     className='titlebar-button flex top-link'
                     onClick={() => {

@@ -1,7 +1,3 @@
-.setting-row {
-    @apply flex flex-row items-center justify-between mb-4;
-}
-
 .multiple-option-button {
     @apply py-2 px-4 border-y border-r border-cyan-600;
     @apply hover:bg-cyan-100;
@@ -26,8 +22,4 @@
 .alignment-input-remove {
     @apply bg-red-200 p-2 rounded-lg;
     @apply hover:bg-red-800 hover:text-white
-}
-
-.action-button {
-    @apply p-2 border border-blue-400 rounded-xl bg-blue-100 active:bg-blue-700 active:text-white;
 }

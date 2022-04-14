@@ -4,10 +4,11 @@ import './data.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faFolder, faFolderOpen, faFile, faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { dialog, BrowserWindow } from "@electron/remote";
+import { dialog } from "@electron/remote";
+import { useWindow } from "../../../hooks/useWindow";
 
 export default ({ settings, onChange }: { settings: DataSettings, onChange?: (newSetting: DataSettings) => void }) => {
-    let window = BrowserWindow.getFocusedWindow();
+    let window = useWindow();
     let [codonSettingOpen, setCodonSettingOpen] = useState(false);
     let codon = Codons.find(codon => codon.type === settings.codonType);
     let { partitionFile, alignmentFiles, alignmentFolder, sequenceType, partitionType } = settings;
