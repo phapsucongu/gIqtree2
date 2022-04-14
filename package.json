@@ -1,0 +1,76 @@
+{
+  "name": "gIqtree",
+  "version": "0.1.0",
+  "homepage": ".",
+  "main": "build/electron/main.js",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "7.0.0-alpha.3",
+    "@electron/remote": "^2.0.8",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-regular-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/react-fontawesome": "^0.1.18",
+    "@types/electron-devtools-installer": "^2.2.1",
+    "@types/node": "14.18.12",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
+    "autoprefixer": "^10.4.4",
+    "electron-better-ipc": "^2.0.1",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-reload": "^1.5.0",
+    "merge-stream": "^2.0.0",
+    "postcss": "^8.4.12",
+    "react": "^17.0.2",
+    "react-arborist": "^1.0.3",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.0",
+    "rereadable-stream": "^1.4.13",
+    "tailwindcss": "^3.0.23",
+    "typescript": "^4.5.5",
+    "use-resize-observer": "^8.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "postinstall": "electron-builder install-app-deps",
+    "electron:dev": "concurrently \"tsc -p electron -w\" \"tsc -p electron && electron .\"",
+    "electron:build": "yarn build && tsc -p electron && electron-builder"
+  },
+  "build": {
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^17.1.0",
+    "electron-builder": "^22.14.13",
+    "wait-on": "^6.0.1"
+  }
+}

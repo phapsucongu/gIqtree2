@@ -1,0 +1,26 @@
+.top-bar-button {
+    @apply p-2 text-lg min-w-[5rem] w-1/4;
+    @apply flex flex-row items-center justify-between gap-2;
+    @apply rounded-lg border-2
+}
+
+.process-button {
+    @apply border-slate-200;
+    @apply hover:border-transparent hover:bg-lime-900 hover:text-white
+}
+
+.process-button:disabled {
+    @apply border-gray-200;
+    @apply text-gray-200;
+    @apply hover:border-gray-100 hover:bg-transparent hover:text-gray-200
+}
+
+.top-bar-button-icon {
+    @apply h-6
+}
+
+.process-button:hover > .top-bar-button-icon {
+    @apply text-white
+}
+
+

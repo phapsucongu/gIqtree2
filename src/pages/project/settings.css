@@ -1,0 +1,8 @@
+.category-column-item {
+    @apply p-4 rounded-r-full;
+}
+
+.category-column-item-chosen {
+    @apply font-bold;
+    @apply bg-cyan-700 text-white;
+}
