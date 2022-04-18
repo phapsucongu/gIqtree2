@@ -6,6 +6,7 @@ import { faPenToSquare, faFolder, faFolderOpen, faFile, faTrashCan } from '@fort
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { dialog } from "@electron/remote";
 import { useWindow } from "../../../hooks/useWindow";
+import SettingRowFile from "../../../components/settingrowfile";
 
 export default ({ settings, onChange }: { settings: DataSettings, onChange?: (newSetting: DataSettings) => void }) => {
     let window = useWindow();
@@ -13,17 +14,6 @@ export default ({ settings, onChange }: { settings: DataSettings, onChange?: (ne
     let codon = Codons.find(codon => codon.type === settings.codonType);
     let { partitionFile, alignmentFiles, alignmentFolder, sequenceType, partitionType } = settings;
     let multipleGenes = isMultipleGene(settings);
-
-    const changePartitionFileCallback = () => {
-        if (!window) return;
-
-        let file = dialog.showOpenDialogSync(window, {
-            title: 'Choose a partition file', properties: ['openFile']
-        });
-
-        if (file)
-            onChange?.({ ...settings, partitionFile: file[0] });
-    }
 
     return (
         <div>
@@ -170,34 +160,12 @@ export default ({ settings, onChange }: { settings: DataSettings, onChange?: (ne
                     </div>
                 </div>
             )}
-            <div className="setting-row">
-                <b>Partition file :</b>
-                <div className="flex flex-row justify-end items-center">
-                    <div className="font-bold pr-2">
-                        {partitionFile}
-                    </div>
-                    {!partitionFile && (
-                        <button className="action-button" onClick={changePartitionFileCallback}>
-                            <FontAwesomeIcon icon={faPenToSquare} className="pr-2" />
-                            Add
-                        </button>
-                    )}
-                    {partitionFile && (
-                        <>
-                            <button className="multiple-option-button border-l rounded-l-full" onClick={changePartitionFileCallback}>
-                                <FontAwesomeIcon icon={faPenToSquare} className="pr-2" />
-                                Change
-                            </button>
-                            <button
-                                className="multiple-option-button rounded-r-full"
-                                onChange={() => onChange?.({ ...settings, partitionFile: null })}>
-                                <FontAwesomeIcon icon={faTrashCan} className="pr-2" />
-                                Remove
-                            </button>
-                        </>
-                    )}
-                </div>
-            </div>
+            <SettingRowFile
+                name="Partition file"
+                file={partitionFile}
+                onChange={file => onChange?.({ ...settings, partitionFile: file })}
+                />
+
             {multipleGenes && (
                 <div className="setting-row">
                     <b>Partition type :</b>

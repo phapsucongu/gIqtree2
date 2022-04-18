@@ -104,8 +104,7 @@ export default () => {
                             type="text"
                             placeholder="Enter project name..."
                             value={name ?? undefined}
-                            onChange={e => setName(e.target.value)}>
-                        </input>
+                            onChange={e => setName(e.target.value)} />
                         <b className="flex flex-row place-items-center">
                             <div>Project path :</div>
                         </b>
@@ -118,8 +117,7 @@ export default () => {
                                 type="text"
                                 placeholder="Enter path, or click the choose button"
                                 value={path ?? undefined}
-                                onChange={e => setPath(e.target.value)}>
-                            </input>
+                                onChange={e => setPath(e.target.value)} />
                             <button
                                 className="action-button"
                                 onClick={() => {
