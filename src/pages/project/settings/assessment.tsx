@@ -11,7 +11,10 @@ import {
     SingleBranchTests
 } from "../../../interfaces/assessmentSettings";
 
-export default ({ settings, onChange }: { settings: AssessmentSettings, onChange?: (newSettings: AssessmentSettings) => void }) => {
+export default (
+    { settings, isMultipleGene, onChange }:
+    { settings: AssessmentSettings, isMultipleGene: boolean, onChange?: (newSettings: AssessmentSettings) => void }
+) => {
     let {
         ufbootOption,
         bootstrapMethod, multiPartitionSamplingStrategy, singleBranchTests,
@@ -71,37 +74,39 @@ export default ({ settings, onChange }: { settings: AssessmentSettings, onChange
                     />
                 </div>
             )}
-            <div className="setting-row">
-                <b>Multi-partition sampling strategy :</b>
-                <div>
-                    {MultiPartitionSamplingStrategies
-                        .map((current, index) => {
-                            let rounded = '';
-                            if (index === 0) rounded = 'border-l rounded-l-full';
-                            if (index === BootstrapMethods.length) rounded = 'rounded-r-full';
+            {isMultipleGene && (
+                <div className="setting-row">
+                    <b>Multi-partition sampling strategy :</b>
+                    <div>
+                        {MultiPartitionSamplingStrategies
+                            .map((current, index) => {
+                                let rounded = '';
+                                if (index === 0) rounded = 'border-l rounded-l-full';
+                                if (index === BootstrapMethods.length) rounded = 'rounded-r-full';
 
-                            let chosen = (
-                                multiPartitionSamplingStrategy === current.type
-                                || (multiPartitionSamplingStrategy === null && current.type === DefaultMultiPartitionSamplingStrategy)
-                            )
-                                ? 'bg-gray-700 border-gray-700 text-white font-bold'
-                                : 'border-black';
-                            return (
-                                <button
-                                    onClick={() => {
-                                        onChange?.({
-                                            ...settings,
-                                            multiPartitionSamplingStrategy: current.type
-                                        });
-                                    }}
-                                    className={"py-2 px-4 border-r border-y hover:bg-gray-200 hover:text-black " + rounded + ' ' + chosen}>
-                                    {current.name}
-                                </button>
-                            )
-                        })
-                    }
+                                let chosen = (
+                                    multiPartitionSamplingStrategy === current.type
+                                    || (multiPartitionSamplingStrategy === null && current.type === DefaultMultiPartitionSamplingStrategy)
+                                )
+                                    ? 'bg-gray-700 border-gray-700 text-white font-bold'
+                                    : 'border-black';
+                                return (
+                                    <button
+                                        onClick={() => {
+                                            onChange?.({
+                                                ...settings,
+                                                multiPartitionSamplingStrategy: current.type
+                                            });
+                                        }}
+                                        className={"py-2 px-4 border-r border-y hover:bg-gray-200 hover:text-black " + rounded + ' ' + chosen}>
+                                        {current.name}
+                                    </button>
+                                )
+                            })
+                        }
+                    </div>
                 </div>
-            </div>
+            )}
             <div className="setting-row">
                 <b>Single branch tests :</b>
                 <div className="flex flex-row gap-4">
@@ -155,21 +160,19 @@ export default ({ settings, onChange }: { settings: AssessmentSettings, onChange
                     }
                 </div>
             </div>
-            {[SingleBranchTest.Parametric_aLRT, SingleBranchTest.SH_aLRT]
-                .some(aLRTtype => singleBranchTests?.includes(aLRTtype)) && (
-                    <div className="setting-row">
-                        <b>Number of aLRT replicates :</b>
-                        <input
-                            className="border-2 p-2 rounded-lg basis-1/2"
-                            type="number"
-                            min={1}
-                            step={1}
-                            placeholder={DefaultALRTReplicate.toString()}
-                            value={approximateLikelihoodReplicate ?? DefaultALRTReplicate}
-                            onChange={e => onChange?.({ ...settings, approximateLikelihoodReplicate: e.target.valueAsNumber })}
-                        />
-                    </div>
-                )}
+            {singleBranchTests?.includes(SingleBranchTest.SH_aLRT) &&
+                <div className="setting-row">
+                    <b>Number of aLRT replicates :</b>
+                    <input
+                        className="border-2 p-2 rounded-lg basis-1/2"
+                        type="number"
+                        min={1}
+                        step={1}
+                        placeholder={DefaultALRTReplicate.toString()}
+                        value={approximateLikelihoodReplicate ?? DefaultALRTReplicate}
+                        onChange={e => onChange?.({ ...settings, approximateLikelihoodReplicate: e.target.valueAsNumber })}
+                    />
+                </div>}
             {singleBranchTests?.includes(SingleBranchTest.LocalBootstrap) && (
                 <div className="setting-row">
                     <b>Number of local-bootstrap-test replicates :</b>

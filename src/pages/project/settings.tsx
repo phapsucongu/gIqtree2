@@ -6,6 +6,7 @@ import TreeSearchSetting from "./settings/treesearch";
 import AssessmentSetting from "./settings/assessment";
 import DatingSetting from "./settings/dating";
 import OtherSetting from "./settings/others";
+import { isMultipleGene } from '../../interfaces/dataSettings';
 
 enum CurrentSetting {
     Data = 1,
@@ -56,6 +57,7 @@ export default ({ setting, onChange }: { setting: Settings, onChange?: (newSetti
         case CurrentSetting.Assessment: {
             currentSettingElement = (
                 <AssessmentSetting
+                    isMultipleGene={isMultipleGene(setting.data)}
                     settings={setting.assessment}
                     onChange={(assessmentSettings) => onChange?.({ ...setting, assessment: assessmentSettings })} />
             );
