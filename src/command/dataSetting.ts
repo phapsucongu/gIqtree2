@@ -42,11 +42,7 @@ export default function ({ data }: Settings) {
         }
     }
 
-    if (data.alignmentFiles.length) {
-        // multiple gene :
-        // if partition file is there, alignment files/folder must be already added.
-        // if it's not there, files/folder being passed as partitions.
-        // here must be single gene
+    if (data.alignmentFiles.length === 1) {
         output.push('-s', data.alignmentFiles[0]);
     }
 
