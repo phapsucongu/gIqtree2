@@ -1,5 +1,6 @@
 import { sep } from "path";
 import { Settings } from "../interfaces";
+import assessmentSetting from "./assessmentSetting";
 import dataSetting from "./dataSetting";
 import treeSearchSetting from "./treeSearchSetting";
 
@@ -9,7 +10,8 @@ export function prepareCommand (setting: Settings, outputPath?: string) {
 
     return [
         ...dataSetting(setting),
-        ...treeSearchSetting(setting)
+        ...treeSearchSetting(setting),
+        ...assessmentSetting(setting)
     ]
         .concat('--redo')
         .concat(outputPath ? ['--prefix', outputPath] : [])
