@@ -9,12 +9,14 @@ type Node = {
     path: string;
     children?: Node[];
     name: string;
+    isFolder: boolean;
 }
 
 function recurse(path: string) {
-    const baseNode: Node = { id: path, name: basename(path), path }
+    const baseNode: Node = { id: path, name: basename(path), path, isFolder: false }
 
     if (statSync(path).isDirectory()) {
+        baseNode.isFolder = true;
         baseNode.children = readdirSync(path)
             .map(dir => join(path, dir))
             .map(recurse);
@@ -48,7 +50,10 @@ export default ({ log, projectPath }: { log: string, projectPath: string }) => {
                 <Tree data={recurse(projectPath)} height={treeHeight - 50}>
                     {({ styles, data }) => (
                         <div className={data.path === currentFile ? 'bg-gray-200' : ''} style={styles.row} key={data.id}>
-                            <div style={styles.indent} onClick={() => setCurrentFile(data.path)}>
+                            <div style={styles.indent} onClick={() => {
+                                if (!data.isFolder)
+                                    setCurrentFile(data.path);
+                            }}>
                                 {data.name}
                             </div>
                         </div>
