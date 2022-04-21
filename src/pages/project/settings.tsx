@@ -54,7 +54,11 @@ export default ({ setting, onChange }: { setting: Settings, onChange?: (newSetti
         }
 
         case CurrentSetting.Assessment: {
-            currentSettingElement = <AssessmentSetting />;
+            currentSettingElement = (
+                <AssessmentSetting
+                    settings={setting.assessment}
+                    onChange={(assessmentSettings) => onChange?.({ ...setting, assessment: assessmentSettings })} />
+            );
             break;
         }
 
