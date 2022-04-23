@@ -57,6 +57,10 @@ export default () => {
         )
     }
 
+    let preparedCommand : string[] = [];
+    if (settings)
+        preparedCommand = prepareCommand(settings, 'output', getOutputFolder(path));
+
     return (
         <div className='pt-1 grow flex flex-col'>
             <div className='flex flex-row justify-between'>
@@ -98,7 +102,7 @@ export default () => {
                         onClick={async () => {
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
-                                arguments: prepareCommand(settings!, getOutputFolder(path)),
+                                arguments: preparedCommand,
                                 binary: getBinaryPath()
                             });
                             setExecuting(true);
@@ -133,7 +137,7 @@ export default () => {
                         <div className='pt-2'>
                             <b>Executing :</b>
                             <code className='overflow-x-scroll'>
-                                {prepareCommand(settings!, getOutputFolder(path)).join(' ')}
+                                {preparedCommand.join(' ')}
                             </code>
                         </div>
                     )}
