@@ -44,7 +44,8 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
                 .then(() => onReady?.())
                 .catch(e => setError(`${e}`))
         }
-    })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     if (error) {
         return (

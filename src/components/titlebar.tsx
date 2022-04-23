@@ -21,7 +21,8 @@ function TitleBar() {
                 .on('maximize', () => setMaximized(true))
                 .on('unmaximize', () => setMaximized(false));
         }
-    });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className='flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
