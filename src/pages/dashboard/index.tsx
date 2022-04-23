@@ -1,1 +1,5 @@
-export default () => <>this is the dashboard</>
+function Dashboard() {
+    return <>this is the dashboard</>
+}
+
+export default Dashboard;

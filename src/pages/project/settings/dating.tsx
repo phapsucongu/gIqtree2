@@ -1,1 +1,5 @@
-export default () => <>dating</>
+function DatingSettings() {
+    return <>dating</>;
+}
+
+export default DatingSettings;

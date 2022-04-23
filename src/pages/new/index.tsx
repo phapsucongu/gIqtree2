@@ -24,13 +24,13 @@ const types = [
 
 ]
 
-export default () => {
+function NewPage() {
     let [name, setName] = useState<string | null>(null);
     let [currentType, setCurrentType] = useState<TemplateType>(TemplateType.FindModel);
     let [path, setPath] = useState('');
     let window = useWindow();
     let navigate = useNavigate();
-    let [_, setSearchParams] = useSearchParams();
+    let [, setSearchParams] = useSearchParams();
 
     let validPath = false;
 
@@ -142,3 +142,5 @@ export default () => {
         </div>
     )
 }
+
+export default NewPage;

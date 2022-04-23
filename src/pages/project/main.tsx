@@ -25,7 +25,7 @@ function recurse(path: string) {
     return baseNode;
 }
 
-export default ({ log, projectPath }: { log: string, projectPath: string }) => {
+function ProjectMain({ log, projectPath }: { log: string, projectPath: string }) {
     let [treeHeight, setTreeHeight] = useState(0);
     let [treeWidth, setTreeWidth] = useState(0);
     let [currentFile, setCurrentFile] = useState<string | null>(null);
@@ -68,3 +68,5 @@ export default ({ log, projectPath }: { log: string, projectPath: string }) => {
         </div>
     )
 }
+
+export default ProjectMain;

@@ -1,1 +1,5 @@
-export default () => <>others</>
+function OthersSettings() {
+    return <>others</>;
+}
+
+export default OthersSettings;

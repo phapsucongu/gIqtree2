@@ -13,7 +13,7 @@ let binaryUrl = getArchiveUrl();
 let binaryPath = getBinaryPath();
 
 
-export default ({ onReady }: { onReady?: () => void }) => {
+function BinaryDownload({ onReady }: { onReady?: () => void }) {
     let [error, setError] = useState('');
     let [progress, setProgress] = useState(0);
     let [[loaded, total], setProgressStats] = useState([0, 0]);
@@ -44,7 +44,7 @@ export default ({ onReady }: { onReady?: () => void }) => {
                 .then(() => onReady?.())
                 .catch(e => setError(`${e}`))
         }
-    }, [])
+    })
 
     if (error) {
         return (
@@ -64,7 +64,7 @@ export default ({ onReady }: { onReady?: () => void }) => {
             <div></div>
             <div className='text-center mx-6'>
                 Your platform type is <code>{type()}</code>
-                {!supported && (
+                {(!supported && (
                     <>
                         , which is unsupported. Sorry.
                         <br />
@@ -84,7 +84,7 @@ export default ({ onReady }: { onReady?: () => void }) => {
                             Close the app
                         </button>
                     </>
-                ) || '.'}
+                )) || '.'}
                 {supported && (
                     <div>
                         Download{downloadCompleted ? 'ed' : 'ing'} binary from
@@ -116,3 +116,5 @@ export default ({ onReady }: { onReady?: () => void }) => {
         </div>
     )
 }
+
+export default BinaryDownload;

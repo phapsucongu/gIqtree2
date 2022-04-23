@@ -1,8 +1,8 @@
 import { Settings } from "../interfaces";
-import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, MultiPartitionSamplingStrategy, SingleBranchTest, SingleBranchTests } from "../interfaces/assessmentSettings";
+import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, MultiPartitionSamplingStrategy, SingleBranchTest } from "../interfaces/assessmentSettings";
 import { isMultipleGene } from "../interfaces/dataSettings";
 
-export default function (settings: Settings) {
+function prepare(settings: Settings) {
     let output: string[] = [];
     let { assessment } = settings;
     switch (assessment.bootstrapMethod) {
@@ -47,3 +47,5 @@ export default function (settings: Settings) {
 
     return output;
 }
+
+export default prepare;

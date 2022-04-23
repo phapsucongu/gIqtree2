@@ -6,7 +6,7 @@ import Project from './pages/project';
 import New from './pages/new';
 import BinaryDownload from './pages/binarydownload';
 
-export default () => {
+function App() {
     let [ready, setReady] = useState(false);
 
     if (!ready) {
@@ -24,3 +24,5 @@ export default () => {
         </HashRouter>
     )
 }
+
+export default App;

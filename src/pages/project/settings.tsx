@@ -17,7 +17,7 @@ enum CurrentSetting {
     Other
 }
 
-export default ({ setting, onChange }: { setting: Settings, onChange?: (newSetting: Settings) => void }) => {
+function ProjectSettings({ setting, onChange }: { setting: Settings, onChange?: (newSetting: Settings) => void }) {
     let [currentSetting, setCurrentSetting] = useState(CurrentSetting.Data);
     let currentSettingElement: ReactElement | null = null;
 
@@ -96,3 +96,5 @@ export default ({ setting, onChange }: { setting: Settings, onChange?: (newSetti
         </div>
     )
 }
+
+export default ProjectSettings;

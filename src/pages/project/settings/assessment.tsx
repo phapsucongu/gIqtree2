@@ -11,10 +11,10 @@ import {
     SingleBranchTests
 } from "../../../interfaces/assessmentSettings";
 
-export default (
+function Assessment(
     { settings, isMultipleGene, onChange }:
     { settings: AssessmentSettings, isMultipleGene: boolean, onChange?: (newSettings: AssessmentSettings) => void }
-) => {
+) {
     let {
         ufbootOption,
         bootstrapMethod, multiPartitionSamplingStrategy, singleBranchTests,
@@ -190,3 +190,5 @@ export default (
         </div>
     )
 }
+
+export default Assessment;

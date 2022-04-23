@@ -15,7 +15,7 @@ import { ChildProcess } from 'child_process';
 import { getOutputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
 
-export default () => {
+function Project() {
     let [searchParams] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>(null)
     let [error, setError] = useState<string>('');
@@ -31,7 +31,7 @@ export default () => {
         } catch (e) {
             setError(`${e}`)
         }
-    }, [])
+    }, [path]);
 
     useEffect(() => {
         let interval = setInterval(async () => {
@@ -46,7 +46,7 @@ export default () => {
             }
         }, 500);
         return () => clearInterval(interval);
-    }, [])
+    });
 
     if (error) {
         return (
@@ -149,3 +149,5 @@ export default () => {
         </div>
     )
 }
+
+export default Project;

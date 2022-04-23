@@ -8,7 +8,7 @@ import { dialog } from "@electron/remote";
 import { useWindow } from "../../../hooks/useWindow";
 import SettingRowFile from "../../../components/settingrowfile";
 
-export default ({ settings, onChange }: { settings: DataSettings, onChange?: (newSetting: DataSettings) => void }) => {
+function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newSetting: DataSettings) => void }) {
     let window = useWindow();
     let [codonSettingOpen, setCodonSettingOpen] = useState(false);
     let codon = Codons.find(codon => codon.type === settings.codonType);
@@ -197,3 +197,5 @@ export default ({ settings, onChange }: { settings: DataSettings, onChange?: (ne
         </div>
     )
 }
+
+export default Data;

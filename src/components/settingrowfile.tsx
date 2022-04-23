@@ -3,7 +3,7 @@ import { faPenToSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWindow } from "../hooks/useWindow";
 
-export default ({ name, file, onChange }: { name: string, file: string | null, onChange?: (file: string | null) => void }) => {
+function SettingRowFile({ name, file, onChange }: { name: string, file: string | null, onChange?: (file: string | null) => void }) {
     let window = useWindow();
 
     const changeFileCallback = () => {
@@ -48,3 +48,5 @@ export default ({ name, file, onChange }: { name: string, file: string | null, o
         </div>
     )
 }
+
+export default SettingRowFile;

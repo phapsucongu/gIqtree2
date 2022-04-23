@@ -9,10 +9,10 @@ import { dialog } from '@electron/remote';
 import { Link } from 'react-router-dom';
 import { useWindow } from '../hooks/useWindow';
 
-export default () => {
+function TitleBar() {
     let window = useWindow();
     let [maximized, setMaximized] = useState(window?.isMaximized || false);
-    let [_, setSearchParams] = useSearchParams();
+    let [, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -21,13 +21,13 @@ export default () => {
                 .on('maximize', () => setMaximized(true))
                 .on('unmaximize', () => setMaximized(false));
         }
-    }, []);
+    });
 
     return (
         <div className='flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
             <div className='flex flex-row'>
                 <div className='titlebar-button'>
-                    <img src="/icon.png" className='h-12' />
+                    <img alt="gIqtree" src="/icon.png" className='h-12' />
                 </div>
 
                 <Link to="/dashboard" className='titlebar-button flex top-link'>
@@ -92,3 +92,5 @@ export default () => {
         </div>
     )
 }
+
+export default TitleBar;

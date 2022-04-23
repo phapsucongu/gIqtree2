@@ -1,6 +1,7 @@
 import { Settings } from "../interfaces";
 import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop } from "../interfaces/treeSearchSettings";
-export default ({ treeSearch } : Settings) => {
+
+function prepare({ treeSearch } : Settings) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, constrainedTreeFile, referenceTreeFile, outgroupTaxa } = treeSearch;
     let output : string[] = [];
     if (enabled) output.push('-n', '0');
@@ -26,3 +27,5 @@ export default ({ treeSearch } : Settings) => {
 
     return output;
 }
+
+export default prepare;

@@ -1,7 +1,10 @@
 import SettingRowFile from "../../../components/settingrowfile";
 import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop, TreeSearchSettings } from "../../../interfaces/treeSearchSettings";
 
-export default ({ settings, onChange }: { settings: TreeSearchSettings, onChange?: (newSetting: TreeSearchSettings) => void }) => {
+function TreeSearch(
+    { settings, onChange }:
+    { settings: TreeSearchSettings, onChange?: (newSetting: TreeSearchSettings) => void }
+) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, referenceTreeFile, constrainedTreeFile, outgroupTaxa } = settings;
     let validOutgroup = true;
 
@@ -84,3 +87,5 @@ export default ({ settings, onChange }: { settings: TreeSearchSettings, onChange
         </div>
     );
 }
+
+export default TreeSearch;

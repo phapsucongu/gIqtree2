@@ -1,7 +1,7 @@
 import { Settings } from "../interfaces";
 import { isMultipleGene, PartitionType, SequenceType } from "../interfaces/dataSettings";
 
-export default function ({ data }: Settings) {
+function prepare({ data }: Settings) {
     let output: string[] = [];
     switch (data.sequenceType) {
         case SequenceType.Codon:
@@ -48,3 +48,5 @@ export default function ({ data }: Settings) {
 
     return output;
 }
+
+export default prepare;
