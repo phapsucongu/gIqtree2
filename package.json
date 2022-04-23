@@ -4,6 +4,7 @@
   "homepage": ".",
   "main": "build/electron/main.js",
   "private": true,
+  "author": "gIqtree team <test@example.com>",
   "dependencies": {
     "@craco/craco": "7.0.0-alpha.3",
     "@electron/remote": "^2.0.8",
@@ -41,9 +42,10 @@
     "build": "craco build",
     "postinstall": "electron-builder install-app-deps",
     "electron:dev": "concurrently \"tsc -p electron -w\" \"tsc -p electron && electron .\"",
-    "electron:build": "yarn build && tsc -p electron && electron-builder -lw",
-    "electron:build:win": "yarn build && tsc -p electron && electron-builder",
-    "electron:build:linux": "yarn build && tsc -p electron && electron-builder",
+    "electron:build": "yarn build && tsc -p electron && electron-builder",
+    "electron:build:win": "yarn build && tsc -p electron && electron-builder -w",
+    "electron:build:linux": "yarn build && tsc -p electron && electron-builder -l",
+    "electron:build:mac": "yarn build && tsc -p electron && electron-builder -m",
     "release": "yarn build && yarn electron:build"
   },
   "build": {
@@ -53,6 +55,28 @@
     ],
     "directories": {
       "buildResources": "assets"
+    },
+    "appId": "com.giqtree2",
+    "mac": {
+      "category": "public.app-category.reference",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "linux": {
+      "icon": "build/512x512.png",
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] },
+        { "target": "snap", "arch": ["x64"] },
+        { "target": "pacman", "arch": ["x64"] },
+        { "target": "tar.gz", "arch": ["x64"] }
+      ],
+      "category": "Science"
     }
   },
   "eslintConfig": {
