@@ -1,0 +1,26 @@
+#download-progress {
+    width: 75%;
+    @apply h-9;
+}
+
+::-webkit-progress-bar {
+    @apply rounded-full bg-slate-200;
+}
+
+::-webkit-progress-value {
+    @apply rounded-full;
+}
+
+.progress::-webkit-progress-value {
+    @apply bg-yellow-500;
+}
+
+.done::-webkit-progress-value {
+    @apply bg-green-400;
+}
+
+#download-progress::before {
+    vertical-align: 0;
+    font-size: 1.5em;
+    @apply absolute left-0 right-0;
+}

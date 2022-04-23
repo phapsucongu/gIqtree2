@@ -1,11 +1,19 @@
+import { useState } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import TitleBar from "./components/titlebar";
 import Dashboard from './pages/dashboard';
 import Project from './pages/project';
 import New from './pages/new';
+import BinaryDownload from './pages/binarydownload';
 
-export default () => (
-    <>
+export default () => {
+    let [ready, setReady] = useState(false);
+
+    if (!ready) {
+        return <BinaryDownload onReady={() => setReady(true)} />
+    }
+
+    return (
         <HashRouter>
             <TitleBar />
             <Routes>
@@ -14,5 +22,5 @@ export default () => (
                 <Route path="/new" element={<New />} />
             </Routes>
         </HashRouter>
-    </>
-)
+    )
+}

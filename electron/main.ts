@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, session } from 'electron';
 import * as path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import './processManager';
@@ -48,6 +48,18 @@ app.whenReady().then(() => {
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err));
 
+    session.defaultSession.webRequest.onHeadersReceived({
+        urls: [
+            'https://github.com/Cibiv/IQ-TREE/releases/download/*',
+            'https://objects.githubusercontent.com/*'
+        ]
+    }, (details, callback) => {
+        let { responseHeaders = {} } = details;
+            responseHeaders['Access-Control-Allow-Origin'] = ['*'];
+
+        callback({ responseHeaders: responseHeaders });
+
+    })
     createWindow();
 
     app.on('activate', () => {

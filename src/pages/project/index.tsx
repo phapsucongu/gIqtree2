@@ -13,6 +13,7 @@ import { prepareCommand } from '../../command';
 import { ipcRenderer } from 'electron-better-ipc';
 import { ChildProcess } from 'child_process';
 import { getOutputFolder } from './projectFolder';
+import { getBinaryPath } from '../../platform';
 
 export default () => {
     let [searchParams] = useSearchParams();
@@ -95,11 +96,10 @@ export default () => {
                         className='top-bar-button w-1/4 top-bar-button-colored'
                         disabled={executing}
                         onClick={async () => {
-
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
                                 arguments: prepareCommand(settings!, getOutputFolder(path)),
-                                binary: 'to be filled'
+                                binary: getBinaryPath()
                             });
                             setExecuting(true);
                             setOpenSetting(false);

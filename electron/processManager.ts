@@ -2,6 +2,7 @@ import { ChildProcess, execFile } from 'child_process';
 import { ReReadable } from 'rereadable-stream';
 import { ipcMain } from 'electron-better-ipc';
 import merge from 'merge-stream';
+import { accessSync, chmodSync, constants, statSync } from 'fs';
 
 const currentProcess = new Map<string, [ChildProcess, ReReadable]>();
 
@@ -16,6 +17,12 @@ ipcMain.answerRenderer('spawn', (data: SpawnData) => {
         return false;
     }
     try {
+        try {
+            accessSync(data.binary, constants.X_OK);
+        } catch {
+            let fileStat = statSync(data.binary);
+            chmodSync(data.binary, fileStat.mode | constants.S_IXUSR);
+        }
         let process = execFile(data.binary, data.arguments, {
             maxBuffer: 1024 * 1024 * 50
         });
