@@ -17,6 +17,21 @@ jobs:
         run: yarn install
       - name: Build
         run: yarn electron:build:linux -p never
+      - name: Publish AppImage
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: gIqtree-appimage
+          path: dist/gIqtree-0.1.0.AppImage
+      - name: Publish Snap
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: gIqtree-snap
+          path: dist/gIqtree_0.1.0_amd64.snap
+      - name: Publish gzipped tar
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: gIqtree-targz
+          path: dist/gIqtree-0.1.0.tar.gz
   build-windows:
     name: Build for Windows
     runs-on: windows-2022
