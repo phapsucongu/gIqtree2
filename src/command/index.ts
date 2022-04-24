@@ -11,6 +11,5 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         ...assessmentSetting(setting)
     ]
         .concat('--redo')
-        .concat(outputPath ? ['--prefix', join(outputPath, basename)] : [])
-        .map(argument => argument.includes(" ") ? `"${argument}"` : argument);
+        .concat(outputPath ? ['--prefix', join(outputPath, basename)] : []);
 }
