@@ -28,6 +28,7 @@ function recurse(path: string) {
 function ProjectMain({ log, projectPath }: { log: string, projectPath: string }) {
     let [treeHeight, setTreeHeight] = useState(0);
     let [treeWidth, setTreeWidth] = useState(0);
+    let [error, setError] = useState('');
     let [currentFile, setCurrentFile] = useState<string | null>(null);
     let [currentContent, setCurrentContent] = useState('');
     let { ref: treeRef } = useResize({
@@ -39,7 +40,13 @@ function ProjectMain({ log, projectPath }: { log: string, projectPath: string })
 
     useEffect(() => {
         if (currentFile !== null) {
-            setCurrentContent(readFileSync(currentFile, 'utf8'));
+            try {
+                setCurrentContent(readFileSync(currentFile, 'utf8'));
+                setError('');
+            }
+            catch (e) {
+                setError(`${e}`);
+            }
         }
     }, [currentFile]);
 
@@ -63,7 +70,7 @@ function ProjectMain({ log, projectPath }: { log: string, projectPath: string })
             <pre className='h-[82vh] overflow-y-scroll' style={{
                 width: window.innerWidth - treeWidth - 20
             }}>
-                {currentFile ? currentContent : log}
+                {error ? error : currentFile ? currentContent : log}
             </pre>
         </div>
     )
