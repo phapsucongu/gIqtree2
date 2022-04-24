@@ -131,7 +131,7 @@ function Project() {
                 </div>
             </div>
             {openSetting && settings && <ProjectSetting setting={settings} onChange={setting => setSettings(setting)} />}
-            {log && !openSetting && (
+            {!openSetting && (
                 <>
                     {executing && (
                         <div className='pt-2'>
