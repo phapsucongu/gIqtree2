@@ -1,5 +1,6 @@
 .titlebar-button {
-    @apply p-2
+    @apply p-2;
+    -webkit-app-region: no-drag;
 }
 
 .top-link {
@@ -8,4 +9,8 @@
 
 .top-link-icon {
     @apply h-8 w-8 pr-2
+}
+
+.draggable {
+    -webkit-app-region: drag;
 }

@@ -25,7 +25,7 @@ function TitleBar() {
     }, []);
 
     return (
-        <div className='flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
+        <div className='draggable flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
             <div className='flex flex-row'>
                 <div className='titlebar-button'>
                     <img alt="gIqtree" src="/icon.png" className='h-12' />
