@@ -1,5 +1,7 @@
 import { AssessmentSettings } from "./assessmentSettings";
 import { DataSettings, PartitionType } from "./dataSettings";
+import { DatingSettings } from "./datingSettings";
+import { OthersSettings } from "./othersSettings";
 import { TreeSearchSettings } from "./treeSearchSettings";
 
 export interface Settings {
@@ -7,6 +9,8 @@ export interface Settings {
     data: DataSettings;
     treeSearch: TreeSearchSettings;
     assessment: AssessmentSettings;
+    others?: OthersSettings;
+    dating: DatingSettings;
 }
 
 export function defaultSettings(): Settings {
@@ -35,6 +39,7 @@ export function defaultSettings(): Settings {
             singleBranchTests: null,
             approximateLikelihoodReplicate: null,
             localBootstrapReplicate: null
-        }
+        },
+        dating: {}
     }
 }

@@ -65,12 +65,20 @@ function ProjectSettings({ setting, onChange }: { setting: Settings, onChange?: 
         }
 
         case CurrentSetting.Dating: {
-            currentSettingElement = <DatingSetting />;
+            currentSettingElement = (
+                <DatingSetting
+                    settings={setting.dating}
+                    onChange={datingSettings => onChange?.({ ...setting, dating: datingSettings })}/>
+            )
             break;
         }
 
         case CurrentSetting.Other: {
-            currentSettingElement = <OtherSetting />;
+            currentSettingElement = (
+                <OtherSetting
+                    settings={setting.others}
+                    onChange={otherSettings => onChange?.({ ...setting, others: otherSettings })}/>
+            );
             break;
         }
     }

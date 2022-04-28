@@ -17,6 +17,7 @@
     "@types/node": "^17.0.23",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "argv-split": "https://github.com/minhduc0257/node-argv-split/tarball/196c19e3b645c09641e708581ab927bcdb8a9789",
     "autoprefixer": "^10.4.4",
     "axios": "^0.26.1",
     "decompress": "^4.2.1",
@@ -64,16 +65,41 @@
     "win": {
       "icon": "build/icon.png",
       "target": [
-        { "target": "nsis", "arch": ["x64"] },
-        { "target": "portable", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "linux": {
       "icon": "build/512x512.png",
       "target": [
-        { "target": "AppImage", "arch": ["x64"] },
-        { "target": "snap", "arch": ["x64"] },
-        { "target": "tar.gz", "arch": ["x64"] }
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "snap",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "category": "Science"
     }
