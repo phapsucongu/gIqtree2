@@ -25,7 +25,7 @@ export function getCompressedPath() {
     switch (type()) {
         case 'Windows_NT': return CompressedPath.Windows;
         case 'Linux': return CompressedPath.Linux;
-        case 'Mac': return CompressedPath.Mac;
+        case 'Darwin': return CompressedPath.Mac;
     }
 }
 
@@ -33,7 +33,7 @@ export function getArchiveUrl() {
     switch (type()) {
         case 'Windows_NT': return BinaryUrls.Windows;
         case 'Linux': return BinaryUrls.Linux;
-        case 'Mac': return BinaryUrls.Mac;
+        case 'Darwin': return BinaryUrls.Mac;
     }
 }
 
