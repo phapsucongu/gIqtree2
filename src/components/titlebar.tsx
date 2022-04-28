@@ -5,7 +5,7 @@ import { faXmark, faList } from '@fortawesome/free-solid-svg-icons'
 import { faWindowMaximize, faWindowMinimize, faSquarePlus, faFolderOpen, faWindowRestore } from '@fortawesome/free-regular-svg-icons';
 import './titlebar.css';
 
-import { dialog } from '@electron/remote';
+import { app, dialog } from '@electron/remote';
 import { Link } from 'react-router-dom';
 import { useWindow } from '../hooks/useWindow';
 
@@ -28,7 +28,7 @@ function TitleBar() {
         <div className='draggable flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
             <div className='flex flex-row'>
                 <div className='titlebar-button'>
-                    <img alt="gIqtree" src="/icon.png" className='h-12' />
+                    <img alt="gIqtree" src={app.isPackaged ? "./icon.png" : "/icon.png"} className='h-12' />
                 </div>
 
                 <Link to="/dashboard" className='titlebar-button flex top-link'>
