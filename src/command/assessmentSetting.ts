@@ -1,5 +1,5 @@
 import { Settings } from "../interfaces";
-import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, MultiPartitionSamplingStrategy, SingleBranchTest } from "../interfaces/assessmentSettings";
+import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, SingleBranchTest } from "../interfaces/assessmentSettings";
 import { isMultipleGene } from "../interfaces/dataSettings";
 
 function prepare(settings: Settings) {
@@ -19,11 +19,11 @@ function prepare(settings: Settings) {
 
     if (isMultipleGene(settings.data) && assessment.bootstrapMethod !== null) {
         switch (assessment.multiPartitionSamplingStrategy) {
-            case MultiPartitionSamplingStrategy.Partitions:
-                output.push("--sampling", "GENE");
+            case null:
+            case DefaultMultiPartitionSamplingStrategy:
                 break;
-            case MultiPartitionSamplingStrategy.PartitionsThenSites:
-                output.push("--sampling", "GENESITE");
+            default:
+                output.push('--sampling', assessment.multiPartitionSamplingStrategy);
                 break;
         }
     }

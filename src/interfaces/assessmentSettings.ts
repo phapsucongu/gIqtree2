@@ -4,9 +4,9 @@ export enum BootstrapMethod {
 }
 
 export enum MultiPartitionSamplingStrategy {
-    Sites = "sites",
-    Partitions = "partitions",
-    PartitionsThenSites = "partitions+sites"
+    Sites = "SITE",
+    Partitions = "GENE",
+    PartitionsThenSites = "GENESITE"
 }
 
 export enum SingleBranchTest {
