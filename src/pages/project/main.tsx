@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Tree } from 'react-arborist';
 import { readdirSync, readFileSync, statSync } from 'fs';
 import { basename, join } from 'path';
@@ -38,6 +38,13 @@ function ProjectMain({ log, projectPath }: { log: string, projectPath: string })
         }
     })
 
+    let divRef = useRef<HTMLDivElement>();
+    useEffect(() => {
+        let element = divRef.current;
+        element?.scroll({ top: element!.scrollHeight, behavior: 'smooth' })
+        console.log('scroll', element);
+    }, [log])
+
     useEffect(() => {
         if (currentFile !== null) {
             try {
@@ -67,11 +74,13 @@ function ProjectMain({ log, projectPath }: { log: string, projectPath: string })
                     )}
                 </Tree>
             </div>
-            <pre className='h-[82vh] overflow-y-scroll' style={{
-                width: window.innerWidth - treeWidth - 20
-            }}>
-                {error ? error : currentFile ? currentContent : log}
-            </pre>
+            <div ref={divRef as any} className='h-[82vh] overflow-y-scroll snap-y snap-mandatory snap-end'>
+                <pre className='' style={{
+                    width: Math.floor(window.innerWidth * 95 / 100) - treeWidth
+                }}>
+                    {error ? error : currentFile ? currentContent : log}
+                </pre>
+            </div>
         </div>
     )
 }
