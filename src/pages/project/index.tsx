@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { diff } from 'deep-object-diff';
-import { Settings } from '../../interfaces';
-import { readSettingsFileSync, writeSettingsFileSync } from '../../utils/settingsFile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPause, faForward, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { faCirclePlay, faFolder, faFloppyDisk } from '@fortawesome/free-regular-svg-icons'
+import { ipcRenderer } from 'electron-better-ipc';
+import { ChildProcess } from 'child_process';
 import { basename } from 'path';
+
 import ProjectSetting from './settings';
 import ProjectMain from './main';
 
+import type { Settings } from '../../interfaces';
+import { readSettingsFileSync, writeSettingsFileSync } from '../../utils/settingsFile';
 import { prepareCommand } from '../../command';
-import { ipcRenderer } from 'electron-better-ipc';
-import { ChildProcess, exec } from 'child_process';
 import { getOutputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
 
