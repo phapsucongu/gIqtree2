@@ -41,7 +41,14 @@ function ProjectSettings({ setting, onChange }: { setting: Settings, onChange?: 
         }
 
         case CurrentSetting.Model: {
-            currentSettingElement = <ModelSetting />;
+            currentSettingElement = (
+                <ModelSetting
+                    sequenceType={setting.data.sequenceType}
+                    isMultipleGene={isMultipleGene(setting.data)}
+                    settings={setting.model}
+                    onChange={(newModelSettings) => onChange?.({ ...setting, model: newModelSettings })}
+                    />
+            )
             break;
         }
 

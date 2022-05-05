@@ -3,7 +3,7 @@ import { faPenToSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWindow } from "../hooks/useWindow";
 
-function SettingRowFile({ name, file, onChange }: { name: string, file: string | null, onChange?: (file: string | null) => void }) {
+function SettingRowFile({ name, file, onChange }: { name: string, file?: string, onChange?: (file?: string) => void }) {
     let window = useWindow();
 
     const changeFileCallback = () => {
@@ -38,7 +38,7 @@ function SettingRowFile({ name, file, onChange }: { name: string, file: string |
                         </button>
                         <button
                             className="multiple-option-button rounded-r-full"
-                            onClick={() => onChange?.(null)}>
+                            onClick={() => onChange?.(undefined)}>
                             <FontAwesomeIcon icon={faTrashCan} className="pr-2" />
                             Remove
                         </button>

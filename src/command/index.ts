@@ -6,10 +6,12 @@ import dataSetting from "./dataSetting";
 import treeSearchSetting from "./treeSearchSetting";
 import othersSetting from "./otherSetting";
 import datingSetting from "./datingSetting";
+import modelSetting from "./modelSetting";
 
 export function prepareCommand (setting: Settings, basename: string, outputPath?: string) {
     return [
         ...dataSetting(setting),
+        ...modelSetting(setting),
         ...treeSearchSetting(setting),
         ...assessmentSetting(setting),
         ...datingSetting(setting),

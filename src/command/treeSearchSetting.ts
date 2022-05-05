@@ -13,11 +13,11 @@ function prepare({ treeSearch } : Settings) {
         output.push('--perturb', pertubationStrength.toString());
     }
 
-    if (constrainedTreeFile !== null) {
+    if (constrainedTreeFile !== undefined) {
         output.push('-g', constrainedTreeFile)
     }
 
-    if (referenceTreeFile !== null) {
+    if (referenceTreeFile !== undefined) {
         output.push('-te', referenceTreeFile);
     }
 

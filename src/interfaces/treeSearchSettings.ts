@@ -3,8 +3,8 @@ export interface TreeSearchSettings {
     unsuccessfulIterationsStop: number | null;
     pertubationStrength: number | null;
     outgroupTaxa: string | null;
-    constrainedTreeFile: string | null;
-    referenceTreeFile: string | null;
+    constrainedTreeFile?: string;
+    referenceTreeFile?: string;
 }
 
 export const DefaultUnsuccessfulIterationStop = 100;

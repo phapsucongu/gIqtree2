@@ -31,12 +31,12 @@ export const PartitionTypes: { name: string, type: PartitionType }[] = [
 ]
 
 export interface DataSettings {
-    sequenceType: SequenceType | null;
-    codonType: Codon | null;
-    partitionType: PartitionType | null; // if null, assume default
-    alignmentFiles: string[];
-    alignmentFolder: string | null;
-    partitionFile: string | null;
+    sequenceType?: SequenceType;
+    codonType?: Codon;
+    partitionType?: PartitionType; // if undefined, assume default
+    alignmentFiles?: string[];
+    alignmentFolder?: string;
+    partitionFile?: string;
 }
 
 export enum Codon {
@@ -84,5 +84,5 @@ export const Codons : { name: string, type: Codon }[] = [
 
 export function isMultipleGene(setting : DataSettings) {
     let { partitionFile, alignmentFolder, alignmentFiles } = setting;
-    return !!(partitionFile || alignmentFolder || (alignmentFiles.length > 1))
+    return !!(partitionFile || alignmentFolder || ((alignmentFiles?.length ?? 0) > 1))
 }

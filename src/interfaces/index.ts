@@ -1,6 +1,7 @@
 import { AssessmentSettings } from "./assessmentSettings";
 import { DataSettings, PartitionType } from "./dataSettings";
 import { DatingSettings } from "./datingSettings";
+import { ModelSettings } from "./modelSettings";
 import { OthersSettings } from "./othersSettings";
 import { TreeSearchSettings } from "./treeSearchSettings";
 
@@ -10,26 +11,21 @@ export interface Settings {
     treeSearch: TreeSearchSettings;
     assessment: AssessmentSettings;
     others?: OthersSettings;
+    model?: ModelSettings;
     dating: DatingSettings;
 }
 
 export function defaultSettings(): Settings {
     return {
         data: {
-            codonType: null,
-            sequenceType: null,
             partitionType: PartitionType.EdgeProportional,
-            alignmentFiles: [],
-            alignmentFolder: null,
-            partitionFile: null
+            alignmentFiles: []
         },
         treeSearch: {
             enabled: false,
             unsuccessfulIterationsStop: null,
             pertubationStrength: null,
-            outgroupTaxa: null,
-            constrainedTreeFile: null,
-            referenceTreeFile: null,
+            outgroupTaxa: null
         },
         assessment: {
             ufbootOption: true,

@@ -7,6 +7,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { dialog } from "@electron/remote";
 import { useWindow } from "../../../hooks/useWindow";
 import SettingRowFile from "../../../components/settingrowfile";
+import SettingRowMultipleChoice from "../../../components/settingrowmultiplechoice";
 
 function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newSetting: DataSettings) => void }) {
     let window = useWindow();
@@ -17,35 +18,22 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
 
     return (
         <div>
-            <div className="setting-row">
-                <b>Sequence type :</b>
-                <div className="flex flex-row">
-                    {[{ name: 'Auto-detect', type: null }, ...SequenceTypes]
-                        .map((current, index) => {
-                            let rounded = '';
-                            if (index === 0) rounded = 'border-l rounded-l-full';
-                            if (index === SequenceTypes.length) rounded = 'rounded-r-full';
+            <SettingRowMultipleChoice
+                label="Sequence type :"
+                options={
+                    [{ name: 'Auto-detect', type: undefined }, ...SequenceTypes]
+                        .map(e => ({ name: e.name, value: e.type }))
+                }
+                value={[sequenceType]}
+                onChosen={(value) => {
+                    onChange?.({
+                        ...settings,
+                        sequenceType: value
+                    });
+                    setCodonSettingOpen(value === SequenceType.Codon && codonSettingOpen)
+                }}
+                />
 
-                            let chosen = sequenceType === current.type
-                                ? 'bg-gray-700 border-gray-700 text-white font-bold'
-                                : 'border-black';
-                            return (
-                                <button
-                                    onClick={() => {
-                                        onChange?.({
-                                            ...settings,
-                                            sequenceType: current.type
-                                        });
-                                        setCodonSettingOpen(current.type === SequenceType.Codon && codonSettingOpen)
-                                    }}
-                                    className={"py-2 px-4 border-r border-y hover:bg-gray-200 hover:text-black " + rounded + ' ' + chosen}>
-                                    {current.name}
-                                </button>
-                            )
-                        })
-                    }
-                </div>
-            </div>
             {sequenceType === SequenceType.Codon && (
                 <>
                     <div className="setting-row">
@@ -96,13 +84,13 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
                             });
 
                             if (file)
-                                onChange?.({ ...settings, alignmentFiles: [...new Set([...alignmentFiles, ...file])] })
+                                onChange?.({ ...settings, alignmentFiles: [...new Set([...(alignmentFiles ?? []), ...file])] })
                         }}>
                         <FontAwesomeIcon icon={faFile} className="pr-2" />
                         Add file(s)
                     </button>
                     <button
-                        disabled={!!(alignmentFiles.length || alignmentFolder)}
+                        disabled={!!(alignmentFiles?.length || alignmentFolder)}
                         className="multiple-option-button rounded-r-full"
                         onClick={() => {
                             if (!window) return;
@@ -119,11 +107,11 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
                     </button>
                 </div>
             </div>
-            {!!(alignmentFolder || alignmentFiles.length) && (
+            {!!(alignmentFolder || alignmentFiles?.length) && (
                 <div className="setting-row">
                     <div>{'\u00a0'.repeat(48)}</div>
                     <div className="grow">
-                        {alignmentFiles.map((file, index) => (
+                        {(alignmentFiles ?? []).map((file, index) => (
                             <div className="alignment-input-row">
                                 <div className="flex flex-row items-center">
                                     <FontAwesomeIcon icon={faFile} className="alignment-input-row-icon" />
@@ -132,7 +120,7 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
                                 <button
                                     className="alignment-input-remove"
                                     onClick={() => {
-                                        let files = [...alignmentFiles];
+                                        let files = [...(alignmentFiles ?? [])];
                                         files.splice(index, 1);
                                         onChange?.({ ...settings, alignmentFiles: [...new Set(files)] })
                                     }}>
@@ -150,7 +138,7 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
                                 <button
                                     className="alignment-input-remove"
                                     onClick={() => {
-                                        onChange?.({ ...settings, alignmentFolder: null })
+                                        onChange?.({ ...settings, alignmentFolder: undefined })
                                     }}>
                                     <FontAwesomeIcon icon={faTrashCan} className="pr-2" />
                                     Remove
@@ -167,32 +155,15 @@ function Data({ settings, onChange }: { settings: DataSettings, onChange?: (newS
                 />
 
             {multipleGenes && (
-                <div className="setting-row">
-                    <b>Partition type :</b>
-                    <div className="flex flex-row">
-                        {PartitionTypes.map((current, index) => {
-                            let rounded = '';
-                            if (index === 0) rounded = 'border-l rounded-l-full';
-                            if (index === PartitionTypes.length - 1) rounded = 'rounded-r-full';
-
-                            let chosen = partitionType === current.type
-                                ? 'bg-gray-700 border-gray-700 text-white font-bold'
-                                : 'border-black';
-                            return (
-                                <button
-                                    onClick={() => {
-                                        onChange?.({
-                                            ...settings,
-                                            partitionType: current.type
-                                        });
-                                    }}
-                                    className={"py-2 px-4 border-r border-y hover:bg-gray-200 hover:text-black " + rounded + ' ' + chosen}>
-                                    {current.name}
-                                </button>
-                            )
-                        })}
-                    </div>
-                </div>
+                <SettingRowMultipleChoice
+                    options={PartitionTypes.map(e => ({ name: e.name, value: e.type }))}
+                    onChosen={value => onChange?.({
+                        ...settings,
+                        partitionType: value
+                    })}
+                    label="Partition type :"
+                    value={[partitionType]}
+                    />
             )}
         </div>
     )

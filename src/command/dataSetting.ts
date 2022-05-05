@@ -7,7 +7,7 @@ function prepare({ data }: Settings) {
         case SequenceType.Codon:
             output.push('--seqtype', 'CODON' + data.codonType?.toString());
             break;
-        case null:
+        case undefined:
             break;
         default:
             output.push('--seqtype', data.sequenceType);
@@ -20,10 +20,10 @@ function prepare({ data }: Settings) {
         let partition: string;
         if (data.partitionFile) {
             partition = data.partitionFile;
-            output.push('-s', data.alignmentFolder || data.alignmentFiles.join(','));
+            output.push('-s', data.alignmentFolder || data.alignmentFiles!.join(','));
         }
         else {
-            partition = data.alignmentFolder || data.alignmentFiles.join(',');
+            partition = data.alignmentFolder || data.alignmentFiles!.join(',');
         }
 
         switch (data.partitionType) {
@@ -42,7 +42,7 @@ function prepare({ data }: Settings) {
         }
     }
 
-    if (data.alignmentFiles.length === 1) {
+    if (data.alignmentFiles?.length === 1) {
         output.push('-s', data.alignmentFiles[0]);
     }
 
