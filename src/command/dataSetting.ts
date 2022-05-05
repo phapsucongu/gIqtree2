@@ -5,7 +5,7 @@ function prepare({ data }: Settings) {
     let output: string[] = [];
     switch (data.sequenceType) {
         case SequenceType.Codon:
-            output.push('--seqtype', 'CODON' + data.codonType?.toString());
+            output.push('--seqtype', 'CODON' + (data.codonType?.toString() ?? ''));
             break;
         case undefined:
             break;

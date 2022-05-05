@@ -147,6 +147,20 @@ export const StateFrequencies: { validSequenceType: SequenceType[], data: { type
     },
 ]
 
+export function getAvailableFrequencies(sequenceType?: SequenceType) {
+    return StateFrequencies
+        .filter(a =>
+            !a.validSequenceType.length
+            || (sequenceType && a.validSequenceType.includes(sequenceType))
+        )
+        .flatMap(a => a.data)
+}
+
+export const RHASModels : { name: string, type: RHASModel }[] = [
+    { name: 'FreeRate', type: RHASModel.FreeRate },
+    { name: 'Gamma', type: RHASModel.Gamma },
+]
+
 export const DefaultRateCategories = 4;
 export interface ModelSettings {
     autoMergePartitions?: AutoMergePartitions;
