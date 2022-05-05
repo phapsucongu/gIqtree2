@@ -43,7 +43,7 @@ body {
     @apply hover:border-transparent hover:bg-lime-900 hover:text-white
 }
 
-.top-bar-button-colored:disabled {
+.top-bar-button-colored:disabled, .top-bar-button:disabled {
     @apply border-gray-200;
     @apply text-gray-200;
     @apply hover:border-gray-100 hover:bg-transparent hover:text-gray-200

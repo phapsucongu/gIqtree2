@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { diff } from 'deep-object-diff';
 import { Settings } from '../../interfaces';
 import { readSettingsFileSync, writeSettingsFileSync } from '../../utils/settingsFile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -17,7 +18,8 @@ import { getBinaryPath } from '../../platform';
 
 function Project() {
     let [searchParams] = useSearchParams();
-    let [settings, setSettings] = useState<Settings | null>(null)
+    let [settings, setSettings] = useState<Settings | null>(null);
+    let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [error, setError] = useState<string>('');
     let [openSetting, setOpenSetting] = useState(true);
     let [executing, setExecuting] = useState(false);
@@ -28,6 +30,7 @@ function Project() {
         try {
             let setting = readSettingsFileSync(path);
             setSettings(setting);
+            setOriginalSettings(setting);
         } catch (e) {
             setError(`${e}`)
         }
@@ -84,9 +87,11 @@ function Project() {
                     </button>
                     {settings && openSetting && (
                         <button
+                            disabled={!Object.keys(diff(originalSettings ?? {}, settings ?? {})).length}
                             className='top-bar-button w-1/4 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
                             onClick={() => {
                                 if (settings) writeSettingsFileSync(path, settings)
+                                setOriginalSettings(settings);
                                 setOpenSetting(false);
                             }}>
                             <div className='flex items-center'>
