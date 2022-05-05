@@ -12,7 +12,7 @@ import ProjectMain from './main';
 
 import { prepareCommand } from '../../command';
 import { ipcRenderer } from 'electron-better-ipc';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, exec } from 'child_process';
 import { getOutputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
 
@@ -119,7 +119,7 @@ function Project() {
                         <div>{executing ? 'Executing...' : 'Execute'}</div>
                         <div></div>
                     </button>
-                    <button className='top-bar-button w-1/4 top-bar-button-colored'>
+                    <button disabled={!executing} className='top-bar-button w-1/4 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faPause} className='top-bar-button-icon' />
                         </div>
