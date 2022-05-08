@@ -1,5 +1,4 @@
 import SettingRowFile from "../../../components/settingrowfile";
-import SettingRowMultipleChoice from "../../../components/settingrowmultiplechoice";
 import {
     AssessmentSettings,
     BootstrapMethod,
@@ -13,10 +12,6 @@ import {
     SingleBranchTests
 } from "../../../interfaces/assessmentSettings";
 
-enum ConcordanceFactorOption {
-    gCF = 1, sCF
-}
-
 function Assessment(
     { settings, isMultipleGene, onChange }:
     { settings: AssessmentSettings, isMultipleGene: boolean, onChange?: (newSettings: AssessmentSettings) => void }
@@ -24,7 +19,8 @@ function Assessment(
     let {
         ufbootOption,
         bootstrapMethod, multiPartitionSamplingStrategy, singleBranchTests,
-        bootstrapMethodReplicate, approximateLikelihoodReplicate, localBootstrapReplicate
+        bootstrapMethodReplicate, approximateLikelihoodReplicate, localBootstrapReplicate,
+        gcf, scf, speciesTree
     } = settings;
     return (
         <div>
@@ -193,36 +189,34 @@ function Assessment(
                     />
                 </div>
             )}
-            <SettingRowMultipleChoice
-                options={[
-                    { name: 'gCF', value: ConcordanceFactorOption.gCF },
-                    { name: 'sCF', value: ConcordanceFactorOption.sCF },
-                ]}
-                value={[
-                    settings.gcf?.enabled && ConcordanceFactorOption.gCF,
-                    settings.scf?.enabled && ConcordanceFactorOption.sCF,
-                ].filter(Boolean) as ConcordanceFactorOption[]}
-                label="Concordance factor :"
-                onChosen={value => {
-                    switch (value) {
-                        case ConcordanceFactorOption.gCF:
-                            onChange?.({ ...settings, gcf: { enabled: !settings.gcf?.enabled } });
-                            break;
-                        case ConcordanceFactorOption.sCF:
-                            onChange?.({ ...settings, scf: { enabled: !settings.scf?.enabled } });
-                            break;
-                    }
-                }}
-                />
+            <div className="setting-row">
+                <b>Enable gCF</b>
+                <button
+                    className="action-button"
+                    onClick={() => onChange?.({ ...settings, gcf: { ...gcf, enabled: !gcf?.enabled } })}>
+                    {gcf?.enabled ? 'Enabled' : 'Disabled'}
+                </button>
+            </div>
+            <div className="setting-row">
+                <b>sCF quartet number (0 to disable sCF) :</b>
+                <input
+                    className="border-2 p-2 rounded-lg basis-1/2"
+                    type="number"
+                    min={0}
+                    step={1}
+                    placeholder="0 to disable sCF"
+                    value={scf?.quartet ?? undefined}
+                    onChange={e => onChange?.({ ...settings, scf: { ...scf, quartet: e.target.valueAsNumber ?? 0 } })} />
+            </div>
             {settings.gcf?.enabled &&
                 <SettingRowFile
-                    name="Gene tree"
-                    file={settings.gcf?.geneTree}
+                    name="Gene tree (leave empty to generate) :"
+                    file={gcf?.geneTree}
                     onChange={f => onChange?.({ ...settings, gcf: { enabled: true, geneTree: f } })} />}
-            {settings.scf?.enabled &&
+            {!!settings.scf?.quartet &&
                 <SettingRowFile
-                    name="Species tree"
-                    file={settings.speciesTree}
+                    name="Species tree (leave empty to generate) :"
+                    file={speciesTree}
                     onChange={f => onChange?.({ ...settings, speciesTree: f })} />}
         </div>
     )

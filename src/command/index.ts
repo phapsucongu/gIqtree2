@@ -20,7 +20,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
 
     let speciesTree : string[] = [];
 
-    if (setting.assessment.scf?.enabled || setting.assessment.gcf?.enabled) {
+    if (setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled) {
         switch (setting.assessment.speciesTree) {
             case undefined:
                 let args = [...final, ...othersSetting(setting, outputPath ? join(outputPath, 'concat') : undefined)];
@@ -35,10 +35,9 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         }
     }
 
-    if (setting.assessment.scf?.enabled) {
+    if (setting.assessment.scf?.quartet) {
         final.push('-s', setting.data.alignmentFolder || setting.data.alignmentFiles!.join(','));
-        // TODO: change this
-        final.push('--scf', setting.assessment.scf?.quartet?.toString() ?? '1')
+        final.push('--scf', setting.assessment.scf?.quartet.toString())
     }
 
     let geneTree : string[] = [];

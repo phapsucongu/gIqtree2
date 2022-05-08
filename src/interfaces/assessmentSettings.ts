@@ -64,7 +64,6 @@ export interface AssessmentSettings {
     }
 
     scf?: {
-        enabled?: boolean;
         quartet?: number;
     }
 }
