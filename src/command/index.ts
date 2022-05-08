@@ -1,4 +1,5 @@
 import { join } from "path";
+import { cpus } from 'os';
 import split from 'argv-split';
 import { Settings } from "../interfaces";
 import assessmentSetting from "./assessmentSetting";
@@ -23,7 +24,14 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
     if (setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled) {
         switch (setting.assessment.speciesTree) {
             case undefined:
-                let args = [...final, ...othersSetting(setting, outputPath ? join(outputPath, 'concat') : undefined)];
+                let args = [
+                    ...final,
+                    ...othersSetting(
+                        setting,
+                        outputPath ? join(outputPath, 'concat') : undefined,
+                        setting.others?.thread ? setting.others?.thread : cpus().length
+                    )
+                ];
                 speciesTree.push(...args);
                 if (outputPath) {
                     final.push('-t', join(outputPath, 'concat') + '.treefile');
@@ -48,7 +56,11 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
                 let args = [
                     ...dataSetting(setting, PartitionType.SeparateGeneTrees),
                     ...modelSetting(setting),
-                    ...othersSetting(setting, outputPath ? join(outputPath, 'loci') : undefined)
+                    ...othersSetting(
+                        setting,
+                        outputPath ? join(outputPath, 'loci') : undefined,
+                        setting.others?.thread ? setting.others?.thread : cpus().length
+                    )
                 ];
                 geneTree.push(...args);
                 if (outputPath) {
