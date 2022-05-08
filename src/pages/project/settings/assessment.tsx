@@ -1,3 +1,5 @@
+import SettingRowFile from "../../../components/settingrowfile";
+import SettingRowMultipleChoice from "../../../components/settingrowmultiplechoice";
 import {
     AssessmentSettings,
     BootstrapMethod,
@@ -10,6 +12,10 @@ import {
     SingleBranchTest,
     SingleBranchTests
 } from "../../../interfaces/assessmentSettings";
+
+enum ConcordanceFactorOption {
+    gCF = 1, sCF
+}
 
 function Assessment(
     { settings, isMultipleGene, onChange }:
@@ -187,6 +193,37 @@ function Assessment(
                     />
                 </div>
             )}
+            <SettingRowMultipleChoice
+                options={[
+                    { name: 'gCF', value: ConcordanceFactorOption.gCF },
+                    { name: 'sCF', value: ConcordanceFactorOption.sCF },
+                ]}
+                value={[
+                    settings.gcf?.enabled && ConcordanceFactorOption.gCF,
+                    settings.scf?.enabled && ConcordanceFactorOption.sCF,
+                ].filter(Boolean) as ConcordanceFactorOption[]}
+                label="Concordance factor :"
+                onChosen={value => {
+                    switch (value) {
+                        case ConcordanceFactorOption.gCF:
+                            onChange?.({ ...settings, gcf: { enabled: !settings.gcf?.enabled } });
+                            break;
+                        case ConcordanceFactorOption.sCF:
+                            onChange?.({ ...settings, scf: { enabled: !settings.scf?.enabled } });
+                            break;
+                    }
+                }}
+                />
+            {settings.gcf?.enabled &&
+                <SettingRowFile
+                    name="Gene tree"
+                    file={settings.gcf?.geneTree}
+                    onChange={f => onChange?.({ ...settings, gcf: { enabled: true, geneTree: f } })} />}
+            {settings.scf?.enabled &&
+                <SettingRowFile
+                    name="Species tree"
+                    file={settings.speciesTree}
+                    onChange={f => onChange?.({ ...settings, speciesTree: f })} />}
         </div>
     )
 }

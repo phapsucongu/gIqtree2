@@ -3,46 +3,75 @@ import { ReReadable } from 'rereadable-stream';
 import { ipcMain } from 'electron-better-ipc';
 import merge from 'merge-stream';
 import { accessSync, chmodSync, constants, statSync } from 'fs';
+import { WriteStream } from 'tty';
 
-const currentProcess = new Map<string, [ChildProcess, ReReadable]>();
+const currentProcess = new Map<string, Task[]>();
 
 interface SpawnData {
     id: string;
-    arguments: string[];
+    arguments: string[][];
     binary: string;
 }
 
-ipcMain.answerRenderer('spawn', (data: SpawnData) => {
-    if (currentProcess.has(data.id) && (currentProcess.get(data.id)![0].exitCode === null)) {
-        return false;
+export class Task {
+    public readonly binary: string = '';
+    public readonly arguments: string[] = [];
+    public process: ChildProcess | undefined;
+    public outputStream: ReReadable | undefined;
+    public constructor(binary: string, execArguments: string[]) {
+        this.binary = binary;
+        this.arguments = execArguments;
     }
-    try {
-        try {
-            accessSync(data.binary, constants.X_OK);
-        } catch {
-            let fileStat = statSync(data.binary);
-            chmodSync(data.binary, fileStat.mode | constants.S_IXUSR);
-        }
-        let process = execFile(data.binary, data.arguments, {
+
+    start() {
+        this.process = execFile(this.binary, this.arguments, {
             maxBuffer: 1024 * 1024 * 50
+        })
+        this.outputStream = merge(this.process.stdout! as WriteStream, this.process.stderr! as WriteStream)!.pipe(new ReReadable({
+            length: 1024 * 1024 * 50
+        }));
+
+        console.log(`spawning process id ${this.process.pid} with arguments "${this.arguments.join(' ')}"`);
+        this.process.on('exit', () => {
+            console.log(`child process id ${this.process!.pid} exited with exit code ${this.process!.exitCode}`);
         });
 
-        console.log(`spawning process id ${process.pid} with arguments "${data.arguments.join(' ')}"`);
-        process.on('exit', () => {
-            console.log(`child process id ${process.pid} exited with exit code ${process.exitCode}`);
-        })
-
-        currentProcess.set(data.id, [
-            process,
-            merge(process.stdout!, process.stderr!)!.pipe(new ReReadable({
-                length: 1024 * 1024 * 50
-            }))
-        ])
-    } catch (e) {
-        console.error('An error occurred trying to spawn child process.')
-        console.error(e);
-        return false;
+        return this.process;
     }
+}
+
+ipcMain.answerRenderer('spawn', async (data: SpawnData) => {
+    if (currentProcess.has(data.id)) {
+        let records = currentProcess.get(data.id)!
+        if (records.some(r => r.process?.exitCode === null))
+            return false;
+    }
+
+    let tasks = data.arguments.map(process => new Task(data.binary, process));
+    currentProcess.set(data.id, tasks);
+
+    let split = async () => {
+        try {
+            try {
+                accessSync(data.binary, constants.X_OK);
+            } catch {
+                let fileStat = statSync(data.binary);
+                chmodSync(data.binary, fileStat.mode | constants.S_IXUSR);
+            }
+
+            for (let task of tasks) {
+                task.start();
+                await new Promise(res => task.process!.on('close', res));
+            }
+        } catch (e) {
+            console.error('An error occurred trying to spawn child process.')
+            console.error(e);
+            return false;
+        }
+    };
+
+    // don't block
+    split();
 })
 
 ipcMain.answerRenderer('list', () => {
@@ -55,27 +84,33 @@ ipcMain.answerRenderer('get', (id: string) => {
     }
 
     return JSON.parse(
-        JSON.stringify(currentProcess.get(id)![0])
+        JSON.stringify(currentProcess.get(id)!)
     );
 })
 
 ipcMain.answerRenderer('get-stdout', async (id: string) => {
-    if (!currentProcess.has(id))  {
+    if (!currentProcess.has(id)) {
         return false;
     }
 
-    const chunks : Buffer[] = [];
+    let tasks = currentProcess.get(id)!;
+    let result = tasks.map(async t => {
+        const chunks: Buffer[] = [];
+        if (!t.outputStream) return '';
 
-    let stdout = await new Promise((res, rej) => {
-        let stream = currentProcess.get(id)![1].rewind();
-        stream.on('data', c => chunks.push(Buffer.from(c)));
-        stream.on('error', rej);
-        let output = () => res(Buffer.concat(chunks).toString('utf-8'));
-        setTimeout(output, 100);
-        stream.on('end', output)
+        let stdout = await new Promise((res, rej) => {
+            let stream = t.outputStream!.rewind();
+            stream.on('data', c => chunks.push(Buffer.from(c)));
+            stream.on('error', rej);
+            let output = () => res(Buffer.concat(chunks).toString('utf-8'));
+            setTimeout(output, 100);
+            stream.on('end', output)
+        })
+
+        return stdout as string;
     })
 
-    return stdout as string;
+    return await Promise.all(result);
 })
 
 ipcMain

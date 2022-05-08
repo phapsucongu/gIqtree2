@@ -1,7 +1,7 @@
 import { Settings } from "../interfaces";
 import { isMultipleGene, PartitionType, SequenceType } from "../interfaces/dataSettings";
 
-function prepare({ data }: Settings) {
+function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
     let output: string[] = [];
     switch (data.sequenceType) {
         case SequenceType.Codon:
@@ -26,7 +26,10 @@ function prepare({ data }: Settings) {
             partition = data.alignmentFolder || data.alignmentFiles!.join(',');
         }
 
-        switch (data.partitionType) {
+        let { partitionType } = data;
+        if (overwritePartitionType !== undefined) partitionType = overwritePartitionType;
+
+        switch (partitionType) {
             case PartitionType.EdgeProportional:
                 output.push('-p', partition);
                 break;

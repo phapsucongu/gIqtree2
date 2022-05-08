@@ -55,4 +55,16 @@ export interface AssessmentSettings {
     singleBranchTests: SingleBranchTest[] | null;
     approximateLikelihoodReplicate: number | null;
     localBootstrapReplicate: number | null;
+    // treefile for gcf
+    speciesTree?: string;
+
+    gcf?: {
+        enabled?: boolean;
+        geneTree?: string;
+    }
+
+    scf?: {
+        enabled?: boolean;
+        quartet?: number;
+    }
 }

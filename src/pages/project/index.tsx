@@ -24,7 +24,7 @@ function Project() {
     let [error, setError] = useState<string>('');
     let [openSetting, setOpenSetting] = useState(true);
     let [executing, setExecuting] = useState(false);
-    let [log, setLog] = useState('');
+    let [log, setLog] = useState<string[]>([]);
     const path = searchParams.get('path')!
 
     useEffect(() => {
@@ -38,15 +38,16 @@ function Project() {
     }, [path]);
 
     useEffect(() => {
+        console.log('what')
         let interval = setInterval(async () => {
-            let result: string | false = await ipcRenderer.callMain('get-stdout', path);
+            let result: string[] | false = await ipcRenderer.callMain('get-stdout', path);
             if (result) {
                 setLog(result);
             }
 
-            let process: ChildProcess | false = await ipcRenderer.callMain('get', path);
-            if (process) {
-                setExecuting(process.exitCode === null);
+            let processes: { process: ChildProcess }[] | false = await ipcRenderer.callMain('get', path);
+            if (processes) {
+                setExecuting(processes.some(p => p.process.exitCode === null));
             }
         }, 500);
         return () => clearInterval(interval);
@@ -61,7 +62,7 @@ function Project() {
         )
     }
 
-    let preparedCommand : string[] = [];
+    let preparedCommand : string[][] = [];
     if (settings)
         preparedCommand = prepareCommand(settings, 'output', getOutputFolder(path));
 
@@ -143,12 +144,12 @@ function Project() {
                         <div className='pt-2'>
                             <b>Executing :</b>
                             <code className='overflow-x-scroll'>
-                                {preparedCommand.join(' ')}
+                                {preparedCommand.map(r => r.join(' ')).join('\n')}
                             </code>
                         </div>
                     )}
                     <div className='pt-2 grow flex flex-col'>
-                        <ProjectMain log={log} projectPath={path} />
+                        <ProjectMain log={log.join('\n\n')} projectPath={path} />
                     </div>
                 </>
             )}
