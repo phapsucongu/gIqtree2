@@ -20,8 +20,8 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
     ]
 
     let speciesTree : string[] = [];
-
-    if (setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled) {
+    let concordanceFactorEnabled = !!(setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled);
+    if (concordanceFactorEnabled) {
         switch (setting.assessment.speciesTree) {
             case undefined:
                 let args = [
@@ -74,7 +74,11 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
     }
 
     final = final
-        .concat(...othersSetting(setting, outputPath ? join(outputPath, basename) : undefined))
+        .concat(...othersSetting(
+            setting,
+            outputPath ? join(outputPath, basename) : undefined,
+            concordanceFactorEnabled ? (setting.others?.thread ? setting.others?.thread : cpus().length) : undefined
+        ))
         .concat('--redo')
         .concat(split(setting.others?.appendCommandLine ?? '', false));
 
