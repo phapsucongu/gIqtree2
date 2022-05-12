@@ -48,7 +48,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
             let processes: { process: ChildProcess }[] | false = await ipcRenderer.callMain('get', path);
             if (processes) {
-                setExecuting(processes.some(p => p.process.exitCode === null));
+                setExecuting(processes.some(p => p.process.exitCode === null && !p.process.signalCode));
             }
         }, 500);
         return () => clearInterval(interval);
@@ -93,7 +93,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     {settings && openSetting && (
                         <button
                             disabled={!Object.keys(diff(originalSettings ?? {}, settings ?? {})).length}
-                            className='top-bar-button w-1/4 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
+                            className='top-bar-button w-1/6 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
                             onClick={() => {
                                 if (settings) writeSettingsFileSync(path, settings)
                                 setOriginalSettings(settings);
@@ -107,9 +107,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         </button>
                     )}
                     <button
-                        className='top-bar-button w-1/4 top-bar-button-colored'
+                        className='top-bar-button w-1/3 top-bar-button-colored'
                         disabled={executing}
                         onClick={async () => {
+                            // remove all checkpoints
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
                                 arguments: preparedCommand,
@@ -121,10 +122,15 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faCirclePlay} className='top-bar-button-icon' />
                         </div>
-                        <div>{executing ? 'Executing...' : 'Execute'}</div>
+                        <div>{executing ? 'Executing...' : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
                         <div></div>
                     </button>
-                    <button disabled={!executing} className='top-bar-button w-1/4 top-bar-button-colored'>
+                    <button
+                        onClick={() => {
+                            ipcRenderer.callMain('kill', path);
+                        }}
+                        disabled={!executing}
+                        className='top-bar-button w-1/6 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faPause} className='top-bar-button-icon' />
                         </div>
@@ -132,7 +138,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         <div></div>
                     </button>
                     <button
-                        className='top-bar-button w-1/4 top-bar-button-colored'
+                        className='top-bar-button w-1/5 top-bar-button-colored'
                         disabled={executing}
                         onClick={async () => {
                             await ipcRenderer.callMain('spawn', {

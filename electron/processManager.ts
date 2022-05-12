@@ -34,6 +34,8 @@ export class Task {
         console.log(`spawning process id ${this.process.pid} with arguments "${this.arguments.join(' ')}"`);
         this.process.on('exit', () => {
             console.log(`child process id ${this.process!.pid} exited with exit code ${this.process!.exitCode}`);
+            if (this.process!.signalCode === null)
+                console.log(`child process id ${this.process!.pid} seems to be killed with code ${this.process!.signalCode}`)
         });
 
         return this.process;
@@ -43,7 +45,7 @@ export class Task {
 ipcMain.answerRenderer('spawn', async (data: SpawnData) => {
     if (currentProcess.has(data.id)) {
         let records = currentProcess.get(data.id)!
-        if (records.some(r => r.process?.exitCode === null))
+        if (records.some(r => r.process?.exitCode === null && !r.process?.signalCode))
             return false;
     }
 
@@ -111,6 +113,15 @@ ipcMain.answerRenderer('get-stdout', async (id: string) => {
     })
 
     return await Promise.all(result);
+})
+
+ipcMain.answerRenderer('kill', async (id: string) => {
+    if (!currentProcess.has(id)) {
+        return false;
+    }
+
+    let tasks = currentProcess.get(id)!;
+    for (let task of tasks) task.process?.kill('SIGKILL');
 })
 
 ipcMain
