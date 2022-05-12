@@ -10,7 +10,7 @@ import datingSetting from "./datingSetting";
 import modelSetting from "./modelSetting";
 import { PartitionType } from "../interfaces/dataSettings";
 
-export function prepareCommand (setting: Settings, basename: string, outputPath?: string) : string[][] {
+export function prepareCommand (setting: Settings, basename: string, outputPath?: string, resume?: boolean) : string[][] {
     let final = [
         ...dataSetting(setting),
         ...modelSetting(setting),
@@ -79,11 +79,11 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
             outputPath ? join(outputPath, basename) : undefined,
             concordanceFactorEnabled ? (setting.others?.thread ? setting.others?.thread : cpus().length) : undefined
         ))
-        .concat('--redo')
+        .concat(...(resume ? [] : ['--redo']))
         .concat(split(setting.others?.appendCommandLine ?? '', false));
 
-    if (geneTree.length) geneTree.push('--redo');
-    if (speciesTree.length) speciesTree.push('--redo');
+    if (geneTree.length && resume) geneTree.push('--redo');
+    if (speciesTree.length && resume) speciesTree.push('--redo');
 
     return [speciesTree, geneTree, final].filter(a => a.length);
 }

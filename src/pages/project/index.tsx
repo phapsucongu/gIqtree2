@@ -63,9 +63,11 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         )
     }
 
-    let preparedCommand : string[][] = [];
-    if (settings)
+    let preparedCommand : string[][] = [], preparedCommandWithRedo : string[][] = [];
+    if (settings) {
         preparedCommand = prepareCommand(settings, 'output', getOutputFolder(path));
+        preparedCommandWithRedo = prepareCommand(settings, 'output', getOutputFolder(path), true);
+    }
 
     return (
         <div className='pt-1 grow flex flex-col'>
@@ -129,7 +131,18 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         <div>Pause</div>
                         <div></div>
                     </button>
-                    <button className='top-bar-button w-1/4 top-bar-button-colored'>
+                    <button
+                        className='top-bar-button w-1/4 top-bar-button-colored'
+                        disabled={executing}
+                        onClick={async () => {
+                            await ipcRenderer.callMain('spawn', {
+                                id: path,
+                                arguments: preparedCommandWithRedo,
+                                binary: getBinaryPath()
+                            });
+                            setExecuting(true);
+                            setOpenSetting(false);
+                        }}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faForward} className='top-bar-button-icon' />
                         </div>
