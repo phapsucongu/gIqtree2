@@ -1,0 +1,12 @@
+diff --git a/node_modules/@types/sql.js/index.d.ts b/node_modules/@types/sql.js/index.d.ts
+index 873d161..971ccab 100755
+--- a/node_modules/@types/sql.js/index.d.ts
++++ b/node_modules/@types/sql.js/index.d.ts
+@@ -4,7 +4,6 @@
+ // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+ // TypeScript Version: 2.3
+ 
+-/// <reference types="node" />
+ /// <reference types="emscripten" />
+ 
+ export type SqlValue = number | string | Uint8Array | null;

@@ -17,7 +17,7 @@ import { prepareCommand } from '../../command';
 import { getOutputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
 
-function Project() {
+function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let [searchParams] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>(null);
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
@@ -26,6 +26,8 @@ function Project() {
     let [executing, setExecuting] = useState(false);
     let [log, setLog] = useState<string[]>([]);
     const path = searchParams.get('path')!
+
+    useEffect(() => onOpenProject?.(path), [onOpenProject, path]);
 
     useEffect(() => {
         try {
@@ -38,7 +40,6 @@ function Project() {
     }, [path]);
 
     useEffect(() => {
-        console.log('what')
         let interval = setInterval(async () => {
             let result: string[] | false = await ipcRenderer.callMain('get-stdout', path);
             if (result) {

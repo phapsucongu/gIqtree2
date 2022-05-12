@@ -2,6 +2,7 @@ import { app, BrowserWindow, session } from 'electron';
 import * as path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import './processManager';
+import './sqlite';
 
 require('@electron/remote/main').initialize();
 
