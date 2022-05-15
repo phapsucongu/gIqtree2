@@ -1,4 +1,4 @@
-import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ipcRenderer } from 'electron-better-ipc';
 import { useEffect, useState } from 'react';
@@ -65,10 +65,9 @@ function Dashboard() {
 
                         return (
                             <tr
-                                onClick={onClick}
                                 key={r.path}
                                 className={`border-y ${valid ? 'hover:bg-slate-200' : ''}`}>
-                                <td className='cursor-pointer'>
+                                <td className={valid ? 'cursor-pointer' : ''} onClick={valid ? onClick : undefined}>
                                     <span className={valid ? '' : 'text-slate-300 line-through'}>
                                         {r.path}
                                     </span>
@@ -81,7 +80,7 @@ function Dashboard() {
                                         </>
                                     )}
                                 </td>
-                                <td className='cursor-pointer' onClick={onClick}>
+                                <td className={valid ? 'cursor-pointer' : ''} onClick={valid ? onClick : undefined}>
                                     <TimeAgo date={r.timestamp} />
                                     <br />
                                     <span className="font-light text-slate-400">
@@ -90,12 +89,14 @@ function Dashboard() {
                                 </td>
                                 <td>
                                     <button
-                                        className='text-red-500'
+                                        className='p-3 bg-red-300 rounded-lg text-white hover:bg-red-500'
                                         onClick={() => {
                                             ipcRenderer.callMain('db_remove', r.path)
                                                 .then(load);
                                         }}>
-                                        <FontAwesomeIcon icon={faTrashCan} />
+                                        <div className='flex flex-row items-center'>
+                                            <FontAwesomeIcon icon={faClose} />
+                                        </div>
                                     </button>
                                 </td>
                             </tr>
