@@ -6,16 +6,18 @@ import { faPause, faForward, faSliders } from '@fortawesome/free-solid-svg-icons
 import { faCirclePlay, faFolder, faFloppyDisk } from '@fortawesome/free-regular-svg-icons'
 import { ipcRenderer } from 'electron-better-ipc';
 import { ChildProcess } from 'child_process';
-import { basename } from 'path';
+import { basename, join } from 'path';
 
 import ProjectSetting from './settings';
 import ProjectMain from './main';
+import Copy from './copy';
 
 import type { Settings } from '../../interfaces';
 import { readSettingsFileSync, writeSettingsFileSync } from '../../utils/settingsFile';
 import { prepareCommand } from '../../command';
-import { getOutputFolder } from './projectFolder';
+import { getOutputFolder, getInputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
+import listDependentFileEntries from '../../utils/listDependentFileEntries';
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let [searchParams] = useSearchParams();
@@ -24,6 +26,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let [error, setError] = useState<string>('');
     let [openSetting, setOpenSetting] = useState(true);
     let [executing, setExecuting] = useState(false);
+    let [copying, setCopying] = useState(false);
     let [log, setLog] = useState<string[]>([]);
     const path = searchParams.get('path')!
 
@@ -69,6 +72,17 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         preparedCommandWithRedo = prepareCommand(settings, 'output', getOutputFolder(path), true);
     }
 
+    let execute = async () => {
+        // remove all checkpoints
+        await ipcRenderer.callMain('spawn', {
+            id: path,
+            arguments: preparedCommand,
+            binary: getBinaryPath()
+        });
+        setExecuting(true);
+        setOpenSetting(false);
+    };
+
     return (
         <div className='pt-1 grow flex flex-col'>
             <div className='flex flex-row justify-between'>
@@ -108,28 +122,23 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     )}
                     <button
                         className='top-bar-button w-1/3 top-bar-button-colored'
-                        disabled={executing}
-                        onClick={async () => {
-                            // remove all checkpoints
-                            await ipcRenderer.callMain('spawn', {
-                                id: path,
-                                arguments: preparedCommand,
-                                binary: getBinaryPath()
-                            });
-                            setExecuting(true);
-                            setOpenSetting(false);
-                        }}>
+                        disabled={executing || copying}
+                        // the copy element down there will deal with executing
+                        onClick={() => setCopying(true)}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faCirclePlay} className='top-bar-button-icon' />
                         </div>
-                        <div>{executing ? 'Executing...' : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
+                        <div>
+                            {(executing || copying)
+                                ? (executing ? 'Executing...' : 'Copying')
+                                : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
                         <div></div>
                     </button>
                     <button
                         onClick={() => {
                             ipcRenderer.callMain('kill', path);
                         }}
-                        disabled={!executing}
+                        disabled={!executing || copying}
                         className='top-bar-button w-1/6 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faPause} className='top-bar-button-icon' />
@@ -139,7 +148,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     </button>
                     <button
                         className='top-bar-button w-1/5 top-bar-button-colored'
-                        disabled={executing}
+                        disabled={executing || copying}
                         onClick={async () => {
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
@@ -169,7 +178,22 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         </div>
                     )}
                     <div className='pt-2 grow flex flex-col'>
-                        <ProjectMain log={log.join('\n\n')} projectPath={path} />
+                        {copying
+                            ? <Copy
+                                files={
+                                    listDependentFileEntries(settings!)
+                                        .map(f => {
+                                            return {
+                                                source: f,
+                                                destination: join(getInputFolder(path), basename(f))
+                                            }
+                                        })
+                                }
+                                onReady={() => {
+                                    setCopying(false);
+                                    execute();
+                                }} />
+                            : <ProjectMain log={log.join('\n\n')} projectPath={path} />}
                     </div>
                 </>
             )}

@@ -6,3 +6,9 @@ export function getOutputFolder(projectPath: string) {
     mkdirSync(folder, { recursive: true });
     return folder + sep;
 }
+
+export function getInputFolder(projectPath: string) {
+    let folder = join(projectPath, 'input');
+    mkdirSync(folder, { recursive: true });
+    return folder + sep;
+}
