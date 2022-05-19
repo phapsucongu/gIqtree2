@@ -18,6 +18,7 @@ import { prepareCommand } from '../../command';
 import { getOutputFolder, getInputFolder } from './projectFolder';
 import { getBinaryPath } from '../../platform';
 import listDependentFileEntries from '../../utils/listDependentFileEntries';
+import remap from '../../utils/remapInputFiles';
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let [searchParams] = useSearchParams();
@@ -72,17 +73,6 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         preparedCommandWithRedo = prepareCommand(settings, 'output', getOutputFolder(path), true);
     }
 
-    let execute = async () => {
-        // remove all checkpoints
-        await ipcRenderer.callMain('spawn', {
-            id: path,
-            arguments: preparedCommand,
-            binary: getBinaryPath()
-        });
-        setExecuting(true);
-        setOpenSetting(false);
-    };
-
     return (
         <div className='pt-1 grow flex flex-col'>
             <div className='flex flex-row justify-between'>
@@ -106,32 +96,41 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     </button>
                     {settings && openSetting && (
                         <button
-                            disabled={!Object.keys(diff(originalSettings ?? {}, settings ?? {})).length}
+                            disabled={!Object.keys(diff(originalSettings ?? {}, settings ?? {})).length || copying}
                             className='top-bar-button w-1/6 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
                             onClick={() => {
                                 if (settings) writeSettingsFileSync(path, settings)
                                 setOriginalSettings(settings);
                                 setOpenSetting(false);
+                                setCopying(true);
                             }}>
                             <div className='flex items-center'>
                                 <FontAwesomeIcon icon={faFloppyDisk} className='top-bar-button-icon' />
                             </div>
-                            <div>Save</div>
+                            <div>
+                                {copying ? 'Copying files...' : 'Save'}
+                            </div>
                             <div></div>
                         </button>
                     )}
                     <button
                         className='top-bar-button w-1/3 top-bar-button-colored'
                         disabled={executing || copying}
-                        // the copy element down there will deal with executing
-                        onClick={() => setCopying(true)}>
+                        onClick={async () => {
+                            // remove all checkpoints
+                            await ipcRenderer.callMain('spawn', {
+                                id: path,
+                                arguments: preparedCommand,
+                                binary: getBinaryPath()
+                            });
+                            setExecuting(true);
+                            setOpenSetting(false);
+                        }}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faCirclePlay} className='top-bar-button-icon' />
                         </div>
                         <div>
-                            {(executing || copying)
-                                ? (executing ? 'Executing...' : 'Copying')
-                                : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
+                            {executing ? 'Executing...' : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
                         <div></div>
                     </button>
                     <button
@@ -189,9 +188,12 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                                             }
                                         })
                                 }
-                                onReady={() => {
+                                onReady={(copied) => {
+                                    let remapped = remap(settings!, copied);
+                                    writeSettingsFileSync(path, remapped)
+                                    setOriginalSettings(remapped);
+                                    setSettings(remapped);
                                     setCopying(false);
-                                    execute();
                                 }} />
                             : <ProjectMain log={log.join('\n\n')} projectPath={path} />}
                     </div>

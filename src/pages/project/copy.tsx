@@ -1,4 +1,4 @@
-import { copyFileSync } from 'fs';
+import { copyFileSync, realpathSync } from 'fs';
 import { useEffect, useState } from 'react';
 import { sync as rimraf } from 'rimraf';
 
@@ -14,19 +14,30 @@ function listDupes(str : string[]) {
         .map(p => p[0]);
 }
 
-function Copy({ files, onReady } : { files: { source: string, destination: string }[], onReady?: () => void }) {
-    let [copied, setCopied] = useState<string[]>([]);
+function Copy({ files, onReady } : { files: { source: string, destination: string }[], onReady?: (copied: Map<string, string>) => void }) {
+    let [copied, setCopied] = useState<Map<string, string>>(new Map());
     let dupes = listDupes(files.map(v => v.destination));
 
     useEffect(() => {
         if (dupes.length) return;
 
+        let c = new Map<string, string>();
+
         for (let { source, destination } of files) {
-            rimraf(destination);
-            copyFileSync(source, destination);
-            setCopied([...copied, destination]);
+            if (realpathSync(source) !== realpathSync(destination)) {
+                rimraf(destination);
+                copyFileSync(source, destination);
+            }
+
+            setCopied(
+                c = new Map([
+                    ...copied,
+                    [source, destination]
+                ])
+            );
         }
-        onReady?.();
+
+        onReady?.(c);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -48,7 +59,7 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
                 <tbody>
                 {files.map(f => (
                     <tr
-                        className={copied ? 'bg-green-200' : ''}
+                        className={copied.has(f.source) ? 'bg-green-200' : ''}
                         key={f.source + f.destination}>
                         <td className='p-2'>
                             {f.source}
