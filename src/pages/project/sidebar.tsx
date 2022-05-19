@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Tree } from 'react-arborist';
 import { readdirSync, statSync } from 'fs';
 import { basename, join } from 'path';
@@ -31,6 +31,7 @@ function Sidebar(
 ) {
     let [treeHeight, setTreeHeight] = useState(0);
     let [treeWidth, setTreeWidth] = useState(0);
+    let [tree, setTree] = useState(recurse(projectPath));
     let { ref: treeRef } = useResize({
         onResize({ height, width }) {
             if (height) setTreeHeight(height);
@@ -38,10 +39,17 @@ function Sidebar(
         }
     })
 
+    useEffect(() => {
+        let interval = setInterval(() => {
+            setTree(recurse(projectPath));
+        }, 200);
+        return () => clearInterval(interval)
+    }, [projectPath]);
+
     return (
         <div className="ml-2 h-full" ref={treeRef}>
             <Tree
-                data={recurse(projectPath)}
+                data={tree}
                 width={Math.max(treeWidth, window.visualViewport.width / 7)}
                 height={Math.max(treeHeight, window.visualViewport.height * 4 / 5)} className='h-full'>
                 {({ styles, data }) => (
