@@ -75,7 +75,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
     return (
         <div className='pt-1 grow flex flex-col relative'>
-            <div className='sticky py-2 top-10 flex flex-row justify-between bg-white drop-shadow-md'>
+            <div className={
+                'sticky py-2 top-10 flex flex-row justify-between z-30 bg-white drop-shadow-md '
+                + (openSetting ? 'border-b border-black' : '')
+            }>
                 <div className='flex flex-row items-center gap-4 text-2xl font-bold pl-4'>
                     {!settings?.name && <FontAwesomeIcon icon={faFolder} className='h-8' />}
                     <div>{settings?.name ?? basename(path)}</div>
@@ -168,15 +171,15 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
             {openSetting && settings && <ProjectSetting setting={settings} onChange={setting => setSettings(setting)} />}
             {!openSetting && (
                 <>
-                    {executing && (
-                        <div className='pt-2'>
-                            <b>Executing :</b>
-                            <code className='overflow-x-scroll'>
-                                {preparedCommand.map(r => r.join(' ')).join('\n')}
-                            </code>
-                        </div>
-                    )}
-                    <div className='pt-2 grow flex flex-col'>
+                    <div className='mt-8 pt-2 grow flex flex-col'>
+                        {executing && (
+                            <div className='pt-2'>
+                                <b>Executing :</b>
+                                <code className='overflow-x-scroll'>
+                                    {preparedCommand.map(r => r.join(' ')).join('\n')}
+                                </code>
+                            </div>
+                        )}
                         {copying
                             ? <Copy
                                 files={

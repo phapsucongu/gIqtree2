@@ -16,10 +16,10 @@ function App() {
 
     return (
         <HashRouter>
-            <div className='sticky top-0 bg-white z-40 drop-shadow-lg'>
+            <div className='fixed w-full top-0 bg-white z-40 drop-shadow-lg'>
                 <TitleBar />
             </div>
-            <div>
+            <div className='mt-10'>
                 <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/dashboard" element={<Dashboard />} />

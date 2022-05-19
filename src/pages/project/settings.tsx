@@ -1,4 +1,5 @@
-import { ReactElement, useState } from 'react';
+import { createRef, useState } from 'react';
+import { Waypoint } from 'react-waypoint';
 import { Settings } from "../../interfaces";
 import DataSetting from "./settings/data";
 import ModelSetting from "./settings/model";
@@ -19,94 +20,115 @@ enum CurrentSetting {
 
 function ProjectSettings({ setting, onChange }: { setting: Settings, onChange?: (newSetting: Settings) => void }) {
     let [currentSetting, setCurrentSetting] = useState(CurrentSetting.Data);
-    let currentSettingElement: ReactElement | null = null;
 
     let settingCategories = [
-        { name: 'Data', setting: CurrentSetting.Data },
-        { name: 'Model', setting: CurrentSetting.Model },
-        { name: 'Tree search', setting: CurrentSetting.TreeSearch },
-        { name: 'Assessment', setting: CurrentSetting.Assessment },
-        { name: 'Dating', setting: CurrentSetting.Dating },
-        { name: 'Others', setting: CurrentSetting.Other },
-    ]
-
-    switch (currentSetting) {
-        case CurrentSetting.Data: {
-            currentSettingElement = (
+        {
+            name: 'Data',
+            setting: CurrentSetting.Data,
+            element: (
                 <DataSetting
                     settings={setting.data}
                     onChange={(newDataSettings) => onChange?.({ ...setting, data: newDataSettings })} />
-            );
-            break;
-        }
-
-        case CurrentSetting.Model: {
-            currentSettingElement = (
+            ),
+            ref: createRef<HTMLDivElement>(),
+        },
+        {
+            name: 'Model',
+            setting: CurrentSetting.Model,
+            element: (
                 <ModelSetting
                     sequenceType={setting.data.sequenceType}
                     isMultipleGene={isMultipleGene(setting.data)}
                     settings={setting.model}
                     onChange={(newModelSettings) => onChange?.({ ...setting, model: newModelSettings })}
                     />
-            )
-            break;
-        }
-
-        case CurrentSetting.TreeSearch: {
-            currentSettingElement = (
+            ),
+            ref: createRef<HTMLDivElement>()
+        },
+        {
+            name: 'Tree search',
+            setting: CurrentSetting.TreeSearch,
+            element: (
                 <TreeSearchSetting
                     settings={setting.treeSearch}
                     onChange={(newTreeSearchSettings) => onChange?.({ ...setting, treeSearch: newTreeSearchSettings })} />
-            );
-            break;
-        }
-
-        case CurrentSetting.Assessment: {
-            currentSettingElement = (
+            ),
+            ref: createRef<HTMLDivElement>()
+        },
+        {
+            name: 'Assessment',
+            setting: CurrentSetting.Assessment,
+            element: (
                 <AssessmentSetting
                     isMultipleGene={isMultipleGene(setting.data)}
                     settings={setting.assessment}
                     onChange={(assessmentSettings) => onChange?.({ ...setting, assessment: assessmentSettings })} />
-            );
-            break;
-        }
-
-        case CurrentSetting.Dating: {
-            currentSettingElement = (
+            ),
+            ref: createRef<HTMLDivElement>()
+        },
+        {
+            name: 'Dating',
+            setting: CurrentSetting.Dating,
+            element: (
                 <DatingSetting
                     settings={setting.dating}
                     onChange={datingSettings => onChange?.({ ...setting, dating: datingSettings })}/>
-            )
-            break;
-        }
-
-        case CurrentSetting.Other: {
-            currentSettingElement = (
+            ),
+            ref: createRef<HTMLDivElement>()
+        },
+        {
+            name: 'Others',
+            setting: CurrentSetting.Other,
+            element: (
                 <OtherSetting
                     settings={setting.others}
                     onChange={otherSettings => onChange?.({ ...setting, others: otherSettings })}/>
-            );
-            break;
+            ),
+            ref: createRef<HTMLDivElement>()
         }
-    }
+    ]
 
     return (
-        <div className="flex flex-row gap-4 pt-4">
-            <div className="min-w-[12rem] flex flex-col">
+        <div className="gap-4">
+            <div className='flex flex-row gap-2 bg-white sticky top-[6.5rem] justify-evenly'>
                 {settingCategories.map(category => (
                     <button
                         key={category.setting}
                         className={
-                            'left-column-item text-left '
+                            'grow p-2 border-x border-b border-black rounded-b-md '
                             + (currentSetting === category.setting ? 'left-column-item-chosen' : '')
                         }
-                        onClick={() => setCurrentSetting(category.setting)}>
+                        onClick={() => {
+                            setCurrentSetting(category.setting)
+                            let ref = settingCategories
+                                .find(s => s.setting === category.setting)
+                                ?.ref;
+                            if (ref) {
+                                ref.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                if (ref.current) {
+                                    let current = ref.current;
+                                    current.classList.add('bg-gray-300');
+                                    setTimeout(() => current.classList.remove('bg-gray-300'), 700);
+                                }
+                            }
+                        }}>
                         {category.name}
                     </button>
                 ))}
             </div>
-            <div className="grow p-4">
-                {currentSettingElement}
+            <div className='p-2 mt-6'>
+                {settingCategories.map(cat => (
+                    <div ref={cat.ref} key={cat.name} className='p-2 rounded-xl transition-colors transition-700'>
+                        <h3 className='border-l-8 pl-4 border-cyan-700 text-xl font-bold'>
+                            {cat.name}
+                        </h3>
+                        <br />
+                        {cat.element}
+                        <br />
+                        <br />
+                        <Waypoint onEnter={() => setCurrentSetting(cat.setting)} />
+                    </div>
+                ))}
             </div>
         </div>
     )
