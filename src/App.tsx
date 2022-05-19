@@ -16,7 +16,9 @@ function App() {
 
     return (
         <HashRouter>
-            <TitleBar />
+            <div className='sticky top-0 bg-white drop-shadow-lg mb-2'>
+                <TitleBar />
+            </div>
             <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />

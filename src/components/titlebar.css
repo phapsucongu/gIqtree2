@@ -1,14 +1,14 @@
 .titlebar-button {
-    @apply p-2;
+    @apply p-1 flex flex-row items-center;
     -webkit-app-region: no-drag;
 }
 
 .top-link {
-    @apply text-2xl px-4 hover:bg-neutral-300 flex items-center
+    @apply text-xl px-4 hover:bg-neutral-300 flex items-center
 }
 
 .top-link-icon {
-    @apply h-8 w-8 pr-2
+    @apply h-4 w-4 pr-2
 }
 
 .draggable {

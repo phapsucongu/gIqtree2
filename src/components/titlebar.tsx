@@ -25,10 +25,10 @@ function TitleBar() {
     }, []);
 
     return (
-        <div className='draggable flex flex-row justify-between border-b-2 border-cyan-900 mb-2'>
+        <div className='draggable flex flex-row justify-between border-b-2 border-cyan-900'>
             <div className='flex flex-row'>
                 <div className='titlebar-button'>
-                    <img alt="gIqtree" src={app.isPackaged ? "./icon.png" : "/icon.png"} className='h-12' />
+                    <img alt="gIqtree" src={app.isPackaged ? "./icon.png" : "/icon.png"} className='h-8' />
                 </div>
 
                 <Link to="/dashboard" className='titlebar-button flex top-link'>
@@ -77,17 +77,17 @@ function TitleBar() {
                 <button
                     className='titlebar-button hover:bg-neutral-300'
                     onClick={() => window?.minimize()}>
-                    <FontAwesomeIcon icon={faWindowMinimize} className="h-10 pb-2 w-12" />
+                    <FontAwesomeIcon icon={faWindowMinimize} className="h-6 w-8" />
                 </button>
                 <button
                     className='titlebar-button hover:bg-neutral-300'
                     onClick={() => maximized ? window?.unmaximize() : window?.maximize()}>
-                    <FontAwesomeIcon icon={maximized ? faWindowRestore : faWindowMaximize} className="h-12 w-12" />
+                    <FontAwesomeIcon icon={maximized ? faWindowRestore : faWindowMaximize} className="h-6 w-6" />
                 </button>
                 <button
                     className='titlebar-button hover:bg-red-400'
                     onClick={() => window?.close()}>
-                    <FontAwesomeIcon icon={faXmark} className="h-12 w-12" />
+                    <FontAwesomeIcon icon={faXmark} className="h-8 w-8" />
                 </button>
             </div>
         </div>
