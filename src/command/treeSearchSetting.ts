@@ -4,7 +4,7 @@ import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop } from "..
 function prepare({ treeSearch } : Settings) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, constrainedTreeFile, referenceTreeFile, outgroupTaxa } = treeSearch;
     let output : string[] = [];
-    if (enabled) output.push('-n', '0');
+    if (!enabled) output.push('-n', '0');
     if (unsuccessfulIterationsStop !== DefaultUnsuccessfulIterationStop && unsuccessfulIterationsStop !== null) {
         output.push('--nstop', unsuccessfulIterationsStop.toString())
     }
