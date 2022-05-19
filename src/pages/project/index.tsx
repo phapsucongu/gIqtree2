@@ -74,8 +74,8 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     }
 
     return (
-        <div className='pt-1 grow flex flex-col'>
-            <div className='flex flex-row justify-between'>
+        <div className='pt-1 grow flex flex-col relative'>
+            <div className='sticky py-2 top-10 flex flex-row justify-between bg-white drop-shadow-md'>
                 <div className='flex flex-row items-center gap-4 text-2xl font-bold pl-4'>
                     {!settings?.name && <FontAwesomeIcon icon={faFolder} className='h-8' />}
                     <div>{settings?.name ?? basename(path)}</div>

@@ -16,17 +16,19 @@ function App() {
 
     return (
         <HashRouter>
-            <div className='sticky top-0 bg-white drop-shadow-lg mb-2'>
+            <div className='sticky top-0 bg-white z-40 drop-shadow-lg'>
                 <TitleBar />
             </div>
-            <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/project" element={<Project onOpenProject={path => {
-                    ipcRenderer.callMain('db_record', path);
-                }} />} />
-                <Route path="/new" element={<New />} />
-            </Routes>
+            <div>
+                <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/project" element={<Project onOpenProject={path => {
+                        ipcRenderer.callMain('db_record', path);
+                    }} />} />
+                    <Route path="/new" element={<New />} />
+                </Routes>
+            </div>
         </HashRouter>
     )
 }
