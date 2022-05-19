@@ -24,7 +24,7 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
         let c = new Map<string, string>();
 
         for (let { source, destination } of files) {
-            if (realpathSync(source) !== realpathSync(destination)) {
+            if (realpathSync(source) !== destination) {
                 rimraf(destination);
                 copyFileSync(source, destination);
             }
