@@ -1,4 +1,5 @@
-import { copyFileSync, realpathSync } from 'fs';
+import { realpathSync } from 'fs';
+import { copySync } from 'fs-extra';
 import { useEffect, useState } from 'react';
 import { sync as rimraf } from 'rimraf';
 
@@ -17,27 +18,33 @@ function listDupes(str : string[]) {
 function Copy({ files, onReady } : { files: { source: string, destination: string }[], onReady?: (copied: Map<string, string>) => void }) {
     let [copied, setCopied] = useState<Map<string, string>>(new Map());
     let dupes = listDupes(files.map(v => v.destination));
+    let [err, setErr] = useState('');
 
     useEffect(() => {
+        setErr('');
         if (dupes.length) return;
 
-        let c = new Map<string, string>();
+        try {
+            let c = new Map<string, string>();
 
-        for (let { source, destination } of files) {
-            if (realpathSync(source) !== destination) {
-                rimraf(destination);
-                copyFileSync(source, destination);
+            for (let { source, destination } of files) {
+                if (realpathSync(source) !== destination) {
+                    rimraf(destination);
+                    copySync(source, destination);
+                }
+
+                setCopied(
+                    c = new Map([
+                        ...copied,
+                        [source, destination]
+                    ])
+                );
             }
 
-            setCopied(
-                c = new Map([
-                    ...copied,
-                    [source, destination]
-                ])
-            );
+            onReady?.(c);
+        } catch (e) {
+            setErr(`${e}`);
         }
-
-        onReady?.(c);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -47,6 +54,13 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
             {!!dupes.length && (
                 <div>
                     Conflicting entries found - halting copy.
+                </div>
+            )}
+            {err && (
+                <div>
+                    Error :
+                    <br />
+                    {err}
                 </div>
             )}
             <table className='w-full'>
