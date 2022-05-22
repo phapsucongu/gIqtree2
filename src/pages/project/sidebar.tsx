@@ -3,6 +3,7 @@ import { Tree } from 'react-arborist';
 import { readdirSync, statSync } from 'fs';
 import { basename, join } from 'path';
 import useResize from 'use-resize-observer';
+import { diff } from 'deep-object-diff';
 
 type Node = {
     id: string;
@@ -31,7 +32,13 @@ function Sidebar(
 ) {
     let [treeHeight, setTreeHeight] = useState(0);
     let [treeWidth, setTreeWidth] = useState(0);
-    let [tree, setTree] = useState(recurse(projectPath));
+    let [tree, setTree] = useState<Node>({
+        id: projectPath,
+        name: basename(projectPath),
+        path: projectPath,
+        isFolder: true
+    });
+
     let { ref: treeRef } = useResize({
         onResize({ height, width }) {
             if (height) setTreeHeight(height);
@@ -41,9 +48,12 @@ function Sidebar(
 
     useEffect(() => {
         let interval = setInterval(() => {
-            setTree(recurse(projectPath));
+            let old = tree;
+            let current = recurse(projectPath);
+            if (Object.keys(diff(old, current)).length)
+                setTree(recurse(projectPath));
         }, 200);
-        return () => clearInterval(interval)
+        return () => clearInterval(interval);
     }, [projectPath]);
 
     return (
@@ -52,16 +62,25 @@ function Sidebar(
                 data={tree}
                 width={Math.max(treeWidth, window.visualViewport.width / 7)}
                 height={Math.max(treeHeight, window.visualViewport.height * 4 / 5)} className='h-full'>
-                {({ styles, data }) => (
-                    <div className={data.path === currentFile ? 'bg-gray-200' : ''} style={styles.row} key={data.id}>
-                        <div style={styles.indent} onClick={() => {
-                            if (!data.isFolder)
-                                onFileChosen?.(data.path);
-                        }}>
-                            {data.name}
+                {({ styles, data }) => {
+                    let clickable = !data.isFolder && !data.name.endsWith('.gz');
+                    return (
+                        <div
+                            className={
+                                (data.path === currentFile ? 'bg-gray-200' : '')
+                                + (clickable ? ' cursor-pointer' : ' text-gray-400')
+                            }
+                            style={styles.row}
+                            key={data.id}>
+                            <div style={styles.indent} onClick={() => {
+                                if (clickable)
+                                    onFileChosen?.(data.path);
+                            }}>
+                                {data.name}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )
+                }}
             </Tree>
         </div>
     )
