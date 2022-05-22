@@ -93,8 +93,8 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
     let preparedCommand : string[][] = [], preparedCommandWithRedo : string[][] = [];
     if (settings) {
-        preparedCommand = prepareCommand(settings, 'output', getOutputFolder(path));
-        preparedCommandWithRedo = prepareCommand(settings, 'output', getOutputFolder(path), true);
+        preparedCommand = prepareCommand(originalSettings!, 'output', getOutputFolder(path));
+        preparedCommandWithRedo = prepareCommand(originalSettings!, 'output', getOutputFolder(path), true);
     }
 
     let main : React.ReactElement | null;
@@ -147,10 +147,13 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     {!settings?.name && <FontAwesomeIcon icon={faFolder} className='h-8' />}
                     <div>{settings?.name ?? basename(path)}</div>
                 </div>
-                <div className='flex flex-row gap-2 pr-2 w-1/2 justify-end items-center'>
+                <div className={
+                    'grid gap-2 pr-2 w-1/2 justify-end items-center'
+                    + (settings && openSetting ? ' grid-cols-5' : ' grid-cols-4')
+                }>
                     <button
                         className={
-                            'top-bar-button w-1/4 hover:border-cyan-500 hover:bg-cyan-200 '
+                            'top-bar-button col-span-1 hover:border-cyan-500 hover:bg-cyan-200 '
                             + 'active:bg-cyan-700 active:text-white active:border-cyan-800 '
                             + (openSetting ? 'border-cyan-200 bg-cyan-100' : '')
                         }
@@ -166,7 +169,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     {settings && openSetting && (
                         <button
                             disabled={!Object.keys(diff(originalSettings ?? {}, settings ?? {})).length || copying}
-                            className='top-bar-button w-1/6 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
+                            className='top-bar-button col-span-1 hover:border-gray-500 hover:bg-gray-100 active:border-black active:text-white'
                             onClick={() => {
                                 if (settings) writeSettingsFileSync(path, settings)
                                 setOriginalSettings(settings);
@@ -182,7 +185,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         </button>
                     )}
                     <button
-                        className='top-bar-button w-1/3 top-bar-button-colored'
+                        className='top-bar-button col-span-1 top-bar-button-colored'
                         disabled={executing || copying}
                         onClick={async () => {
                             // remove all checkpoints
@@ -206,7 +209,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                             ipcRenderer.callMain('kill', path);
                         }}
                         disabled={!executing || copying}
-                        className='top-bar-button w-1/6 top-bar-button-colored'>
+                        className='top-bar-button col-span-1 top-bar-button-colored'>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faPause} className='top-bar-button-icon' />
                         </div>
@@ -214,7 +217,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         <div></div>
                     </button>
                     <button
-                        className='top-bar-button w-1/5 top-bar-button-colored'
+                        className='top-bar-button col-span-1 top-bar-button-colored'
                         disabled={executing || copying}
                         onClick={async () => {
                             await ipcRenderer.callMain('spawn', {
