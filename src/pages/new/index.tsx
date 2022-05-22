@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { dialog } from "@electron/remote";
 import { useWindow } from "../../hooks/useWindow";
-import { accessSync, constants, lstatSync } from "fs";
+import { accessSync, constants, lstatSync, mkdirSync } from "fs";
 import { hasSettingsFileSync } from "../../utils/settingsFile";
 import { useNavigate, createSearchParams, useSearchParams } from 'react-router-dom';
+import { join } from "path";
 
 enum TemplateType {
     FindModel = 1,
@@ -53,9 +54,11 @@ function NewPage() {
         error = `Couldn't check the project path. Make sure the directory exists & it is writable.`;
     };
 
+    let pathToMakeAndNavigate = join(...(name ? [path, name] : [path]));
+
     return (
         <div>
-            <div className="flex flex-row px-2 justify-between">
+            <div className="flex flex-row px-2 pt-2 justify-between">
                 <div className="text-2xl font-bold">
                     New project
                 </div>
@@ -64,12 +67,13 @@ function NewPage() {
                         disabled={(!!error && !tolerable) || !validPath}
                         className="top-bar-button top-bar-button-colored"
                         onClick={() => {
+                            mkdirSync(pathToMakeAndNavigate);
                             navigate({
                                 pathname: "/project",
-                                search: createSearchParams({ path }).toString()
+                                search: createSearchParams({ path: pathToMakeAndNavigate }).toString()
                             });
                             navigate(0);
-                            setSearchParams({ path });
+                            setSearchParams({ path: pathToMakeAndNavigate });
                         }}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faFloppyDisk} className='top-bar-button-icon' />
@@ -105,36 +109,44 @@ function NewPage() {
                             placeholder="Enter project name..."
                             value={name ?? undefined}
                             onChange={e => setName(e.target.value)} />
-                        <b className="flex flex-row place-items-center">
-                            <div>Project path :</div>
+                        <b className="flex flex-row place-items-start">
+                            <div className="py-2">Project path :</div>
                         </b>
-                        <div className="col-span-6 flex flex-row gap-4">
-                            <input
-                                className={
-                                    "grow p-2 border-2 rounded-lg outline-none "
-                                    + (!path || validPath ? 'border-gray-400' : 'border-red-600')
-                                }
-                                type="text"
-                                placeholder="Enter path, or click the choose button"
-                                value={path ?? undefined}
-                                onChange={e => setPath(e.target.value)} />
-                            <button
-                                className="action-button"
-                                onClick={() => {
-                                    if (window) {
-                                        let folder = dialog.showOpenDialogSync(window, {
-                                            title: 'Choose project directory',
-                                            properties: ['openDirectory']
-                                        });
-
-                                        if (folder) {
-                                            setPath(folder[0]);
-                                        }
+                        <div className="col-span-6">
+                            <div className="flex flex-row gap-4">
+                                <input
+                                    className={
+                                        "grow p-2 border-2 rounded-lg outline-none "
+                                        + (!path || validPath ? 'border-gray-400' : 'border-red-600')
                                     }
-                                }}>
-                                <FontAwesomeIcon icon={faFolderOpen} className="pr-2" />
-                                Choose a folder
-                            </button>
+                                    type="text"
+                                    placeholder="Enter path, or click the choose button"
+                                    value={path ?? undefined}
+                                    onChange={e => setPath(e.target.value)} />
+                                <button
+                                    className="action-button"
+                                    onClick={() => {
+                                        if (window) {
+                                            let folder = dialog.showOpenDialogSync(window, {
+                                                title: 'Choose project directory',
+                                                properties: ['openDirectory']
+                                            });
+
+                                            if (folder) {
+                                                setPath(folder[0]);
+                                            }
+                                        }
+                                    }}>
+                                    <FontAwesomeIcon icon={faFolderOpen} className="pr-2" />
+                                    Choose a folder
+                                </button>
+                            </div>
+                            <br />
+                            {path && (
+                                <>
+                                    The project folder will be <b className="underline">{pathToMakeAndNavigate}</b>.
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
