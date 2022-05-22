@@ -54,6 +54,7 @@ function Sidebar(
                 setTree(recurse(projectPath));
         }, 200);
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectPath]);
 
     return (

@@ -29,7 +29,7 @@ body {
 }
 
 .top-bar-button {
-    @apply p-2 text-lg min-w-[5rem];
+    @apply px-4 py-1 text-lg min-w-[5rem];
     @apply flex flex-row items-center justify-between gap-2;
     @apply rounded-lg border-2;
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { diff } from 'deep-object-diff';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPause, faForward, faSliders } from '@fortawesome/free-solid-svg-icons'
+import { faPause, faForward, faSliders, faTerminal } from '@fortawesome/free-solid-svg-icons'
 import { faCirclePlay, faFolder, faFloppyDisk } from '@fortawesome/free-regular-svg-icons'
 import { ipcRenderer } from 'electron-better-ipc';
 import { ChildProcess } from 'child_process';
@@ -148,8 +148,8 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     <div>{settings?.name ?? basename(path)}</div>
                 </div>
                 <div className={
-                    'grid gap-2 pr-2 w-1/2 justify-end items-center'
-                    + (settings && openSetting ? ' grid-cols-5' : ' grid-cols-4')
+                    'grid gap-2 pr-2 justify-end items-center'
+                    + (settings && openSetting ? ' grid-cols-6' : ' grid-cols-5')
                 }>
                     <button
                         className={
@@ -185,6 +185,19 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         </button>
                     )}
                     <button
+                        onClick={() => {
+                            setCurrentScreen(CurrentScreen.Text);
+                            setCurrentFile(undefined);
+                        }}
+                        disabled={currentFile === undefined}
+                        className='top-bar-button col-span-1 top-bar-button-colored'>
+                        <div className='flex items-center'>
+                            <FontAwesomeIcon icon={faTerminal} className='top-bar-button-icon' />
+                        </div>
+                        <div>Log</div>
+                        <div></div>
+                    </button>
+                    <button
                         className='top-bar-button col-span-1 top-bar-button-colored'
                         disabled={executing || copying}
                         onClick={async () => {
@@ -201,7 +214,8 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                             <FontAwesomeIcon icon={faCirclePlay} className='top-bar-button-icon' />
                         </div>
                         <div>
-                            {executing ? 'Executing...' : (openSetting ? 'Execute' : 'Execute / Restart')}</div>
+                            {executing ? 'Executing...' : (openSetting ? 'Execute' : 'Execute / Restart')}
+                        </div>
                         <div></div>
                     </button>
                     <button
