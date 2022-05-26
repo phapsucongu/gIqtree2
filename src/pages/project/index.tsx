@@ -7,6 +7,7 @@ import { faCirclePlay, faFolder, faFloppyDisk } from '@fortawesome/free-regular-
 import { ipcRenderer } from 'electron-better-ipc';
 import { ChildProcess } from 'child_process';
 import { basename, join } from 'path';
+import { readFileSync } from 'fs';
 
 import ProjectSetting from './settings';
 import Copy from './copy';
@@ -19,10 +20,10 @@ import { getBinaryPath } from '../../platform';
 import listDependentFileEntries from '../../utils/listDependentFileEntries';
 import remap from '../../utils/remapInputFiles';
 import Sidebar from './sidebar';
-import { readFileSync } from 'fs';
+import MainContent from './mainContent';
 
 enum CurrentScreen {
-    Text = 1,
+    Main = 1,
     Setting = 2,
     Copy = 3
 }
@@ -31,7 +32,7 @@ enum CurrentScreen {
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let [searchParams] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>(null);
-    let [currentScreen, setCurrentScreen] = useState(CurrentScreen.Text);
+    let [currentScreen, setCurrentScreen] = useState(CurrentScreen.Main);
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [error, setError] = useState<string>('');
     let [executing, setExecuting] = useState(false);
@@ -116,7 +117,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                         writeSettingsFileSync(path, remapped)
                         setOriginalSettings(remapped);
                         setSettings(remapped);
-                        setCurrentScreen(CurrentScreen.Text)
+                        setCurrentScreen(CurrentScreen.Main)
                     }} />
             );
             break;
@@ -129,9 +130,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         }
         default: {
             main = (
-                <pre className='h-[87vh] overflow-y-scroll snap-y snap-mandatory snap-end' style={{ width: '80vw' }}>
-                    {error ? error : currentFile ? currentContent : log}
-                </pre>
+                <MainContent content={error ? error : currentFile ? currentContent : log.join('\n\n')} />
             );
             break;
         }
@@ -158,7 +157,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                             + (openSetting ? 'border-cyan-200 bg-cyan-100' : '')
                         }
                         onClick={() => setCurrentScreen(
-                            currentScreen === CurrentScreen.Setting ? CurrentScreen.Text : CurrentScreen.Setting
+                            currentScreen === CurrentScreen.Setting ? CurrentScreen.Main : CurrentScreen.Setting
                         )}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faSliders} className='top-bar-button-icon' />
@@ -186,7 +185,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     )}
                     <button
                         onClick={() => {
-                            setCurrentScreen(CurrentScreen.Text);
+                            setCurrentScreen(CurrentScreen.Main);
                             setCurrentFile(undefined);
                         }}
                         disabled={currentFile === undefined}
@@ -208,7 +207,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                                 binary: getBinaryPath()
                             });
                             setExecuting(true);
-                            setCurrentScreen(CurrentScreen.Text);
+                            setCurrentScreen(CurrentScreen.Main);
                         }}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faCirclePlay} className='top-bar-button-icon' />
@@ -240,7 +239,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                                 binary: getBinaryPath()
                             });
                             setExecuting(true);
-                            setCurrentScreen(CurrentScreen.Text);
+                            setCurrentScreen(CurrentScreen.Main);
                         }}>
                         <div className='flex items-center'>
                             <FontAwesomeIcon icon={faForward} className='top-bar-button-icon' />
