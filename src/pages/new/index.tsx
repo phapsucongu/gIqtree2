@@ -27,7 +27,7 @@ const types = [
 
 function NewPage() {
     let [name, setName] = useState<string | null>(null);
-    let [currentType, setCurrentType] = useState<TemplateType>(TemplateType.FindModel);
+    let [currentType, setCurrentType] = useState<TemplateType>(TemplateType.InferTree);
     let [path, setPath] = useState('');
     let window = useWindow();
     let navigate = useNavigate();
