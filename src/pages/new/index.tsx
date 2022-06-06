@@ -1,12 +1,14 @@
 import { faFloppyDisk, faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { dialog } from "@electron/remote";
 import { useWindow } from "../../hooks/useWindow";
 import { accessSync, constants, lstatSync, mkdirSync } from "fs";
 import { hasSettingsFileSync } from "../../utils/settingsFile";
 import { useNavigate, createSearchParams, useSearchParams } from 'react-router-dom';
-import { join } from "path";
+import { join, normalize } from "path";
+import { ipcRenderer } from 'electron-better-ipc';
+import type { Record } from '../dashboard';
 
 enum TemplateType {
     FindModel = 1,
@@ -34,6 +36,15 @@ function NewPage() {
     let [, setSearchParams] = useSearchParams();
 
     let validPath = false;
+
+    useEffect(() => {
+        ipcRenderer.callMain('db_list')
+            .then(r => {
+                let record = (r as Record[]);
+                if (record.length !== 0)
+                    setPath(normalize(join(record[0].path, '..')));
+            })
+    }, [])
 
     let error = '', tolerable = false;
     try {

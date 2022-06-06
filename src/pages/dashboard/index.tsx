@@ -6,7 +6,7 @@ import TimeAgo from 'react-timeago';
 import { useSearchParams, useNavigate, createSearchParams } from 'react-router-dom';
 import { readSettingsFileSync } from '../../utils/settingsFile';
 
-type Record = { path: string, timestamp: string };
+export type Record = { path: string, timestamp: string };
 
 function Dashboard() {
     let [records, setRecord] = useState<Record[]>([]);
