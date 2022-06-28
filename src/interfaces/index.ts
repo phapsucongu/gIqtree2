@@ -22,10 +22,7 @@ export function defaultSettings(): Settings {
             alignmentFiles: []
         },
         treeSearch: {
-            enabled: false,
-            unsuccessfulIterationsStop: null,
-            pertubationStrength: null,
-            outgroupTaxa: null
+            enabled: false
         },
         assessment: {
             ufbootOption: true,

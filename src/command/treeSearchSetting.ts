@@ -5,11 +5,11 @@ function prepare({ treeSearch } : Settings) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, constrainedTreeFile, referenceTreeFile, outgroupTaxa } = treeSearch;
     let output : string[] = [];
     if (!enabled) output.push('-n', '0');
-    if (unsuccessfulIterationsStop !== DefaultUnsuccessfulIterationStop && unsuccessfulIterationsStop !== null) {
+    if (unsuccessfulIterationsStop !== DefaultUnsuccessfulIterationStop && unsuccessfulIterationsStop) {
         output.push('--nstop', unsuccessfulIterationsStop.toString())
     }
 
-    if (pertubationStrength !== DefaultPertubationStrength && pertubationStrength !== null) {
+    if (pertubationStrength !== DefaultPertubationStrength && pertubationStrength) {
         output.push('--perturb', pertubationStrength.toString());
     }
 
@@ -21,7 +21,7 @@ function prepare({ treeSearch } : Settings) {
         output.push('-te', referenceTreeFile);
     }
 
-    if (outgroupTaxa !== null) {
+    if (outgroupTaxa) {
         output.push('-o', outgroupTaxa)
     }
 

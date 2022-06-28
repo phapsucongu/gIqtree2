@@ -1,8 +1,8 @@
 export interface TreeSearchSettings {
-    enabled: boolean;
-    unsuccessfulIterationsStop: number | null;
-    pertubationStrength: number | null;
-    outgroupTaxa: string | null;
+    enabled?: boolean;
+    unsuccessfulIterationsStop?: number;
+    pertubationStrength?: number;
+    outgroupTaxa?: string;
     constrainedTreeFile?: string;
     referenceTreeFile?: string;
 }
