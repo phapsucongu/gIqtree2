@@ -2,21 +2,14 @@ import { faFloppyDisk, faFolderOpen } from "@fortawesome/free-regular-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { dialog } from "@electron/remote";
+import { getTemplateSettings, TemplateType } from '../../templates';
 import { useWindow } from "../../hooks/useWindow";
 import { accessSync, constants, lstatSync, mkdirSync } from "fs";
-import { hasSettingsFileSync } from "../../utils/settingsFile";
+import { hasSettingsFileSync, writeSettingsFileSync } from "../../utils/settingsFile";
 import { useNavigate, createSearchParams, useSearchParams } from 'react-router-dom';
 import { join, normalize } from "path";
 import { ipcRenderer } from 'electron-better-ipc';
 import type { Record } from '../dashboard';
-
-enum TemplateType {
-    FindModel = 1,
-    MergePartitions,
-    InferTree,
-    AssessSupport,
-    DateTree
-}
 
 const types = [
     { name: "Find Model", type: TemplateType.FindModel },
@@ -79,6 +72,7 @@ function NewPage() {
                         className="top-bar-button top-bar-button-colored"
                         onClick={() => {
                             mkdirSync(pathToMakeAndNavigate);
+                            writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(currentType))
                             navigate({
                                 pathname: "/project",
                                 search: createSearchParams({ path: pathToMakeAndNavigate }).toString()

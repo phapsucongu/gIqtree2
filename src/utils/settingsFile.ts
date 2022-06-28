@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-import { defaultSettings, Settings } from '../interfaces';
+import { Settings } from '../interfaces';
+import { getTemplateSettings } from '../templates';
 
 const filename = 'settings.json';
 
@@ -15,7 +16,7 @@ export function readSettingsFileSync(projectPath: string) {
         let result = readFileSync(path, 'utf-8');
         return JSON.parse(result);
     } catch (err) {
-        let result = defaultSettings();
+        let result = getTemplateSettings();
         writeFileSync(path, JSON.stringify(result));
         return result;
     }

@@ -9,6 +9,6 @@ export const DateInfoTypes = [
 ]
 
 export interface DatingSettings {
-    dateInfoType?: DateInfoType | null;
+    dateInfoType?: DateInfoType;
     dateFile?: string;
 }
