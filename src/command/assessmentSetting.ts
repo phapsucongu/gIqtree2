@@ -19,7 +19,7 @@ function prepare(settings: Settings) {
 
     if (isMultipleGene(settings.data) && assessment.bootstrapMethod !== null) {
         switch (assessment.multiPartitionSamplingStrategy) {
-            case null:
+            case undefined:
             case DefaultMultiPartitionSamplingStrategy:
                 break;
             default:

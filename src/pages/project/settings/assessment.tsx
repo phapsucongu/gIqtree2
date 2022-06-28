@@ -27,7 +27,7 @@ function Assessment(
             <div className="setting-row">
                 <b>Bootstrap method :</b>
                 <div>
-                    {[{ name: 'None', type: null }, ...BootstrapMethods]
+                    {[{ name: 'None', type: undefined }, ...BootstrapMethods]
                         .map((current, index) => {
                             let rounded = '';
                             if (index === 0) rounded = 'border-l rounded-l-full';

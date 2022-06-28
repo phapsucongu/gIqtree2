@@ -48,13 +48,13 @@ export const DefaultMultiPartitionSamplingStrategy = MultiPartitionSamplingStrat
 
 
 export interface AssessmentSettings {
-    ufbootOption: boolean | null;
-    bootstrapMethod: BootstrapMethod | null;
-    bootstrapMethodReplicate: number | null;
-    multiPartitionSamplingStrategy: MultiPartitionSamplingStrategy | null;
-    singleBranchTests: SingleBranchTest[] | null;
-    approximateLikelihoodReplicate: number | null;
-    localBootstrapReplicate: number | null;
+    ufbootOption?: boolean;
+    bootstrapMethod?: BootstrapMethod;
+    bootstrapMethodReplicate?: number;
+    multiPartitionSamplingStrategy?: MultiPartitionSamplingStrategy;
+    singleBranchTests?: SingleBranchTest[];
+    approximateLikelihoodReplicate?: number;
+    localBootstrapReplicate?: number;
     // treefile for gcf
     speciesTree?: string;
 

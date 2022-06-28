@@ -25,13 +25,7 @@ export function defaultSettings(): Settings {
             enabled: false
         },
         assessment: {
-            ufbootOption: true,
-            bootstrapMethod: null,
-            bootstrapMethodReplicate: null,
-            multiPartitionSamplingStrategy: null,
-            singleBranchTests: null,
-            approximateLikelihoodReplicate: null,
-            localBootstrapReplicate: null
+            ufbootOption: true
         },
         dating: {}
     }
