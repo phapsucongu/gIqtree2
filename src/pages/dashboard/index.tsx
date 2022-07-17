@@ -91,7 +91,7 @@ function Dashboard() {
         </>
     )
 
-    if (records.length) {
+    if (!records.length) {
         renderedRecords = (
             <tr>
                 <td colSpan={3}>
