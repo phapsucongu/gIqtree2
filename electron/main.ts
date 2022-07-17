@@ -51,7 +51,7 @@ app.whenReady().then(() => {
 
     session.defaultSession.webRequest.onHeadersReceived({
         urls: [
-            'https://github.com/Cibiv/IQ-TREE/releases/download/*',
+            'https://github.com/iqtree/iqtree2/releases/download/*',
             'https://objects.githubusercontent.com/*'
         ]
     }, (details, callback) => {
