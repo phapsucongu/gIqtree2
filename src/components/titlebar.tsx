@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, createSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faList } from '@fortawesome/free-solid-svg-icons'
@@ -8,21 +7,13 @@ import './titlebar.css';
 import { app, dialog } from '@electron/remote';
 import { Link } from 'react-router-dom';
 import { useWindow } from '../hooks/useWindow';
+import { useWindowMaximized } from '../hooks/useWindowMaximized';
 
 function TitleBar() {
     let window = useWindow();
-    let [maximized, setMaximized] = useState(window?.isMaximized || false);
+    let maximized = useWindowMaximized();
     let [, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
-
-    useEffect(() => {
-        if (window) {
-            window
-                .on('maximize', () => setMaximized(true))
-                .on('unmaximize', () => setMaximized(false));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         <div className='draggable flex flex-row justify-between border-b-2 border-cyan-900'>
