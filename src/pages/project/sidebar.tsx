@@ -46,13 +46,19 @@ function Sidebar(
         }
     })
 
+    // do this once, but not on the rendering flow
+    useEffect(() => {
+        setTree(recurse(projectPath))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     useEffect(() => {
         let interval = setInterval(() => {
             let old = tree;
             let current = recurse(projectPath);
             if (Object.keys(diff(old, current)).length)
                 setTree(recurse(projectPath));
-        }, 200);
+        }, 1500);
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectPath]);
