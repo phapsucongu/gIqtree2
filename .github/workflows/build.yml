@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:linux -p never
       - name: Publish AppImage
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:win -p never
       - name: Publish portable version
@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:mac -p never
       - name: Publish DMG
