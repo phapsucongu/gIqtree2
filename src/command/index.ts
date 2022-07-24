@@ -21,6 +21,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
 
     let speciesTree : string[] = [];
     let concordanceFactorEnabled = !!(setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled);
+    let commonThreadCount = setting.others?.thread ? setting.others?.thread : cpus().length;
     if (concordanceFactorEnabled) {
         switch (setting.assessment.speciesTree) {
             case undefined:
@@ -29,7 +30,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
                     ...othersSetting(
                         setting,
                         outputPath ? join(outputPath, 'concat') : undefined,
-                        setting.others?.thread ? setting.others?.thread : cpus().length
+                        commonThreadCount
                     )
                 ];
                 speciesTree.push(...args);
@@ -59,7 +60,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
                     ...othersSetting(
                         setting,
                         outputPath ? join(outputPath, 'loci') : undefined,
-                        setting.others?.thread ? setting.others?.thread : cpus().length
+                        commonThreadCount
                     )
                 ];
                 geneTree.push(...args);
@@ -77,7 +78,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         .concat(...othersSetting(
             setting,
             outputPath ? join(outputPath, basename) : undefined,
-            concordanceFactorEnabled ? (setting.others?.thread ? setting.others?.thread : cpus().length) : undefined
+            concordanceFactorEnabled ? commonThreadCount : undefined
         ))
         .concat(...(resume ? [] : ['--redo']))
         .concat(split(setting.others?.appendCommandLine ?? '', false));
