@@ -34,7 +34,7 @@ export class Task {
         console.log(`spawning process id ${this.process.pid} with arguments "${this.arguments.join(' ')}"`);
         this.process.on('exit', () => {
             console.log(`child process id ${this.process!.pid} exited with exit code ${this.process!.exitCode}`);
-            if (this.process!.signalCode === null)
+            if (this.process!.signalCode !== null)
                 console.log(`child process id ${this.process!.pid} seems to be killed with code ${this.process!.signalCode}`)
         });
 
@@ -61,8 +61,16 @@ ipcMain.answerRenderer('spawn', async (data: SpawnData) => {
                 chmodSync(data.binary, fileStat.mode | constants.S_IXUSR);
             }
 
+            let first : number | undefined;
             for (let task of tasks) {
                 task.start();
+                if (first === undefined) {
+                    first = task.process!.pid;
+                    console.log(`Starting task, first PID is ${first}`);
+                }
+                else {
+                    console.log(`Spawned child w/ PID ${task.process!.pid}, from task w/ first PID ${first}`);
+                }
                 await new Promise(res => task.process!.on('close', res));
             }
         } catch (e) {
