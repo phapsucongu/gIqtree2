@@ -75,7 +75,8 @@ function Sidebar(
             <Tree
                 data={tree}
                 width={Math.max(treeWidth, window.visualViewport.width / 7)}
-                height={Math.max(treeHeight, window.visualViewport.height * 4 / 5)} className='h-full'>
+                height={Math.max(treeHeight, window.visualViewport.height * 4 / 5)}
+                rowHeight={30} className='h-full'>
                 {({ styles, data }) => {
                     let clickable = !data.isFolder && !data.name.endsWith('.gz');
                     return (
