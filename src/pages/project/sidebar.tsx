@@ -16,11 +16,18 @@ type Node = {
 function recurse(path: string) {
     const baseNode: Node = { id: path, name: basename(path), path, isFolder: false }
 
-    if (statSync(path).isDirectory()) {
-        baseNode.isFolder = true;
-        baseNode.children = readdirSync(path)
-            .map(dir => join(path, dir))
-            .map(recurse);
+    try {
+        if (statSync(path).isDirectory()) {
+            baseNode.isFolder = true;
+            baseNode.children = readdirSync(path)
+                .map(dir => join(path, dir))
+                .map(recurse);
+        }
+    } catch (e: any) {
+        if (e.code !== 'ENOENT') {
+            // ENOENTs happen because the statSync call may run when the file is gone
+            throw e;
+        }
     }
 
     return baseNode;
