@@ -23,7 +23,7 @@ const types = [
 function NewPage() {
     let [name, setName] = useState<string | null>(null);
     let [currentType, setCurrentType] = useState<TemplateType>(TemplateType.InferTree);
-    let [path, setPath] = useState('');
+    let [basePath, setBasePath] = useState('');
     let window = useWindow();
     let navigate = useNavigate();
     let [, setSearchParams] = useSearchParams();
@@ -35,21 +35,26 @@ function NewPage() {
             .then(r => {
                 let record = (r as Record[]);
                 if (record.length !== 0)
-                    setPath(normalize(join(record[0].path, '..')));
+                    setBasePath(normalize(join(record[0].path, '..')));
             })
     }, [])
 
     let error = '', tolerable = false;
+    let pathToMakeAndNavigate = join(...(name ? [basePath, name] : [basePath]));
     try {
-        if (path) {
-            let lstat = lstatSync(path);
-            accessSync(path, constants.W_OK | constants.R_OK);
+        if (basePath) {
+            let lstat = lstatSync(basePath);
+            accessSync(basePath, constants.W_OK | constants.R_OK);
 
             validPath = lstat.isDirectory();
             if (!lstat.isDirectory()) {
                 error = 'Path is not a directory!';
             }
-            if (hasSettingsFileSync(path)) {
+            // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
+            if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
+                error = 'Path needs to consist of ASCII characters only!'
+            }
+            if (hasSettingsFileSync(pathToMakeAndNavigate)) {
                 error = 'Folder ALREADY contains a project - creating a new one WILL OVERWRITE IT!';
                 tolerable = true;
             }
@@ -57,8 +62,6 @@ function NewPage() {
     } catch {
         error = `Couldn't check the project path. Make sure the directory exists & it is writable.`;
     };
-
-    let pathToMakeAndNavigate = join(...(name ? [path, name] : [path]));
 
     return (
         <div>
@@ -122,12 +125,12 @@ function NewPage() {
                                 <input
                                     className={
                                         "grow p-2 border-2 rounded-lg outline-none "
-                                        + (!path || validPath ? 'border-gray-400' : 'border-red-600')
+                                        + (!basePath || validPath ? 'border-gray-400' : 'border-red-600')
                                     }
                                     type="text"
                                     placeholder="Enter path, or click the choose button"
-                                    value={path ?? undefined}
-                                    onChange={e => setPath(e.target.value)} />
+                                    value={basePath ?? undefined}
+                                    onChange={e => setBasePath(e.target.value)} />
                                 <button
                                     className="action-button"
                                     onClick={() => {
@@ -138,7 +141,7 @@ function NewPage() {
                                             });
 
                                             if (folder) {
-                                                setPath(folder[0]);
+                                                setBasePath(folder[0]);
                                             }
                                         }
                                     }}>
@@ -147,7 +150,7 @@ function NewPage() {
                                 </button>
                             </div>
                             <br />
-                            {path && (
+                            {basePath && (
                                 <>
                                     The project folder will be <b className="underline">{pathToMakeAndNavigate}</b>.
                                 </>
