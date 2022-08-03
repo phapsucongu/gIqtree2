@@ -51,6 +51,7 @@ function NewPage() {
                 error = 'Path is not a directory!';
             }
             // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
+            // eslint-disable-next-line
             if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
                 error = 'Path needs to consist of ASCII characters only!'
             }
