@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { dialog } from "@electron/remote";
 import { getTemplateSettings, TemplateType } from '../../templates';
 import { useWindow } from "../../hooks/useWindow";
-import { accessSync, constants, lstatSync, mkdirSync } from "fs";
+import { accessSync, constants, existsSync, lstatSync, mkdirSync } from "fs";
 import { hasSettingsFileSync, writeSettingsFileSync } from "../../utils/settingsFile";
 import { useNavigate, createSearchParams, useSearchParams } from 'react-router-dom';
 import { join, normalize } from "path";
@@ -75,7 +75,9 @@ function NewPage() {
                         disabled={(!!error && !tolerable) || !validPath}
                         className="top-bar-button top-bar-button-colored"
                         onClick={() => {
-                            mkdirSync(pathToMakeAndNavigate);
+                            if (!existsSync(pathToMakeAndNavigate)) {
+                                mkdirSync(pathToMakeAndNavigate);
+                            }
                             writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(currentType))
                             navigate({
                                 pathname: "/project",
