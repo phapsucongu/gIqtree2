@@ -52,3 +52,19 @@ body {
 .top-bar-button-colored:hover > .top-bar-button-icon {
     @apply text-white
 }
+
+.Resizer {
+    @apply w-1 cursor-col-resize;
+}
+
+.left-pane {
+    background-color: #F6FAFB;
+}
+
+.font-arvo {
+    font-family: 'Arvo';
+}
+
+.font-helvetica {
+    font-family: 'Helvetica';
+}
