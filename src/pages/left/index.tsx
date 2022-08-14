@@ -1,9 +1,13 @@
+import { normalize } from 'path';
 import { Routes, Route } from 'react-router-dom'
-import Dashboard, { route } from './dashboard'
+import { AppRoute } from '../../routes';
+import Dashboard from './dashboard';
+import Project from './project';
 function Left() {
     return (
         <Routes>
-            <Route path={route} element={<Dashboard />} />
+            <Route path={AppRoute.Dashboard} element={<Dashboard />} />
+            <Route path={normalize(AppRoute.Project + '/:path')}  element={<Project />} />
         </Routes>
     )
 }

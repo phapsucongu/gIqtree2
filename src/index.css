@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply flex h-screen;
+    @apply flex h-screen font-helvetica;
 }
 
 #root {
