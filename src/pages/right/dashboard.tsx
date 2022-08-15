@@ -2,6 +2,7 @@ import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { ParamKey } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
 import { readSettingsFileSync } from "../../utils/settingsFile";
@@ -40,7 +41,7 @@ export default () => {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 lg:grid-cols-6 pt-4">
                 {types.map(t => (
                     <Link
-                        to={"?new=1&template=" + t.type.toString()}
+                        to={`?${ParamKey.NewDialog}=1&${ParamKey.NewTemplate}=${t.type}`}
                         key={t.name}
                         className="drop-shadow-lg bg-white rounded-lg p-2 text-center">
                         {t.name}

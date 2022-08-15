@@ -2,7 +2,7 @@ import { normalize } from 'path';
 import { Routes, Route } from 'react-router-dom'
 import { AppRoute } from '../../routes';
 import Dashboard from './dashboard/';
-import Project from './project';
+import Project from './project/';
 function Left() {
     return (
         <Routes>

@@ -3,6 +3,7 @@ import { normalize } from 'path';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useWindow } from '../../../hooks/useWindow';
 import { CreateLogo, FolderLogo, HomeLogo, IQTREELogo } from '../../../icons';
+import { ParamKey } from '../../../paramKey';
 import { AppRoute } from '../../../routes';
 import CreateModal from './createModal';
 
@@ -21,10 +22,10 @@ export default () => {
             <CreateModal
                 className="absolute top-1/4 left-1/4 w-1/2 h-1/2"
                 overlayClassName="fixed inset-0 bg-black/50"
-                isOpen={params.get('new') === '1'}
-                template={+(params.get('template') || '0')}
-                onClose={() => setSearchParams({ ...Object.fromEntries(params), new: '0' })}
-                onSetTemplate={t => setSearchParams({ ...Object.fromEntries(params), template: t.toString() })} />
+                isOpen={params.get(ParamKey.NewDialog) === '1'}
+                template={+(params.get(ParamKey.NewTemplate) || '0')}
+                onClose={() => setSearchParams({ ...Object.fromEntries(params), [ParamKey.NewDialog]: '0' })}
+                onSetTemplate={t => setSearchParams({ ...Object.fromEntries(params), [ParamKey.NewTemplate]: t.toString() })} />
 
             <div className='pr-6 font-helvetica'>
                 <div className='flex flex-row items-center gap-2 pb-3'>
@@ -35,7 +36,7 @@ export default () => {
                 </div>
                 <Link
                     to="?new=1"
-                    onClick={() => setSearchParams({ new: '1' })}
+                    onClick={() => setSearchParams({ [ParamKey.NewTemplate]: '1' })}
                     >
                     <div className='mx-auto flex flex-row items-center gap-2 pb-3'>
                         <div className='p-2'>
