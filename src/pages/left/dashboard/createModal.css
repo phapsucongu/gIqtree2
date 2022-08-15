@@ -1,0 +1,11 @@
+.react-select__indicator-separator {
+    @apply w-0;
+}
+
+.input-bordered {
+    @apply border-2 border-black rounded-lg;
+}
+
+.react-select__control, .react-select__control:hover {
+    @apply input-bordered shadow-none;
+}

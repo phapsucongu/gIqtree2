@@ -6,6 +6,10 @@ body {
     @apply flex h-screen font-helvetica;
 }
 
+* {
+    @apply outline-none;
+}
+
 #root {
     @apply grow;
     @apply flex flex-col;

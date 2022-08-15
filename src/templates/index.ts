@@ -16,6 +16,14 @@ export enum TemplateType {
     DateTree
 }
 
+export const TemplateTypes = [
+    { name: "Find Model", type: TemplateType.FindModel },
+    { name: "Merge Partitions", type: TemplateType.MergePartitions },
+    { name: "Infer Tree", type: TemplateType.InferTree },
+    { name: "Assess Support", type: TemplateType.AssessSupport },
+    { name: "Date Tree", type: TemplateType.DateTree },
+]
+
 
 export function getTemplateSettings(type?: TemplateType) : Settings {
     let def = base();

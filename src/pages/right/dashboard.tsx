@@ -1,19 +1,15 @@
 import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AppRoute } from "../../routes";
-import { TemplateType } from "../../templates"
+import { TemplateTypes } from "../../templates"
 import { readSettingsFileSync } from "../../utils/settingsFile";
 import { ClockIcon, FileIcon } from "./icons"
 
 const types = [
-    { name: "Blank Project", type: null },
-    { name: "Find Model", type: TemplateType.FindModel },
-    { name: "Merge Partitions", type: TemplateType.MergePartitions },
-    { name: "Infer Tree", type: TemplateType.InferTree },
-    { name: "Assess Support", type: TemplateType.AssessSupport },
-    { name: "Date Tree", type: TemplateType.DateTree },
+    { name: "Blank Project", type: 0 },
+    ...TemplateTypes
 ]
 
 export type Record = { path: string, timestamp: string };
@@ -43,11 +39,12 @@ export default () => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 lg:grid-cols-6 pt-4">
                 {types.map(t => (
-                    <button
+                    <Link
+                        to={"?new=1&template=" + t.type.toString()}
                         key={t.name}
-                        className="drop-shadow-lg bg-white rounded-lg p-2">
+                        className="drop-shadow-lg bg-white rounded-lg p-2 text-center">
                         {t.name}
-                    </button>
+                    </Link>
                 ))}
             </div>
         </>
