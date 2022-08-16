@@ -1,0 +1,54 @@
+import { join, normalize } from "path";
+import { Link, useMatch } from "react-router-dom";
+import useResizeObserver from "use-resize-observer";
+import { HomeLogo, IQTREELogo } from "../../../icons";
+import { AppRoute } from "../../../routes";
+import Tree from "./tree";
+
+let useResizeObserverOptions = {
+    box: 'border-box' as const
+};
+
+export default () => {
+    let m = useMatch(normalize(AppRoute.Project + '/:path'))!;
+    let { ref: containerRef, height: containerHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let { ref: upperRef, height: upperHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let { ref: lowerRef, height: lowerHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let { ref: inputTitleRef, height: inputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let { ref: outputTitleRef, height: outputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let { path } = m.params;
+
+    let remaining = containerHeight - upperHeight - lowerHeight - inputTitleHeight - outputTitleHeight;
+
+    return (
+        <div className='pl-6 flex flex-col h-full' ref={containerRef}>
+            <div className='flex flex-row items-center gap-2 py-6 font-arvo' ref={upperRef}>
+                <IQTREELogo />
+                <b className="text-lg">IQ-TREE</b>
+            </div>
+            <div className="flex flex-col font-arvo">
+                <div ref={inputTitleRef}>
+                    <b>Input</b>
+                </div>
+                <Tree height={remaining / 2} path={join(path!, 'input')} />
+            </div>
+            <div className="flex flex-col font-arvo">
+                <div ref={outputTitleRef}>
+                    <b>Output</b>
+                </div>
+                <Tree height={remaining / 2} path={join(path!, 'output')} />
+            </div>
+            <div className="flex-grow"></div>
+            <div ref={lowerRef}>
+                <Link to="/" className='flex flex-row items-center gap-2 pb-3'>
+                    <div className='p-2'>
+                        <HomeLogo />
+                    </div>
+                    <div className="mt-1">
+                        Home
+                    </div>
+                </Link>
+            </div>
+        </div>
+    )
+}
