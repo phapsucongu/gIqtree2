@@ -5,7 +5,7 @@ import { AppRoute } from "../../routes"
 import Dashboard from "./dashboard"
 import Project from "./project"
 
-export default () => {
+function App() {
     return (
         <Routes>
             <Route path={AppRoute.Dashboard} element={<Dashboard />} />
@@ -15,3 +15,5 @@ export default () => {
         </Routes>
     )
 }
+
+export default App;

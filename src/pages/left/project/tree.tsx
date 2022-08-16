@@ -1,6 +1,6 @@
 import { Tree } from "react-arborist";
 import { statSync, readdirSync } from "fs";
-import { basename, join, normalize } from "path";
+import { basename, join } from "path";
 import { useContext } from "react";
 import { PaneWidthContext } from "../../../App";
 
@@ -32,7 +32,7 @@ function recurse(path: string) {
     return baseNode;
 }
 
-export default ({ path, onFileChosen, height }: { path: string, onFileChosen?: (s: string) => void, height: number }) => {
+function Files({ path, onFileChosen, height }: { path: string, onFileChosen?: (s: string) => void, height: number }) {
     let ctx = useContext(PaneWidthContext);
     let files = recurse(path);
     return (
@@ -66,3 +66,5 @@ export default ({ path, onFileChosen, height }: { path: string, onFileChosen?: (
         </div>
     )
 }
+
+export default Files;

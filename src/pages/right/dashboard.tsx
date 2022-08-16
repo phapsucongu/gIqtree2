@@ -1,7 +1,7 @@
 import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
 import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ParamKey } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
@@ -15,16 +15,14 @@ const types = [
 
 export type Record = { path: string, timestamp: string };
 
-export default () => {
+function Dashboard() {
     let [records, setRecord] = useState<Record[]>([]);
-    let [loading, setLoading] = useState(true);
 
     let load = () => {
         ipcRenderer.callMain('db_list')
             .then(r => setRecord(
                 (r as Record[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
             ))
-            .then(r => setLoading(false));
     }
 
     useEffect(load, []);
@@ -116,3 +114,5 @@ export default () => {
         </div>
     )
 }
+
+export default Dashboard;

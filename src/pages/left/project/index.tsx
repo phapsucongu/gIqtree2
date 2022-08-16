@@ -9,7 +9,7 @@ let useResizeObserverOptions = {
     box: 'border-box' as const
 };
 
-export default () => {
+function Project() {
     let m = useMatch(normalize(AppRoute.Project + '/:path'))!;
     let { ref: containerRef, height: containerHeight = 0 } = useResizeObserver(useResizeObserverOptions);
     let { ref: upperRef, height: upperHeight = 0 } = useResizeObserver(useResizeObserverOptions);
@@ -52,3 +52,5 @@ export default () => {
         </div>
     )
 }
+
+export default Project;

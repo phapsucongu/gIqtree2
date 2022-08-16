@@ -32,7 +32,7 @@ const templateOptions = [
 let inputTextStyles = "w-full p-2 input-bordered";
 let buttonBaseStyles = "text-white py-2 px-4 rounded-lg";
 
-export default (props: ModalProps) => {
+function CreateModal (props: ModalProps) {
     let window = useWindow();
     let navigate = useNavigate();
     let [name, setName] = useState('');
@@ -172,3 +172,5 @@ export default (props: ModalProps) => {
         </ReactModal>
     )
 }
+
+export default CreateModal;

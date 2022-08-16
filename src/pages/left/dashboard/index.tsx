@@ -7,7 +7,7 @@ import { ParamKey } from '../../../paramKey';
 import { AppRoute } from '../../../routes';
 import CreateModal from './createModal';
 
-export default () => {
+function Dashboard() {
     let window = useWindow();
     let navigate = useNavigate();
     let [params, setSearchParams] = useSearchParams();
@@ -74,3 +74,5 @@ export default () => {
         </div>
     )
 }
+
+export default Dashboard;

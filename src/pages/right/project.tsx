@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useMatch } from "react-router-dom"
 import { AppRoute } from "../../routes";
 
-export default ({ onOpenProject } : { onOpenProject?: (path: string) => void }) => {
+function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let m = useMatch(normalize(AppRoute.Project + '/:path'))!;
     let { path } = m.params;
 
@@ -14,3 +14,5 @@ export default ({ onOpenProject } : { onOpenProject?: (path: string) => void }) 
         </div>
     )
 }
+
+export default Project;
