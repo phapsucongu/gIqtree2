@@ -1,8 +1,11 @@
 import { Tree } from "react-arborist";
 import { statSync, readdirSync } from "fs";
 import { basename, join } from "path";
-import { useContext } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { PaneWidthContext } from "../../../App";
+import { Link } from "react-router-dom";
+import { ParamKey, ProjectScreen } from "../../../paramKey";
+import { diff } from 'deep-object-diff';
 
 type Node = {
     id: string;
@@ -32,32 +35,47 @@ function recurse(path: string) {
     return baseNode;
 }
 
-function Files({ path, onFileChosen, height }: { path: string, onFileChosen?: (s: string) => void, height: number }) {
-    let ctx = useContext(PaneWidthContext);
-    let files = recurse(path);
+function Files({ path, height, width }: { path: string, height: number, width: number }) {
+    let [tree, setTree] = useState({ id: path, name: basename(path), path, isFolder: false });
+
+    useEffect(() => {
+        setTree(recurse(path));
+    }, [path])
+
+    useEffect(() => {
+        let interval = setInterval(() => {
+            let old = tree;
+            let current = recurse(path);
+            if (Object.keys(diff(old, current)).length)
+            {
+                setTree(recurse(path));
+            }
+        }, 1500);
+        return () => clearInterval(interval);
+    }, [path, tree]);
+
     return (
         <div>
             <Tree
-                width={ctx - 40}
-                data={files}
+                width={width - 40}
+                data={tree}
                 height={height}
                 hideRoot>
                 {({ styles, data }) => {
-
                     let clickable = !data.isFolder && !data.name.endsWith('.gz');
+                    let link = (
+                        <Link to={`?${ParamKey.ProjectFile}=${data.path}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}>
+                            {data.name}
+                        </Link>
+                    );
+
                     return (
                         <div
-                            className={
-                                ''
-                                + (clickable ? ' cursor-pointer' : ' text-gray-400')
-                            }
+                            className={(clickable ? ' cursor-pointer' : ' text-gray-400')}
                             style={styles.row}
                             key={data.id}>
-                            <div style={styles.indent} onClick={() => {
-                                if (clickable)
-                                    onFileChosen?.(data.path);
-                            }}>
-                                {data.name}
+                            <div style={styles.indent}>
+                                {clickable ? link : data.name}
                             </div>
                         </div>
                     )
@@ -67,4 +85,11 @@ function Files({ path, onFileChosen, height }: { path: string, onFileChosen?: (s
     )
 }
 
-export default Files;
+let Memoized = memo(Files);
+function MemoizedFiles({ path, height } : { path: string, height: number }) {
+    let ctx = useContext(PaneWidthContext);
+    let memoized = <Memoized path={path} height={height} width={ctx} />;
+    return memoized;
+}
+
+export default MemoizedFiles;
