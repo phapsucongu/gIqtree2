@@ -36,13 +36,15 @@ function Dashboard() {
                 </b>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 lg:grid-cols-6 pt-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 lg:grid-cols-6 pt-4">
                 {types.map(t => (
                     <Link
                         to={`?${ParamKey.NewDialog}=1&${ParamKey.NewTemplate}=${t.type}`}
                         key={t.name}
-                        className="drop-shadow-lg bg-white rounded-lg p-2 text-center">
-                        {t.name}
+                        className="drop-shadow-lg bg-white rounded-lg p-2 flex flex-row items-center">
+                        <div className="text-center flex-grow">
+                            {t.name}
+                        </div>
                     </Link>
                 ))}
             </div>
@@ -51,13 +53,13 @@ function Dashboard() {
 
     const recentSection = (
         <>
-            <div className="flex flex-row gap-8 items-end">
+            <div className="flex flex-row gap-8 items-end pb-6">
                 <ClockIcon />
                 <b className="font-arvo">
                     Recent
                 </b>
             </div>
-            <div className="pt-6 flex flex-col gap-2">
+            <div className="flex flex-col gap-2 flex-grow overflow-y-auto my-2">
                 {records.map(r => {
                     let valid = true;
                     try {
@@ -106,7 +108,7 @@ function Dashboard() {
     )
 
     return (
-        <div className="p-6">
+        <div className="p-6 h-full flex flex-col">
             {createSection}
             <br />
             <br />
