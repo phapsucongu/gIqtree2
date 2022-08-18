@@ -7,10 +7,10 @@ function prepare(settings: Settings) {
     let { assessment } = settings;
     switch (assessment.bootstrapMethod) {
         case BootstrapMethod.Standard:
-            output.push('-B', (assessment.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate).toString());
+            output.push('-b', (assessment.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate).toString());
             break;
         case BootstrapMethod.UltraFastBootstrap:
-            output.push('-b', (assessment.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate).toString());
+            output.push('-B', (assessment.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate).toString());
             if (assessment.ufbootOption) {
                 output.push('--bnni');
             }
