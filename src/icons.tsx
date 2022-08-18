@@ -50,16 +50,10 @@ export const HomeLogo = memo(
 
 export const CreateLogo = memo(
     () => (
-        <svg width="25" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fillRule="evenodd" clipRule="evenodd" d="M0.386059 7.21065L9.38606 0.210648C9.74717 -0.0702159 10.2528 -0.0702159 10.6139 0.210648L19.6139 7.21065C19.8575 7.4001 20 7.69141 20 8V19C20 20.6569 18.6569 22 17 22H13H7H3C1.34315 22 0 20.6569 0 19V8C0 7.69141 0.142473 7.4001 0.386059 7.21065ZM8 20H12V12H8V20ZM14 20V11C14 10.4477 13.5523 10 13 10H7C6.44772 10 6 10.4477 6 11V20H3C2.44772 20 2 19.5523 2 19V8.48908L10 2.26686L18 8.48908V19C18 19.5523 17.5523 20 17 20H14Z" fill="black" />
-            <mask id="mask0_337_858" style={{
-                maskType: 'alpha'
-            }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="22">
-                <path fillRule="evenodd" clipRule="evenodd" d="M0.386059 7.21065L9.38606 0.210648C9.74717 -0.0702159 10.2528 -0.0702159 10.6139 0.210648L19.6139 7.21065C19.8575 7.4001 20 7.69141 20 8V19C20 20.6569 18.6569 22 17 22H13H7H3C1.34315 22 0 20.6569 0 19V8C0 7.69141 0.142473 7.4001 0.386059 7.21065ZM8 20H12V12H8V20ZM14 20V11C14 10.4477 13.5523 10 13 10H7C6.44772 10 6 10.4477 6 11V20H3C2.44772 20 2 19.5523 2 19V8.48908L10 2.26686L18 8.48908V19C18 19.5523 17.5523 20 17 20H14Z" fill="white" />
-            </mask>
-            <g mask="url(#mask0_337_858)">
-                <rect x="-2" y="-1" width="24" height="24" fill="black" />
-            </g>
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 22.9166C18.2529 22.9166 22.9166 18.2529 22.9166 12.5C22.9166 6.74701 18.2529 2.08331 12.5 2.08331C6.74701 2.08331 2.08331 6.74701 2.08331 12.5C2.08331 18.2529 6.74701 22.9166 12.5 22.9166Z" stroke="#949697" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M12.5 8.33331V16.6666" stroke="#949697" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M8.33331 12.5H16.6666" stroke="#949697" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     )
 )
