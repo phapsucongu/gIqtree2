@@ -61,21 +61,23 @@ function Files({ path, current,  height, width }: { path: string, current: strin
                 data={tree}
                 height={height}
                 hideRoot
-                rowHeight={30}>
+                rowHeight={28}>
                 {({ styles, data }) => {
                     let clickable = !data.isFolder && !data.name.endsWith('.gz');
                     let chosen = current === data.path;
                     let link = (
                         <Link
                             to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}
-                            className={chosen ? ' bg-pink-600 p-1 rounded-md text-white' : ''}>
+                            className={chosen ? ' bg-pink-600 p-0.5 rounded-md text-white' : ''}>
                             {data.name}
                         </Link>
                     );
 
                     return (
                         <div
-                            className={clickable ? ' cursor-pointer' : ' text-gray-400'}
+                            className={
+                                'font-helvetica'
+                                + (clickable ? ' cursor-pointer' : ' text-gray-400')}
                             style={styles.row}
                             key={data.id}>
                             <div
