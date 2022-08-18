@@ -15,50 +15,8 @@ body {
     @apply flex flex-col;
 }
 
-.left-column-item {
-    @apply p-4 rounded-r-full;
-}
-
-.left-column-item-chosen {
-    @apply font-bold;
-    @apply bg-cyan-700 text-white;
-}
-
-.setting-row {
-    @apply flex flex-row items-center justify-between mb-4;
-}
-
-.action-button {
-    @apply p-2 border border-blue-400 rounded-lg bg-blue-100 active:bg-blue-700 active:text-white;
-}
-
-.top-bar-button {
-    @apply px-4 py-1 text-lg min-w-[5rem];
-    @apply flex flex-row items-center justify-between gap-2;
-    @apply rounded-lg border-2;
-}
-
-.top-bar-button-icon {
-    @apply h-6;
-}
-
-.top-bar-button-colored {
-    @apply border-slate-200;
-    @apply hover:border-transparent hover:bg-lime-900 hover:text-white
-}
-
-.top-bar-button-colored:disabled, .top-bar-button:disabled {
-    @apply border-gray-200;
-    @apply text-gray-200;
-    @apply hover:border-gray-100 hover:bg-transparent hover:text-gray-200
-}
-
-.top-bar-button-colored:hover > .top-bar-button-icon {
-    @apply text-white
-}
-
 .Resizer {
-    @apply w-1 cursor-col-resize;
+    @apply cursor-col-resize;
 }
 
 .left-pane {

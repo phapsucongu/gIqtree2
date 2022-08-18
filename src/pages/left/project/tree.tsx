@@ -2,8 +2,8 @@ import { Tree } from "react-arborist";
 import { statSync, readdirSync } from "fs";
 import { basename, join } from "path";
 import { memo, useContext, useEffect, useState } from "react";
-import { PaneWidthContext } from "../../../App";
-import { Link } from "react-router-dom";
+import { LeftPaneWidthContext } from "../../../App";
+import { Link, useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { diff } from 'deep-object-diff';
 
@@ -35,7 +35,7 @@ function recurse(path: string) {
     return baseNode;
 }
 
-function Files({ path, height, width }: { path: string, height: number, width: number }) {
+function Files({ path, current,  height, width }: { path: string, current: string, height: number, width: number }) {
     let [tree, setTree] = useState({ id: path, name: basename(path), path, isFolder: false });
 
     useEffect(() => {
@@ -60,21 +60,26 @@ function Files({ path, height, width }: { path: string, height: number, width: n
                 width={width - 40}
                 data={tree}
                 height={height}
-                hideRoot>
+                hideRoot
+                rowHeight={30}>
                 {({ styles, data }) => {
                     let clickable = !data.isFolder && !data.name.endsWith('.gz');
+                    let chosen = current === data.path;
                     let link = (
-                        <Link to={`?${ParamKey.ProjectFile}=${data.path}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}>
+                        <Link
+                            to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}
+                            className={chosen ? ' bg-pink-600 p-1 rounded-md text-white' : ''}>
                             {data.name}
                         </Link>
                     );
 
                     return (
                         <div
-                            className={(clickable ? ' cursor-pointer' : ' text-gray-400')}
+                            className={clickable ? ' cursor-pointer' : ' text-gray-400'}
                             style={styles.row}
                             key={data.id}>
-                            <div style={styles.indent}>
+                            <div
+                                style={styles.indent}>
                                 {clickable ? link : data.name}
                             </div>
                         </div>
@@ -87,8 +92,11 @@ function Files({ path, height, width }: { path: string, height: number, width: n
 
 let Memoized = memo(Files);
 function MemoizedFiles({ path, height } : { path: string, height: number }) {
-    let ctx = useContext(PaneWidthContext);
-    let memoized = <Memoized path={path} height={height} width={ctx} />;
+    let ctx = useContext(LeftPaneWidthContext);
+
+    let [params] = useSearchParams();
+    let file = params.get(ParamKey.ProjectFile)!;
+    let memoized = <Memoized current={file} path={path} height={height} width={ctx} />;
     return memoized;
 }
 
