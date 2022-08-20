@@ -30,3 +30,7 @@ body {
 .font-helvetica {
     font-family: 'Helvetica';
 }
+
+.input-bordered {
+    @apply border-2 border-black rounded-md;
+}
