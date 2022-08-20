@@ -7,9 +7,11 @@ import { AppRoute } from "../../../routes";
 import { readSettingsFileSync } from "../../../utils/settingsFile";
 import File from "./file/";
 import SettingsSubPage from "./settings/";
+import useTitle from "./useTitle";
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let m = useMatch(normalize(AppRoute.Project + '/:path'))!;
+    let title = useTitle();
     let { path } = m.params;
     let [params, ] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>();
@@ -43,7 +45,14 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
     return (
         <div className="h-full">
-            {content}
+            <div  className="h-full font-mono">
+                <div className="flex flex-row items-center justify-between border-b border-b-black/10 py-2">
+                    <b className="font-arvo py-4 pl-6">
+                        {title}
+                    </b>
+                </div>
+                {content}
+            </div>
         </div>
     )
 }

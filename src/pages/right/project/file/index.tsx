@@ -68,11 +68,6 @@ function File() {
 
     return (
         <div ref={containerRef} className="h-full font-mono">
-            <div ref={titleRef} className="flex flex-row items-center justify-between border-b border-b-black/10 py-2">
-                <b className="font-arvo py-4 pl-6">
-                    {basename(file)}
-                </b>
-            </div>
             {loading && (
                 <div>
                     <div>Loading</div>
