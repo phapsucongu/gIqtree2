@@ -1,6 +1,6 @@
 import { basename } from "path";
 import { useSearchParams } from "react-router-dom";
-import { ParamKey, ProjectScreen } from "../../../paramKey";
+import { ParamKey, ProjectScreen } from "../../../../paramKey";
 
 function useTitle() {
     let [params, ] = useSearchParams();

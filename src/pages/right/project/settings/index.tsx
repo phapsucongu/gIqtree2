@@ -86,23 +86,6 @@ function SettingsSubPage({ setting, onChange }: { setting: Settings, onChange?: 
     let currentPage = settingCategories.find(f => f.setting === current);
     return (
         <div className="h-full">
-            <div className="flex flex-row items-center justify-between border-b border-b-black/10 py-2">
-                <b className="font-arvo py-4 pl-6">
-                    Settings
-                </b>
-                <div className="flex flex-row gap-8 pr-4">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="py-1 px-16 border-2 border-black rounded-lg">
-                        Cancel
-                    </button>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="py-1 px-16 border-2 text-white bg-pink-600 border-pink-600 rounded-lg">
-                        Save
-                    </button>
-                </div>
-            </div>
             <div className="flex flex-row gap-4 h-full px-6">
                 <div className="basis-1/5 h-full flex flex-col gap-2 pt-6 border-r border-r-black/10">
                     {settingCategories.map(r => {

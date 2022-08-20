@@ -24,7 +24,7 @@ function Project({ path } : { path: string }) {
         <div className='pl-6 flex flex-col h-full' ref={containerRef}>
             <div className='flex flex-row items-center gap-2 py-6 font-arvo' ref={upperRef}>
                 <IQTREELogo />
-                <b className="text-lg">IQ-TREE</b>
+                <b className="text-lg font-arvo">IQ-TREE</b>
             </div>
             <div className="flex flex-col font-arvo">
                 <div ref={inputTitleRef}>

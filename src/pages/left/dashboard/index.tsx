@@ -16,7 +16,7 @@ function Dashboard() {
         <div className='pl-6'>
             <div className='flex flex-row items-center gap-2 py-6 font-arvo'>
                 <IQTREELogo />
-                <b className='text-lg'>IQ-TREE</b>
+                <b className='text-lg font-arvo'>IQ-TREE</b>
             </div>
 
             <CreateModal

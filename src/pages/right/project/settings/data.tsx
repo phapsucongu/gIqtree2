@@ -1,11 +1,9 @@
 import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/dataSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
-import Select, { GroupBase, Props } from 'react-select';
 import SettingRowFile from "../../../../component/settingrowfile";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});
-    let autoDetectSymbol = Symbol();
     return (
         <div className="flex flex-col gap-6">
             <div>
