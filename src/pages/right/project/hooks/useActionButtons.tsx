@@ -5,8 +5,13 @@ import { getBinaryPath } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
 import useExecutionState from "./useExecutionState";
 
-function useActionButtons(path: string, preparedCommand: string[][], preparedCommandWithRedo: string[][]) {
-    let [params, _] = useSearchParams();
+function useActionButtons(
+    path: string,
+    preparedCommand: string[][],
+    preparedCommandWithRedo: string[][],
+    onSaveSettings: () => void | undefined
+) {
+    let [params, ] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
 
@@ -17,7 +22,11 @@ function useActionButtons(path: string, preparedCommand: string[][], preparedCom
                     <NegativeButton onClick={() => navigate(-1)}>
                         Cancel
                     </NegativeButton>
-                    <PositiveButton onClick={() => navigate(-1)}>
+                    <PositiveButton
+                        onClick={() => {
+                            onSaveSettings?.();
+                            navigate(-1)
+                        }}>
                         Save
                     </PositiveButton>
                 </>

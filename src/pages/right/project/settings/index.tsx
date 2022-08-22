@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import DataSetting from './data';
 import ModelSetting from './model';
 import AssessmentSetting from './assessment';
@@ -18,8 +17,10 @@ enum CurrentSetting {
     Other
 }
 
-function SettingsSubPage({ setting, onChange }: { setting: Settings, onChange?: (newSetting: Settings) => void }) {
-    let navigate = useNavigate();
+function SettingsSubPage(
+    { setting, onChange }:
+    { setting: Settings, onChange?: (newSetting: Settings) => void }
+) {
     let [current, setCurrent] = useState(CurrentSetting.Data);
 
     let settingCategories = [

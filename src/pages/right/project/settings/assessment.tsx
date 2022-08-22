@@ -1,9 +1,9 @@
 import { AssessmentSettings, BootstrapMethod, BootstrapMethods } from "../../../../interfaces/assessmentSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
-export default ({ settings, onChange } : SettingCategoryCommonProp<AssessmentSettings> & {
+function Assessment({ settings, onChange } : SettingCategoryCommonProp<AssessmentSettings> & {
     isMultipleGene: boolean
-}) => {
+}) {
     return (
         <div className="flex flex-col gap-6">
             <div>
@@ -16,7 +16,8 @@ export default ({ settings, onChange } : SettingCategoryCommonProp<AssessmentSet
                     onChange={e => onChange?.({
                         ...settings,
                         bootstrapMethod: (e.target.value || undefined) as BootstrapMethod | undefined
-                    })}>
+                    })}
+                    value={settings?.bootstrapMethod}>
                     {
                         [{ name: 'None', type: undefined }, ...BootstrapMethods]
                             .map(option => {
@@ -32,3 +33,5 @@ export default ({ settings, onChange } : SettingCategoryCommonProp<AssessmentSet
         </div>
     )
 }
+
+export default Assessment;

@@ -4,7 +4,7 @@ import { useMatch, useSearchParams } from "react-router-dom"
 import { Settings } from "../../../interfaces";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
-import { readSettingsFileSync } from "../../../utils/settingsFile";
+import { readSettingsFileSync, writeSettingsFileSync } from "../../../utils/settingsFile";
 import Console from "./console";
 import File from "./file/";
 import SettingsSubPage from "./settings/";
@@ -18,14 +18,18 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let [params, ] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>();
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
-    let [error, setError] = useState<string>('');
+    let [, setError] = useState<string>('');
     let title = useTitle();
     let content = <></>;
 
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             content = settings
-                ? <SettingsSubPage setting={settings!} onChange={s => setSettings(s)} />
+                ? <SettingsSubPage
+                    setting={settings!}
+                    onChange={s => {
+                        setSettings(s);
+                    }}/>
                 : <></>
             break;
         }
@@ -56,7 +60,17 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         preparedCommandWithRedo = prepareCommand(originalSettings!, 'output', getOutputFolder(path), true);
     }
 
-    let actions = useActionButtons(path, preparedCommand, preparedCommandWithRedo);
+    let actions = useActionButtons(
+        path,
+        preparedCommand,
+        preparedCommandWithRedo,
+        () => {
+            if (settings) {
+                setOriginalSettings(settings);
+                writeSettingsFileSync(path, settings);
+            }
+        }
+    );
 
     return (
         <div className="h-full">

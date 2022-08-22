@@ -16,7 +16,8 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     onChange={e => onChange?.({
                         ...settings,
                         sequenceType: (e.target.value || undefined) as SequenceType | undefined
-                    })}>
+                    })}
+                    value={settings?.sequenceType}>
                     {
                         [{ name: 'Auto-detect', type: undefined }, ...SequenceTypes]
                             .map(option => {
@@ -39,7 +40,8 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         onChange={e => onChange?.({
                             ...settings,
                             codonType: (+e.target.value || undefined) as Codon | undefined
-                        })}>
+                        })}
+                        value={settings?.codonType}>
                         {
                             Codons
                                 .map(option => {
@@ -60,6 +62,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 <SettingRowFile
                     isFile
                     name="Alignment file/folder"
+                    file={settings?.alignmentFiles?.[0]}
                     onChange={file => onChange?.({ ...settings, alignmentFiles: file ? [file] : undefined })}
                     />
             </div>
@@ -70,6 +73,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 <SettingRowFile
                     isFile
                     name="Partition file"
+                    file={settings?.partitionFile}
                     onChange={file => onChange?.({ ...settings, partitionFile: file })}
                     />
             </div>
@@ -83,7 +87,8 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         onChange={e => onChange?.({
                             ...settings,
                             partitionType: (e.target.value || undefined) as PartitionType | undefined
-                        })}>
+                        })}
+                        value={settings?.partitionType}>
                         {
                             PartitionTypes
                                 .map(option => {
