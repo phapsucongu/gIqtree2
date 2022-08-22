@@ -17,7 +17,7 @@ function useExecutionState(path: string) {
         return () => clearInterval(interval);
     })
 
-    return <const>[executing, refresh];
+    return [executing, refresh] as const;
 }
 
 export default useExecutionState;
