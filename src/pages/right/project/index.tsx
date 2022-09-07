@@ -12,6 +12,7 @@ import useActionButtons from "./hooks/useActionButtons";
 import useTitle from "./hooks/useTitle";
 import { prepareCommand } from "../../../command";
 import { getOutputFolder } from "./folder";
+import useWindowsButtons from "../../../hooks/useWindowsButtons";
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let { params: { path = '' } } = useMatch(normalize(AppRoute.Project + '/:path'))!;
@@ -19,6 +20,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let [settings, setSettings] = useState<Settings | null>();
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [, setError] = useState<string>('');
+    let buttons = useWindowsButtons();
     let title = useTitle();
     let content = <></>;
 
@@ -80,6 +82,9 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                 </b>
                 <div className="flex flex-row gap-8 pr-4">
                     {actions}
+                </div>
+                <div className="flex flex-row gap-8 pr-4">
+                    {buttons}
                 </div>
             </div>
             {content}

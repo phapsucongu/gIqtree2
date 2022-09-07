@@ -2,6 +2,7 @@ import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useWindowsButtons from "../../hooks/useWindowsButtons";
 import { ParamKey } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
@@ -17,6 +18,7 @@ export type Record = { path: string, timestamp: string };
 
 function Dashboard() {
     let [records, setRecord] = useState<Record[]>([]);
+    let buttons = useWindowsButtons();
 
     let load = () => {
         ipcRenderer.callMain('db_list')
@@ -108,7 +110,10 @@ function Dashboard() {
     )
 
     return (
-        <div className="p-6 h-full flex flex-col">
+        <div className="h-full flex flex-col">
+            <div className="flex flex-row justify-end pt-2 pr-4 pb-6">
+                {buttons}
+            </div>
             {createSection}
             <br />
             <br />
