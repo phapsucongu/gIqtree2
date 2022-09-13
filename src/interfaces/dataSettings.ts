@@ -84,5 +84,6 @@ export const Codons : { name: string, type: Codon }[] = [
 
 export function isMultipleGene(setting : DataSettings) {
     let { partitionFile, alignmentFolder, alignmentFiles } = setting;
+    alignmentFiles = (alignmentFiles ?? []).filter(file => file);
     return !!(partitionFile || alignmentFolder || ((alignmentFiles?.length ?? 0) > 1))
 }

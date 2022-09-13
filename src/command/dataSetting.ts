@@ -14,16 +14,19 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
             break;
     }
 
+    let { alignmentFiles } = data;
+    if (alignmentFiles?.length) alignmentFiles = alignmentFiles.filter(file => file);
+
     let multipleGene = isMultipleGene(data);
 
     if (multipleGene) {
         let partition: string;
         if (data.partitionFile) {
             partition = data.partitionFile;
-            output.push('-s', data.alignmentFolder || data.alignmentFiles!.join(','));
+            output.push('-s', data.alignmentFolder || alignmentFiles!.join(','));
         }
         else {
-            partition = data.alignmentFolder || data.alignmentFiles!.join(',');
+            partition = data.alignmentFolder || alignmentFiles!.join(',');
         }
 
         let { partitionType } = data;
@@ -45,8 +48,8 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
         }
     }
 
-    if (data.alignmentFiles?.length === 1) {
-        output.push('-s', data.alignmentFiles[0]);
+    if (alignmentFiles?.length === 1) {
+        output.push('-s', alignmentFiles[0]);
     }
 
     return output;

@@ -1,6 +1,7 @@
 import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/dataSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
+import { MinusLogo, PlusLogo } from "../../../../icons";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});
@@ -59,12 +60,54 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 <b className="pb-2">
                     Alignment file
                 </b>
-                <SettingRowFile
-                    isFile
-                    name="Alignment file/folder"
-                    file={settings?.alignmentFiles?.[0]}
-                    onChange={file => onChange?.({ ...settings, alignmentFiles: file ? [file] : undefined })}
-                    />
+                <div className="flex flex-col gap-2">
+                    {(settings?.alignmentFiles ?? [])
+                        .map((file, index) => {
+                            return (
+                                <div className="flex flex-row items-center gap-2" key={file + index}>
+                                    <SettingRowFile
+                                        isFile
+                                        name="Alignment file/folder"
+                                        file={file}
+                                        onChange={file => {
+                                            let newFiles = [...(settings?.alignmentFiles ?? [])];
+                                            newFiles[index] = file;
+                                            onChange?.({ ...settings, alignmentFiles: newFiles?.length ? newFiles : undefined })
+                                        }}
+                                        />
+                                    {((settings?.alignmentFiles?.length ?? 0) > 1) && (
+                                        <div className={index ? '' : 'invisible pointer-events-none'}>
+                                            <button
+                                                className="bg-pink-600 p-1 rounded-md"
+                                                onClick={() => {
+                                                    let newFiles = [...(settings?.alignmentFiles ?? [])];
+                                                    newFiles.splice(index, 1);
+                                                    onChange?.({ ...settings, alignmentFiles: newFiles })
+                                                }}>
+                                                <div className="h-6 w-6 mr-px">
+                                                    <MinusLogo />
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )}
+                                    <div>
+                                        <button
+                                            className="bg-pink-600 p-1 rounded-md"
+                                            onClick={() => {
+                                                let newFiles = [...(settings?.alignmentFiles ?? [])];
+                                                newFiles.splice(index + 1, 0, '');
+                                                onChange?.({ ...settings, alignmentFiles: newFiles })
+                                            }}>
+                                            <div className="h-6 w-6 mr-px">
+                                                <PlusLogo />
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
             </div>
             <div>
                 <b className="pb-2">
@@ -77,7 +120,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     onChange={file => onChange?.({ ...settings, partitionFile: file })}
                     />
             </div>
-            {!multipleGenes && (
+            {multipleGenes && (
                 <div>
                     <b className="pb-2">
                         Partition Type

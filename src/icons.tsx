@@ -113,3 +113,20 @@ export const CloseLogo = memo(
         </svg>
     )
 )
+
+export const PlusLogo = memo(
+    () => (
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.8179 5.47607V19.4761" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M5.81787 12.4761H19.8179" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+)
+
+export const MinusLogo = memo(
+    () => (
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.12695 12.1594H19.127" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+)
