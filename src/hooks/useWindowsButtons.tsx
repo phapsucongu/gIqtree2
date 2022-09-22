@@ -6,7 +6,7 @@ function useWindowsButtons() {
     let window = useWindow();
     let maximized = useWindowMaximized();
 
-    let buttonClass = "p-2 mx-1";
+    let buttonClass = "px-2 py-1 mx-1";
 
     return (
         <div className="flex flex-row">
