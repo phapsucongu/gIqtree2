@@ -5,6 +5,13 @@ import { MinusLogo, PlusLogo } from "../../../../icons";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});
+    let { alignmentFiles } = settings || {};
+    if (alignmentFiles) {
+        if (!alignmentFiles.filter(Boolean).length) {
+            alignmentFiles = undefined;
+        }
+    }
+
     return (
         <div className="flex flex-col gap-6">
             <div>
@@ -61,10 +68,10 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     Alignment file
                 </b>
                 <div className="flex flex-col gap-2">
-                    {(settings?.alignmentFiles ?? [])
+                    {(alignmentFiles ?? [undefined])
                         .map((file, index) => {
                             return (
-                                <div className="flex flex-row items-center gap-2" key={file + index}>
+                                <div className="flex flex-row items-center gap-2" key={(file ?? '') + index}>
                                     <SettingRowFile
                                         isFile
                                         name="Alignment file/folder"
