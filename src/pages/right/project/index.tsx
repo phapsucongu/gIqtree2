@@ -1,5 +1,5 @@
 import { normalize } from "path";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMatch, useSearchParams } from "react-router-dom"
 import { Settings } from "../../../interfaces";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
@@ -13,8 +13,13 @@ import useTitle from "./hooks/useTitle";
 import { prepareCommand } from "../../../command";
 import { getOutputFolder } from "./folder";
 import useWindowsButtons from "../../../hooks/useWindowsButtons";
+import useResizeObserver from "use-resize-observer";
+import { HeightContext } from "../../../App";
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
+    let height = useContext(HeightContext);
+    let { ref: titleRef, height: titleHeight } = useResizeObserver();
+
     let { params: { path = '' } } = useMatch(normalize(AppRoute.Project + '/:path'))!;
     let [params, ] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>();
@@ -74,9 +79,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         }
     );
 
+    console.log(height - (titleHeight ?? 0));
     return (
         <div className="h-full">
-            <div className="flex flex-row items-center justify-between border-b border-b-black/10 py-2 window-draggable">
+            <div ref={titleRef} className="flex flex-row items-center justify-between border-b border-b-black/10 py-2 window-draggable">
                 <b className="font-arvo py-4 pl-6 justify-self-start window-draggable">
                     {title}
                 </b>
@@ -89,7 +95,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     </div>
                 </div>
             </div>
-            {content}
+            <div
+                style={{ height: (height - (titleHeight ?? 0)) || undefined }}>
+                {content}
+            </div>
         </div>
     )
 }

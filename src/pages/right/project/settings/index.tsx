@@ -103,11 +103,11 @@ function SettingsSubPage(
                         )
                     })}
                 </div>
-                <div className="basis-4/5 pt-6">
+                <div className="basis-4/5 pt-6 overflow-y-scroll">
                     <div className="text-2xl font-bold pb-6">
                         {currentPage?.name}
                     </div>
-                    <div>
+                    <div className="pr-3 mb-6">
                         {currentPage?.element}
                     </div>
                 </div>
