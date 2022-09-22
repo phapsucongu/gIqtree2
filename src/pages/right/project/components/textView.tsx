@@ -25,7 +25,7 @@ function TextView({ content } : { content: string }) {
                                         {...props.getLineProps({ line, key: i })}
                                         style={{}}
                                         className="table-row text-black">
-                                        <span className="font-mono opacity-50 text-gray-700 table-cell select-none text-right">
+                                        <span className="font-mono opacity-20 text-gray-700 table-cell select-none text-right">
                                             {i + 1}&nbsp;&nbsp;
                                         </span>
                                         <span>
@@ -33,7 +33,7 @@ function TextView({ content } : { content: string }) {
                                                 <span
                                                     key={key}
                                                     {...props.getTokenProps({ token, key })}
-                                                    className="font-mono text-gray-700" />
+                                                    className="font-mono opacity-75 text-gray-700" />
                                             ))}
                                         </span>
                                     </div>
