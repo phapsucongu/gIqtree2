@@ -25,7 +25,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     </b>
                     <br />
                     <select
-                        className="p-2 w-full input-bordered bg-transparent"
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
                         onChange={e => onChange?.({
                             ...settings,
                             autoMergePartitions: (e.target.value || undefined) as AutoMergePartitions | undefined
@@ -50,7 +50,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 </b>
                 <br />
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         substitutionModel: (e.target.value || undefined) as SubstitutionModel | undefined
@@ -85,7 +85,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 </b>
                 <br />
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         rhasModel: (e.target.value || undefined) as RHASModel | undefined
@@ -109,7 +109,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 </b>
                 <br />
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         stateFrequency: (e.target.value || undefined) as StateFrequency | undefined

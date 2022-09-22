@@ -10,7 +10,7 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                     Thread count
                 </b>
                 <input
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="number"
                     onChange={e => onChange?.({
                         ...settings,
@@ -23,7 +23,7 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                     Output prefix
                 </b>
                 <input
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="text"
                     onChange={e => onChange?.({
                         ...settings,
@@ -37,7 +37,7 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                     Append command line
                 </b>
                 <input
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="text"
                     onChange={e => onChange?.({
                         ...settings,

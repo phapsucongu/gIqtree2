@@ -5,7 +5,7 @@ function BinaryOptions(
     return (
         <div className="w-full input-bordered flex flex-row items-center gap-2">
             <select
-                className="p-2 w-full bg-transparent no-select-arrow"
+                className="py-1 px-2 w-full bg-transparent no-select-arrow"
                 value={+value}
                 onChange={e => onChange?.(!!+e.target.value)}>
                 <option value={1}>

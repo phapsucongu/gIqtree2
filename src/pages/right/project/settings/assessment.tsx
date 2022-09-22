@@ -12,7 +12,7 @@ function Assessment({ settings, onChange } : SettingCategoryCommonProp<Assessmen
                 </b>
                 <br />
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="py-1 px-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         bootstrapMethod: (e.target.value || undefined) as BootstrapMethod | undefined
@@ -29,6 +29,19 @@ function Assessment({ settings, onChange } : SettingCategoryCommonProp<Assessmen
                             })
                     }
                 </select>
+            </div>
+            <div>
+                <b className="pb-2">
+                    Number of bootstrapping replicates
+                </b>
+                {/* <input
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
+                    type="number"
+                    onChange={e => onChange?.({
+                        ...settings,
+                        // re: (e.target.valueAsNumber || undefined)
+                    })}
+                    value={settings?.thread} /> */}
             </div>
         </div>
     )

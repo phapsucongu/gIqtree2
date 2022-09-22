@@ -10,7 +10,7 @@ function Dating({ settings, onChange } : SettingCategoryCommonProp<DatingSetting
                     Date info type
                 </b>
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         dateInfoType: (e.target.value || undefined) as DateInfoType | undefined

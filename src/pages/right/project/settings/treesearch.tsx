@@ -24,7 +24,7 @@ function TreeSearch({ settings, onChange } : SettingCategoryCommonProp<TreeSearc
                 </b>
                 <input
                     min={0}
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="number"
                     onChange={e => onChange?.({
                         ...settings,
@@ -38,7 +38,7 @@ function TreeSearch({ settings, onChange } : SettingCategoryCommonProp<TreeSearc
                 </b>
                 <input
                     step={0.1}
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="number"
                     onChange={e => onChange?.({
                         ...settings,
@@ -78,7 +78,7 @@ function TreeSearch({ settings, onChange } : SettingCategoryCommonProp<TreeSearc
                 </b>
                 <input
                     min={0}
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="text"
                     placeholder="strings separated by commas..."
                     onChange={e => onChange?.({

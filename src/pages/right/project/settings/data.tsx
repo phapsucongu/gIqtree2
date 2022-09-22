@@ -20,7 +20,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 </b>
                 <br />
                 <select
-                    className="p-2 w-full input-bordered bg-transparent"
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
                     onChange={e => onChange?.({
                         ...settings,
                         sequenceType: (e.target.value || undefined) as SequenceType | undefined
@@ -44,7 +44,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         Codon Type
                     </b>
                     <select
-                        className="p-2 w-full input-bordered bg-transparent"
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
                         onChange={e => onChange?.({
                             ...settings,
                             codonType: (+e.target.value || undefined) as Codon | undefined
@@ -133,7 +133,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         Partition Type
                     </b>
                     <select
-                        className="p-2 w-full input-bordered bg-transparent"
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
                         onChange={e => onChange?.({
                             ...settings,
                             partitionType: (e.target.value || undefined) as PartitionType | undefined
