@@ -39,3 +39,13 @@ select.no-select-arrow {
     -webkit-appearance: none;
     -moz-appearance: none;
 }
+
+.window-draggable {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+}
+
+.window-draggable > * {
+    -webkit-app-region: no-drag;
+}

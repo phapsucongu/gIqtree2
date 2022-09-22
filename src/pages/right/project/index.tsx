@@ -76,15 +76,15 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
     return (
         <div className="h-full">
-            <div className="flex flex-row items-center justify-between border-b border-b-black/10 py-2">
-                <b className="font-arvo py-4 pl-6 justify-self-start">
+            <div className="flex flex-row items-center justify-between border-b border-b-black/10 py-2 window-draggable">
+                <b className="font-arvo py-4 pl-6 justify-self-start window-draggable">
                     {title}
                 </b>
                 <div className="flex flex-row gap-8">
-                    <div className="flex flex-row gap-8 pr-4">
+                    <div className="flex flex-row gap-8 pr-4 window-draggable">
                         {actions}
                     </div>
-                    <div className="flex flex-row gap-8 pr-4">
+                    <div className="flex flex-row gap-8 pr-4 window-draggable">
                         {buttons}
                     </div>
                 </div>

@@ -111,7 +111,7 @@ function Dashboard() {
 
     return (
         <div className="h-full flex flex-col">
-            <div className="flex flex-row justify-end pt-2 pr-4 pb-6">
+            <div className="flex flex-row justify-end pt-2 pr-4 pb-6 window-draggable">
                 {buttons}
             </div>
             {createSection}
