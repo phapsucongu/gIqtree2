@@ -10,7 +10,7 @@ function TextView({ content } : { content: string }) {
 
     return (
         <div ref={containerRef} className="h-full font-mono">
-            <div style={{ height: containerHeight - 80, width }} className="overflow-x-scroll" id="file-content">
+            <div style={{ height: containerHeight - 80, width: width * 99 / 100 }} className="overflow-x-scroll" id="file-content">
                 <Highlight
                     {...defaultProps}
                     language={"" as any}
@@ -33,7 +33,7 @@ function TextView({ content } : { content: string }) {
                                                 <span
                                                     key={key}
                                                     {...props.getTokenProps({ token, key })}
-                                                    className="font-mono opacity-75 text-gray-700" />
+                                                    className="font-mono opacity-75 text-gray-700 pr-2" />
                                             ))}
                                         </span>
                                     </div>
