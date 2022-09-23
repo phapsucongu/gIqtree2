@@ -1,8 +1,11 @@
 import { ipcRenderer } from "electron-better-ipc";
+import { join } from "path";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import rimraf from "rimraf";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
 import { getBinaryPath } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
+import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
 
 function useActionButtons(
@@ -57,6 +60,7 @@ function useActionButtons(
                     <PositiveButton
                         disabled={executing}
                         onClick={async () => {
+                            rimraf.sync(join(getOutputFolder(path), '*'));
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
                                 arguments: preparedCommandWithRedo,
