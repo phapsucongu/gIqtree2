@@ -83,8 +83,8 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         .concat(...(resume ? [] : ['--redo']))
         .concat(split(setting.others?.appendCommandLine ?? '', false));
 
-    if (geneTree.length && resume) geneTree.push('--redo');
-    if (speciesTree.length && resume) speciesTree.push('--redo');
+    if (geneTree.length && !resume) geneTree.push('--redo');
+    if (speciesTree.length && !resume) speciesTree.push('--redo');
 
     return [speciesTree, geneTree, final].filter(a => a.length);
 }
