@@ -1,13 +1,13 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import { SequenceType } from "../../../../interfaces/dataSettings";
-import { AutoMergePartitions, AutoMergePartitionsAlgorithms, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/modelSettings";
+import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/modelSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
 function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCategoryCommonProp<ModelSettings> & {
     sequenceType: SequenceType | undefined,
     isMultipleGene: boolean
 }) {
-    let { proportionOfInvariableSites, ascertainmentBiasCorrection } = settings ?? {};
+    let { proportionOfInvariableSites, ascertainmentBiasCorrection, rhasModel, substitutionModel } = settings ?? {};
     let availableModels: (SubstitutionModel | undefined)[] = SubstitutionModels
         .filter(e => e.sequenceType === sequenceType || sequenceType === undefined)
         .map(e => e.models)
@@ -55,7 +55,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         ...settings,
                         substitutionModel: (e.target.value || undefined) as SubstitutionModel | undefined
                     })}
-                    value={settings?.substitutionModel}>
+                    value={substitutionModel}>
                     {
                         availableModels
                             .map(option => {
@@ -79,9 +79,10 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     falsyText="Off"
                     onChange={v => onChange?.({ ...settings, proportionOfInvariableSites: v })} />
             </div>
+            {}
             <div>
                 <b className="pb-2">
-                    RHAS model
+                    Rate heterogenity across sites
                 </b>
                 <br />
                 <select
@@ -90,7 +91,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         ...settings,
                         rhasModel: (e.target.value || undefined) as RHASModel | undefined
                     })}
-                    value={settings?.substitutionModel}>
+                    value={settings?.rhasModel}>
                     {
                         [{ name: 'None', type: undefined }, ...RHASModels]
                             .map(option => {
@@ -103,6 +104,24 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     }
                 </select>
             </div>
+            {substitutionModel && rhasModel && (
+                <div>
+                    <b className="pb-2">
+                        Rate categories number
+                    </b>
+                    <input
+                        min={1}
+                        step={1}
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
+                        type="number"
+                        placeholder={DefaultRateCategories.toString()}
+                        onChange={e => onChange?.({
+                            ...settings,
+                            rateCategories: (e.target.valueAsNumber || undefined)
+                        })}
+                        value={settings?.rateCategories ?? DefaultRateCategories} />
+                </div>
+            )}
             <div>
                 <b className="pb-2">
                     State frequency
