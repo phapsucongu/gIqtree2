@@ -17,7 +17,7 @@ function File() {
     let [isTree, setIsTree] = useState(false);
     let { ref: containerRef } = useResizeObserver();
 
-    let isTreeFile = ['.treefile'].some(ext => extname(file).toLowerCase() == ext);
+    let isTreeFile = ['.treefile'].some(ext => extname(file).toLowerCase() === ext);
 
     useEffect(() => {
         try {
