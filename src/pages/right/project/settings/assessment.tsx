@@ -77,7 +77,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                             ...settings,
                             multiPartitionSamplingStrategy: (e.target.value || undefined) as MultiPartitionSamplingStrategy | undefined
                         })}
-                        value={multiPartitionSamplingStrategy}>
+                        value={multiPartitionSamplingStrategy ?? DefaultMultiPartitionSamplingStrategy}>
                         {
                             MultiPartitionSamplingStrategies
                                 .map(option => {
