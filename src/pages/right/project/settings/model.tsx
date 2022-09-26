@@ -79,7 +79,6 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     falsyText="Off"
                     onChange={v => onChange?.({ ...settings, proportionOfInvariableSites: v })} />
             </div>
-            {}
             <div>
                 <b className="pb-2">
                     Rate heterogenity across sites

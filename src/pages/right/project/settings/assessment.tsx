@@ -1,12 +1,16 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import SettingRowFile from "../../../../component/settingrowfile";
-import { AssessmentSettings, BootstrapMethod, BootstrapMethods, DefaultBootstrapMethodReplicate } from "../../../../interfaces/assessmentSettings";
+import { AssessmentSettings, BootstrapMethod, BootstrapMethods, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, MultiPartitionSamplingStrategies, MultiPartitionSamplingStrategy, SingleBranchTest, SingleBranchTests } from "../../../../interfaces/assessmentSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
-function Assessment({ settings, onChange } : SettingCategoryCommonProp<AssessmentSettings> & {
+function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryCommonProp<AssessmentSettings> & {
     isMultipleGene: boolean
 }) {
-    let { gcf, scf } = settings ?? {};
+    let {
+        gcf, scf, bootstrapMethod, ufbootOption,
+        multiPartitionSamplingStrategy, singleBranchTests,
+        approximateLikelihoodReplicate, localBootstrapReplicate
+    } = settings ?? {};
     return (
         <div className="flex flex-col gap-6">
             <div>
@@ -20,7 +24,7 @@ function Assessment({ settings, onChange } : SettingCategoryCommonProp<Assessmen
                         ...settings,
                         bootstrapMethod: (e.target.value || undefined) as BootstrapMethod | undefined
                     })}
-                    value={settings?.bootstrapMethod}>
+                    value={bootstrapMethod}>
                     {
                         [{ name: 'None', type: undefined }, ...BootstrapMethods]
                             .map(option => {
@@ -33,19 +37,166 @@ function Assessment({ settings, onChange } : SettingCategoryCommonProp<Assessmen
                     }
                 </select>
             </div>
+            {bootstrapMethod === BootstrapMethod.UltraFastBootstrap && (
+                <div>
+                    <b className="pb-2">
+                        UFBoot option for reducing impact of severe model violation
+                    </b>
+                    <br />
+                    <BinaryOptions
+                        value={ufbootOption ?? false}
+                        truthyText="On"
+                        falsyText="Off"
+                        onChange={v => onChange?.({ ...settings, ufbootOption: v })} />
+                </div>
+            )}
+            {(bootstrapMethod === BootstrapMethod.Standard || bootstrapMethod === BootstrapMethod.UltraFastBootstrap) && (
+                <div>
+                    <b className="pb-2">
+                        Number of bootstrapping replicates
+                    </b>
+                    <input
+                        className="py-1 px-2 w-full input-bordered bg-transparent"
+                        type="number"
+                        onChange={e => onChange?.({
+                            ...settings,
+                            bootstrapMethodReplicate: (e.target.valueAsNumber || undefined)
+                        })}
+                        value={settings?.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate} />
+                </div>
+            )}
+            {isMultipleGene && (
+                <div>
+                    <b className="pb-2">
+                        Multi-partition sampling strategy :
+                    </b>
+                    <br />
+                    <select
+                        className="py-1 px-2 w-full input-bordered bg-transparent"
+                        onChange={e => onChange?.({
+                            ...settings,
+                            multiPartitionSamplingStrategy: (e.target.value || undefined) as MultiPartitionSamplingStrategy | undefined
+                        })}
+                        value={multiPartitionSamplingStrategy}>
+                        {
+                            MultiPartitionSamplingStrategies
+                                .map(option => {
+                                    return (
+                                        <option value={option.type}>
+                                            {option.name}
+                                        </option>
+                                    )
+                                })
+                        }
+                    </select>
+                </div>
+            )}
             <div>
                 <b className="pb-2">
-                    Number of bootstrapping replicates
+                    Single branch tests
                 </b>
-                <input
-                    className="py-1 px-2 w-full input-bordered bg-transparent"
-                    type="number"
-                    onChange={e => onChange?.({
-                        ...settings,
-                        bootstrapMethodReplicate: (e.target.valueAsNumber || undefined)
-                    })}
-                    value={settings?.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate} />
+                <div className="flex flex-col gap-4">
+                    {/* render groups separately */}
+                    {SingleBranchTests
+                        .filter(group => group.length > 1)
+                        .map((group, index) => {
+                            let groupWithDisable = [{ name: 'Disabled', type: undefined }, ...group];
+                            return (
+                                <div className="grid grid-cols-3">
+                                    {groupWithDisable.map(g => {
+                                        let isDisableEntry = !g.type;
+                                        let checked = g.type
+                                            ? singleBranchTests?.includes(g.type)
+                                            : group.every(entry => !singleBranchTests?.includes(entry.type));
+
+                                        return (
+                                            <div className="flex flex-row gap-4 items-center">
+                                                <input
+                                                    type="radio"
+                                                    value={g.type}
+                                                    name={"group_" + index}
+                                                    checked={checked}
+                                                    onChange={event => {
+                                                        let type = event.target.value as SingleBranchTest;
+                                                        let set = new Set(singleBranchTests);
+                                                        for (let entry of group) {
+                                                            set.delete(entry.type);
+                                                        }
+                                                        if (!isDisableEntry) set.add(type);
+                                                        onChange?.({ ...settings, singleBranchTests: [...set] })
+                                                    }}/>
+                                                <label htmlFor={"single_branch_test_" + g.type}>
+                                                    {g.name}
+                                                </label>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )
+                        })}
+                    <div className="grid grid-cols-3">
+                        {SingleBranchTests
+                            .filter(group => group.length === 1)
+                            .map(g => {
+                                let entry = g[0];
+                                let checked = singleBranchTests?.includes(entry.type);
+                                return (
+                                    <div className="flex flex-row gap-4 items-center">
+                                        <input
+                                            type="checkbox"
+                                            value={entry.type}
+                                            checked={checked}
+                                            onChange={() => {
+                                                let set = new Set(singleBranchTests);
+                                                set[checked ? 'delete' : 'add'](entry.type);
+                                                onChange?.({ ...settings, singleBranchTests: [...set] })
+                                            }}
+                                            />
+                                        <label htmlFor={"single_branch_test_" + entry.type}>
+                                            {entry.name}
+                                        </label>
+                                    </div>
+                                )
+                            })}
+                    </div>
+                </div>
             </div>
+            {singleBranchTests?.includes(SingleBranchTest.SH_aLRT) && (
+                <div>
+                    <b className="pb-2">
+                        Number of aLRT replicates
+                    </b>
+                    <input
+                        min={1}
+                        step={1}
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
+                        type="number"
+                        placeholder={DefaultALRTReplicate.toString()}
+                        onChange={e => onChange?.({
+                            ...settings,
+                            approximateLikelihoodReplicate: e.target.valueAsNumber
+                        })}
+                        value={approximateLikelihoodReplicate ?? DefaultALRTReplicate} />
+                </div>
+            )}
+            {singleBranchTests?.includes(SingleBranchTest.LocalBootstrap) && (
+                <div>
+                    <b className="pb-2">
+                        Number of local-bootstrap-test replicates
+                    </b>
+                    <input
+                        min={1}
+                        step={1}
+                        className="px-1 py-2 w-full input-bordered bg-transparent"
+                        type="number"
+                        placeholder={DefaultLocalBootstrapReplicate.toString()}
+                        onChange={e => onChange?.({
+                            ...settings,
+                            localBootstrapReplicate: e.target.valueAsNumber
+                        })}
+                        value={localBootstrapReplicate ?? DefaultLocalBootstrapReplicate} />
+                </div>
+            )}
             <div>
                 <b className="pb-2">
                     Enable gCF
