@@ -37,19 +37,6 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     }
                 </select>
             </div>
-            {bootstrapMethod === BootstrapMethod.UltraFastBootstrap && (
-                <div>
-                    <b className="pb-2">
-                        UFBoot option for reducing impact of severe model violation
-                    </b>
-                    <br />
-                    <BinaryOptions
-                        value={ufbootOption ?? false}
-                        truthyText="On"
-                        falsyText="Off"
-                        onChange={v => onChange?.({ ...settings, ufbootOption: v })} />
-                </div>
-            )}
             {(bootstrapMethod === BootstrapMethod.Standard || bootstrapMethod === BootstrapMethod.UltraFastBootstrap) && (
                 <div>
                     <b className="pb-2">
@@ -63,6 +50,19 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                             bootstrapMethodReplicate: (e.target.valueAsNumber || undefined)
                         })}
                         value={settings?.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate} />
+                </div>
+            )}
+            {bootstrapMethod === BootstrapMethod.UltraFastBootstrap && (
+                <div>
+                    <b className="pb-2">
+                        UFBoot option for reducing impact of severe model violation
+                    </b>
+                    <br />
+                    <BinaryOptions
+                        value={ufbootOption ?? false}
+                        truthyText="On"
+                        falsyText="Off"
+                        onChange={v => onChange?.({ ...settings, ufbootOption: v })} />
                 </div>
             )}
             {isMultipleGene && (
