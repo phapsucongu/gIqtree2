@@ -63,8 +63,8 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
 
     let preparedCommand : string[][] = [], preparedCommandWithRedo : string[][] = [];
     if (settings) {
-        preparedCommand = prepareCommand(originalSettings!, 'output', getOutputFolder(path));
-        preparedCommandWithRedo = prepareCommand(originalSettings!, 'output', getOutputFolder(path), true);
+        preparedCommand = prepareCommand(originalSettings!, 'output', getOutputFolder(path), true);
+        preparedCommandWithRedo = prepareCommand(originalSettings!, 'output', getOutputFolder(path));
     }
 
     let actions = useActionButtons(
