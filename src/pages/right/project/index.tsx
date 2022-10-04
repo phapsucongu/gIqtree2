@@ -79,7 +79,6 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         }
     );
 
-    console.log(height - (titleHeight ?? 0));
     return (
         <div className="h-full">
             <div ref={titleRef} className="flex flex-row items-center justify-between border-b border-b-black/10 py-2 window-draggable">
