@@ -15,7 +15,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
         <div className="flex flex-col gap-6">
             <div>
                 <b className="pb-2">
-                    Bootstrap Method
+                    Bootstrap method
                 </b>
                 <br />
                 <select

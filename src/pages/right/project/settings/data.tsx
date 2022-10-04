@@ -16,7 +16,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
         <div className="flex flex-col gap-6">
             <div>
                 <b className="pb-2">
-                    Sequence Type
+                    Sequence type
                 </b>
                 <br />
                 <select
@@ -41,7 +41,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
             {settings?.sequenceType === SequenceType.Codon && (
                 <div>
                     <b className="pb-2">
-                        Codon Type
+                        Codon type
                     </b>
                     <select
                         className="px-1 py-2 w-full input-bordered bg-transparent"
@@ -130,7 +130,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
             {multipleGenes && (
                 <div>
                     <b className="pb-2">
-                        Partition Type
+                        Partition type
                     </b>
                     <select
                         className="px-1 py-2 w-full input-bordered bg-transparent"
