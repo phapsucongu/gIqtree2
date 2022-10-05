@@ -14,7 +14,7 @@ function useActionButtons(
     preparedCommandWithRedo: string[][],
     onSaveSettings: () => void | undefined
 ) {
-    let [params, ] = useSearchParams();
+    let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
 
@@ -28,7 +28,7 @@ function useActionButtons(
                     <PositiveButton
                         onClick={() => {
                             onSaveSettings?.();
-                            navigate(-1)
+                            setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy });
                         }}>
                         Save
                     </PositiveButton>

@@ -1,6 +1,6 @@
-import { normalize } from "path";
+import { basename, join, normalize } from "path";
 import { useContext, useEffect, useState } from "react";
-import { useMatch, useSearchParams } from "react-router-dom"
+import { useMatch, useSearchParams } from "react-router-dom";
 import { Settings } from "../../../interfaces";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
@@ -11,17 +11,20 @@ import SettingsSubPage from "./settings/";
 import useActionButtons from "./hooks/useActionButtons";
 import useTitle from "./hooks/useTitle";
 import { prepareCommand } from "../../../command";
-import { getOutputFolder } from "./folder";
+import { getInputFolder, getOutputFolder } from "./folder";
 import useWindowsButtons from "../../../hooks/useWindowsButtons";
 import useResizeObserver from "use-resize-observer";
 import { HeightContext } from "../../../App";
+import Copy from "./copy";
+import remap from "../../../utils/remapInputFiles";
+import listDependentFileEntries from "../../../utils/listDependentFileEntries";
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let height = useContext(HeightContext);
     let { ref: titleRef, height: titleHeight } = useResizeObserver();
 
     let { params: { path = '' } } = useMatch(normalize(AppRoute.Project + '/:path'))!;
-    let [params, ] = useSearchParams();
+    let [params, setSearchParams] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>();
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [, setError] = useState<string>('');
@@ -47,6 +50,25 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         case ProjectScreen.Log: {
             content = <Console path={path} />;
             break;
+        }
+        case ProjectScreen.Copy: {
+            content = <Copy
+                files={
+                    listDependentFileEntries(settings!)
+                        .map(f => {
+                            return {
+                                source: f,
+                                destination: join(getInputFolder(path), basename(f))
+                            }
+                        })
+                }
+                onReady={(copied) => {
+                    let remapped = remap(settings!, copied);
+                    writeSettingsFileSync(path, remapped)
+                    setOriginalSettings(remapped);
+                    setSettings(remapped);
+                    setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Log })
+                }} />
         }
     }
 

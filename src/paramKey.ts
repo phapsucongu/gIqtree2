@@ -8,5 +8,6 @@ export enum ParamKey {
 export enum ProjectScreen {
     File = 'file',
     Setting = 'setting',
-    Log = 'log'
+    Log = 'log',
+    Copy = 'copy'
 }
