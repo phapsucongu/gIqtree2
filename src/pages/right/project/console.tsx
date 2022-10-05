@@ -15,7 +15,7 @@ function Console({ path } : { path: string }) {
             }
         };
         if (executing) {
-            let interval = setInterval(refreshLog, 500);
+            let interval = setInterval(refreshLog, 100);
             return () => {
                 clearInterval(interval)
             }
