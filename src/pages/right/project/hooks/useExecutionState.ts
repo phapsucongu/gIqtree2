@@ -13,7 +13,7 @@ function useExecutionState(path: string) {
     }
 
     useEffect(() => {
-        let interval = setInterval(refresh, 100);
+        let interval = setInterval(refresh, 50);
         return () => clearInterval(interval);
     })
 

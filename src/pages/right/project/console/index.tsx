@@ -1,11 +1,27 @@
+import { ChildProcess } from "child_process";
 import { ipcRenderer } from "electron-better-ipc";
 import { useEffect, useState } from "react";
-import TextView from "./components/textView";
-import useExecutionState from "./hooks/useExecutionState";
+import TextView from "../components/textView";
+import useExecutionState from "../hooks/useExecutionState";
 
 function Console({ path } : { path: string }) {
     let [executing] = useExecutionState(path);
     let [log, setLog] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (!executing) {
+            ipcRenderer.callMain('get', path)
+                .then(res => {
+                    let processes = res as { process: ChildProcess }[] | false;
+                    if (processes) {
+                        let failed = processes.some(p => p.process.exitCode !== 0);
+                        if (failed) {
+                            alert('Execution failed!');
+                        }
+                    }
+                })
+        }
+    }, [path, executing]);
 
     useEffect(() => {
         let refreshLog = async () => {
@@ -26,7 +42,10 @@ function Console({ path } : { path: string }) {
     }, [path, executing])
 
     return (
-        <TextView content={log.join('\n')} />
+        <>
+            <TextView content={log.join('\n')} />
+
+        </>
     )
 }
 
