@@ -132,7 +132,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         ...settings,
                         stateFrequency: (e.target.value || undefined) as StateFrequency | undefined
                     })}
-                    value={settings?.substitutionModel}>
+                    value={settings?.stateFrequency}>
                     {
                         [{ name: 'None', type: undefined }, ...availableFrequencies]
                             .map(option => {

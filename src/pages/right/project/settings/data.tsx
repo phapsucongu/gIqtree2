@@ -27,7 +27,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     })}
                     value={settings?.sequenceType}>
                     {
-                        [{ name: 'Auto-detect', type: undefined }, ...SequenceTypes]
+                        [{ name: 'Auto-detect', type: '' }, ...SequenceTypes]
                             .map(option => {
                                 return (
                                     <option value={option.type}>
