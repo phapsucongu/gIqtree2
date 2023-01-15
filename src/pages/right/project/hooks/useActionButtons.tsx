@@ -38,25 +38,29 @@ function useActionButtons(
         case ProjectScreen.Log: {
             return (
                 <>
-                    <NegativeButton
-                        disabled={!executing}
-                        onClick={() => {
-                            ipcRenderer.callMain('kill', path);
-                        }}>
-                        Pause
-                    </NegativeButton>
-                    <NegativeButton
-                        disabled={executing}
-                        onClick={async () => {
-                            await ipcRenderer.callMain('spawn', {
-                                id: path,
-                                arguments: preparedCommand,
-                                binary: getBinaryPath()
-                            });
-                            refresh();
-                        }}>
-                        Continue
-                    </NegativeButton>
+                    {executing && (
+                        <NegativeButton
+                            disabled={!executing}
+                            onClick={() => {
+                                ipcRenderer.callMain('kill', path);
+                            }}>
+                            Pause
+                        </NegativeButton>
+                    )}
+                    {!executing && (
+                        <NegativeButton
+                            disabled={executing}
+                            onClick={async () => {
+                                await ipcRenderer.callMain('spawn', {
+                                    id: path,
+                                    arguments: preparedCommand,
+                                    binary: getBinaryPath()
+                                });
+                                refresh();
+                            }}>
+                            Continue
+                        </NegativeButton>
+                    )}
                     <PositiveButton
                         disabled={executing}
                         onClick={async () => {
