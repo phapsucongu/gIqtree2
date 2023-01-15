@@ -1,4 +1,4 @@
-import { memo, useContext } from "react";
+import { memo, useContext, useState } from "react";
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import useResizeObserver from "use-resize-observer";
 import { RightPaneWidthContext } from "../../../../App";
@@ -6,10 +6,15 @@ import './textView.css';
 
 function TextView({ content } : { content: string }) {
     let width = useContext(RightPaneWidthContext);
+    let [wrap, setWrap] = useState(false);
     let { ref: containerRef, height: containerHeight = 0 } = useResizeObserver();
 
     return (
         <div ref={containerRef} className="h-full font-mono">
+            <div className="flex flex-row gap-2 items-center">
+                <input type='checkbox' checked={wrap} onChange={() => setWrap(!wrap)}/>
+                <div>Text wrap</div>
+            </div>
             <div style={{ height: containerHeight - 80, width: width * 99 / 100 }} className="overflow-x-scroll" id="file-content">
                 <Highlight
                     {...defaultProps}
@@ -23,17 +28,16 @@ function TextView({ content } : { content: string }) {
                                     <div
                                         key={i}
                                         {...props.getLineProps({ line, key: i })}
-                                        style={{}}
-                                        className="table-row text-black">
+                                        className="table-row text-black break-all">
                                         <span className="font-mono opacity-20 text-gray-700 table-cell select-none text-right">
                                             {i + 1}&nbsp;&nbsp;
                                         </span>
-                                        <span>
+                                        <span style={{ width: width * 99 / 100 }} className="table-cell">
                                             {line.map((token, key) => (
-                                                <span
+                                                <div
                                                     key={key}
                                                     {...props.getTokenProps({ token, key })}
-                                                    className="font-mono opacity-75 text-gray-700 pr-2" />
+                                                    className={"font-mono opacity-75 text-gray-700 pr-2 " + (wrap ? "whitespace-pre-wrap" : "")} />
                                             ))}
                                         </span>
                                     </div>
