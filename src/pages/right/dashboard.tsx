@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useWindowsButtons from "../../hooks/useWindowsButtons";
 import { CloseLogo } from "../../icons";
@@ -19,6 +19,7 @@ export type Record = { path: string, timestamp: string };
 
 function Dashboard() {
     let [records, setRecord] = useState<Record[]>([]);
+    let [search, setSearch] = useState('');
     let buttons = useWindowsButtons();
 
     let load = () => {
@@ -29,6 +30,12 @@ function Dashboard() {
     }
 
     useEffect(load, []);
+    let filteredRecord = useMemo(() => {
+        return records.filter(r => {
+            if (!search) return true;
+            return r.path.toLowerCase().includes(search.toLowerCase());
+        })
+    }, [search, records]);
 
     const createSection = (
         <>
@@ -56,14 +63,25 @@ function Dashboard() {
 
     const recentSection = (
         <>
-            <div className="flex flex-row gap-8 items-end pb-6">
-                <ClockIcon />
-                <b className="font-arvo">
-                    Recent
-                </b>
+            <div className="flex flex-row justify-between pb-6 items-center">
+                <div className="flex flex-row gap-8 h-fit">
+                    <ClockIcon />
+                    <b className="font-arvo">
+                        Recent
+                    </b>
+                </div>
+                <div className="pr-2">
+                    <input
+                        onChange={e => {
+                            setSearch(e.target.value);
+                        }}
+                        className="w-full p-2 border-b border-b-black"
+                        placeholder="Search..."
+                        />
+                </div>
             </div>
             <div className="flex flex-col gap-2 flex-grow overflow-y-auto my-2">
-                {records.map(r => {
+                {filteredRecord.map(r => {
                     let valid = true;
                     try {
                         readSettingsFileSync(r.path);
@@ -74,16 +92,14 @@ function Dashboard() {
                         <div className="p-6 bg-gray-200">
                             <div className="flex flex-row gap-2 items-center">
                                 <div className="flex-grow">
-                                    <Link key={r.path} to={normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))}>
-                                        <div className={valid ? '' : 'opacity-50 line-through'}>
-                                            {basename(r.path)}
-                                        </div>
-                                        {!valid && (
-                                            <span className='font-bold text-red-400'>
-                                                Could not read from the setting file (project setting corrupt?)
-                                            </span>
-                                        )}
-                                    </Link>
+                                    <div className={valid ? '' : 'opacity-50 line-through'}>
+                                        {basename(r.path)}
+                                    </div>
+                                    {!valid && (
+                                        <span className='font-bold text-red-400'>
+                                            Could not read from the setting file (project setting corrupt?)
+                                        </span>
+                                    )}
                                 </div>
                                 <button onClick={(e) => {
                                     e.preventDefault();
