@@ -60,7 +60,7 @@ function File() {
                 </div>
             )}
             {!error && (
-                isTree ? <TreeView file={file} content={content} /> : <TextView content={content} />
+                isTree ? <TreeView file={file} content={content} /> : <TextView autoscroll={false} content={content} />
             )}
         </div>
     )

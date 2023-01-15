@@ -43,8 +43,7 @@ function Console({ path } : { path: string }) {
 
     return (
         <>
-            <TextView content={log.join('\n')} />
-
+            <TextView autoscroll={true} content={log.join('\n')} />
         </>
     )
 }
