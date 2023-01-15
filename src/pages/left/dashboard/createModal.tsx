@@ -12,6 +12,7 @@ import Select from 'react-select';
 import './createModal.css';
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../../routes";
+import { ParamKey, ProjectScreen } from "../../../paramKey";
 
 interface ModalProps extends ReactModal.Props {
     template: TemplateType | 0;
@@ -162,7 +163,10 @@ function CreateModal (props: ModalProps) {
                             }
                             writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(template || undefined));
                             navigate({
-                                pathname: normalize(AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate))
+                                pathname: normalize(
+                                    AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
+                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                )
                             })
                         }}>
                         Create
