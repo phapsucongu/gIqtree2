@@ -3,11 +3,12 @@ import { basename, normalize, sep } from "path";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useWindowsButtons from "../../hooks/useWindowsButtons";
+import { CloseLogo } from "../../icons";
 import { ParamKey } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
 import { readSettingsFileSync } from "../../utils/settingsFile";
-import { ClockIcon, FileIcon } from "./icons"
+import { ClockIcon, FileIcon } from "./icons";
 
 const types = [
     { name: "Blank Project", type: 0 },
@@ -71,14 +72,28 @@ function Dashboard() {
 
                     let content = (
                         <div className="p-6 bg-gray-200">
-                            <div className={valid ? '' : 'opacity-50 line-through'}>
-                                {basename(r.path)}
+                            <div className="flex flex-row gap-2 items-center">
+                                <div className="flex-grow">
+                                    <Link key={r.path} to={normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))}>
+                                        <div className={valid ? '' : 'opacity-50 line-through'}>
+                                            {basename(r.path)}
+                                        </div>
+                                        {!valid && (
+                                            <span className='font-bold text-red-400'>
+                                                Could not read from the setting file (project setting corrupt?)
+                                            </span>
+                                        )}
+                                    </Link>
+                                </div>
+                                <button onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    ipcRenderer.callMain('db_remove', r.path)
+                                        .then(() => load())
+                                }}>
+                                    <CloseLogo />
+                                </button>
                             </div>
-                            {!valid && (
-                                <span className='font-bold text-red-400'>
-                                    Could not read from the setting file (project setting corrupt?)
-                                </span>
-                            )}
                             <div className="pt-4 flex flex-row justify-between text-gray-500">
                                 <div className="flex flex-row gap-3">
                                     {r.path.split(sep)
