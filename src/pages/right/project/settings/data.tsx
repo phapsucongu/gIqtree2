@@ -21,10 +21,12 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 <br />
                 <select
                     className="px-1 py-2 w-full input-bordered bg-transparent"
-                    onChange={e => onChange?.({
-                        ...settings,
-                        sequenceType: (e.target.value || undefined) as SequenceType | undefined
-                    })}
+                    onChange={e => {
+                        onChange?.({
+                            ...settings,
+                            sequenceType: (e.target.value || undefined) as SequenceType | undefined
+                        })
+                    }}
                     value={settings?.sequenceType}>
                     {
                         [{ name: 'Auto-detect', type: '' }, ...SequenceTypes]

@@ -32,7 +32,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         })}
                         value={settings?.autoMergePartitions}>
                         {
-                            [{ name: 'None', type: undefined }, ...AutoMergePartitionsAlgorithms]
+                            [{ name: 'None', type: '' }, ...AutoMergePartitionsAlgorithms]
                                 .map(option => {
                                     return (
                                         <option value={option.type}>

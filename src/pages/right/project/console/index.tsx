@@ -14,7 +14,7 @@ function Console({ path } : { path: string }) {
                 .then(res => {
                     let processes = res as { process: ChildProcess }[] | false;
                     if (processes) {
-                        let failed = processes.some(p => p.process.exitCode !== 0);
+                        let failed = processes.some(p => p.process.exitCode !== 0 && !p.process.killed);
                         if (failed) {
                             alert('Execution failed!');
                         }
