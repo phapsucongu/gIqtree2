@@ -1,6 +1,7 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { AssessmentSettings, BootstrapMethod, BootstrapMethods, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, MultiPartitionSamplingStrategies, MultiPartitionSamplingStrategy, SingleBranchTest, SingleBranchTests } from "../../../../interfaces/assessmentSettings";
+import { DisableWrap } from "../components/opaqueWrapping";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
 function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryCommonProp<AssessmentSettings> & {
@@ -26,7 +27,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     })}
                     value={bootstrapMethod}>
                     {
-                        [{ name: 'None', type: undefined }, ...BootstrapMethods]
+                        [{ name: 'None', type: '' }, ...BootstrapMethods]
                             .map(option => {
                                 return (
                                     <option value={option.type}>
@@ -37,7 +38,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     }
                 </select>
             </div>
-            {(bootstrapMethod === BootstrapMethod.Standard || bootstrapMethod === BootstrapMethod.UltraFastBootstrap) && (
+            <DisableWrap disabled={!bootstrapMethod} disableText="Available if bootstrapping is used">
                 <div>
                     <b className="pb-2">
                         Number of bootstrapping replicates
@@ -51,8 +52,9 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         })}
                         value={settings?.bootstrapMethodReplicate ?? DefaultBootstrapMethodReplicate} />
                 </div>
-            )}
-            {bootstrapMethod === BootstrapMethod.UltraFastBootstrap && (
+            </DisableWrap>
+            <DisableWrap disabled={bootstrapMethod !== BootstrapMethod.UltraFastBootstrap}
+                         disableText="Available only for UFBoot bootstrapping method">
                 <div>
                     <b className="pb-2">
                         UFBoot option for reducing impact of severe model violation
@@ -64,8 +66,8 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         falsyText="Off"
                         onChange={v => onChange?.({ ...settings, ufbootOption: v })} />
                 </div>
-            )}
-            {isMultipleGene && (
+            </DisableWrap>
+            <DisableWrap disabled={!isMultipleGene} disableText="Available for multiple genes">
                 <div>
                     <b className="pb-2">
                         Multi-partition sampling strategy :
@@ -90,7 +92,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         }
                     </select>
                 </div>
-            )}
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Single branch tests
@@ -161,7 +163,8 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     </div>
                 </div>
             </div>
-            {singleBranchTests?.includes(SingleBranchTest.SH_aLRT) && (
+            <DisableWrap disabled={!singleBranchTests?.includes(SingleBranchTest.SH_aLRT)}
+                         disableText="Available if SH-like aLRT test is used">
                 <div>
                     <b className="pb-2">
                         Number of aLRT replicates
@@ -178,8 +181,9 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         })}
                         value={approximateLikelihoodReplicate ?? DefaultALRTReplicate} />
                 </div>
-            )}
-            {singleBranchTests?.includes(SingleBranchTest.LocalBootstrap) && (
+            </DisableWrap>
+            <DisableWrap disabled={!singleBranchTests?.includes(SingleBranchTest.LocalBootstrap)}
+                         disableText="Available if local bootstrap test is enabled">
                 <div>
                     <b className="pb-2">
                         Number of local-bootstrap-test replicates
@@ -196,7 +200,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         })}
                         value={localBootstrapReplicate ?? DefaultLocalBootstrapReplicate} />
                 </div>
-            )}
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Enable gCF

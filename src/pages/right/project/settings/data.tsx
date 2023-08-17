@@ -2,6 +2,7 @@ import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTy
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { MinusLogo, PlusLogo } from "../../../../icons";
+import { DisableWrap } from "../components/opaqueWrapping";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});
@@ -32,7 +33,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         [{ name: 'Auto-detect', type: '' }, ...SequenceTypes]
                             .map(option => {
                                 return (
-                                    <option value={option.type}>
+                                    <option value={option.type} key={option.name}>
                                         {option.name}
                                     </option>
                                 )
@@ -40,7 +41,8 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     }
                 </select>
             </div>
-            {settings?.sequenceType === SequenceType.Codon && (
+            <DisableWrap disabled={settings?.sequenceType !== SequenceType.Codon}
+                         disableText="Available if sequence type is Codon">
                 <div>
                     <b className="pb-2">
                         Codon type
@@ -56,7 +58,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                             Codons
                                 .map(option => {
                                     return (
-                                        <option value={option.type}>
+                                        <option value={option.type} key={option.name}>
                                             {option.name}
                                         </option>
                                     )
@@ -64,7 +66,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         }
                     </select>
                 </div>
-            )}
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Alignment file
@@ -129,7 +131,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                     onChange={file => onChange?.({ ...settings, partitionFile: file })}
                     />
             </div>
-            {multipleGenes && (
+            <DisableWrap disabled={!multipleGenes} disableText="Available for multiple genes">
                 <div>
                     <b className="pb-2">
                         Partition type
@@ -153,7 +155,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                         }
                     </select>
                 </div>
-            )}
+            </DisableWrap>
         </div>
     )
 }

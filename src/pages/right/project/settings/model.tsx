@@ -1,6 +1,7 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import { SequenceType } from "../../../../interfaces/dataSettings";
 import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/modelSettings";
+import { DisableWrap } from "../components/opaqueWrapping";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
 function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCategoryCommonProp<ModelSettings> & {
@@ -18,7 +19,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
 
     return (
         <div className="flex flex-col gap-6">
-            {isMultipleGene && (
+            <DisableWrap disabled={!isMultipleGene} disableText="Available for multiple genes">
                 <div>
                     <b className="pb-2">
                         Auto merge partitions
@@ -43,7 +44,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         }
                     </select>
                 </div>
-            )}
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Subtitution model
@@ -103,7 +104,8 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     }
                 </select>
             </div>
-            {substitutionModel && rhasModel && (
+            <DisableWrap disabled={!substitutionModel || !rhasModel}
+                         disableText="Available if substitution model is set (not auto) and RHAS is enabled">
                 <div>
                     <b className="pb-2">
                         Rate categories number
@@ -120,7 +122,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                         })}
                         value={settings?.rateCategories ?? DefaultRateCategories} />
                 </div>
-            )}
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     State frequency
