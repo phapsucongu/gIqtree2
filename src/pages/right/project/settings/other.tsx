@@ -1,3 +1,4 @@
+import { getThreadCommand } from "../../../../command/otherSetting";
 import { OthersSettings } from "../../../../interfaces/othersSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import split from 'argv-split';
@@ -9,6 +10,14 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                 <b className="pb-2">
                     Thread count
                 </b>
+                {settings?.thread && (
+                    <span className="opacity-50 ml-2">
+                        (output :&nbsp;
+                        <span className="font-mono">
+                            {getThreadCommand(settings.thread).join(' ')}
+                        </span>)
+                    </span>
+                )}
                 <input
                     className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="number"

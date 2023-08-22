@@ -89,7 +89,7 @@ function Dashboard() {
                     catch { valid = false };
 
                     let content = (
-                        <div className="p-6 bg-gray-200">
+                        <div className="p-6 bg-gray-200" key={r.path}>
                             <div className="flex flex-row gap-2 items-center">
                                 <div className="flex-grow">
                                     <div className={valid ? '' : 'opacity-50 line-through'}>

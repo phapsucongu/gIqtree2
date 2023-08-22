@@ -1,3 +1,4 @@
+import { getAutoMergePartitionCommand, getSubstitutionModelCommand } from "../../../../command/modelSetting";
 import BinaryOptions from "../../../../component/binaryoptions";
 import { SequenceType } from "../../../../interfaces/dataSettings";
 import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/modelSettings";
@@ -24,6 +25,14 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     <b className="pb-2">
                         Auto merge partitions
                     </b>
+                    {isMultipleGene && settings?.autoMergePartitions && (
+                        <span className="opacity-50 ml-2">
+                            (output :&nbsp;
+                            <span className="font-mono">
+                                {getAutoMergePartitionCommand(settings.autoMergePartitions).join(' ')}
+                            </span>)
+                        </span>
+                    )}
                     <br />
                     <select
                         className="px-1 py-2 w-full input-bordered bg-transparent"
@@ -49,6 +58,14 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 <b className="pb-2">
                     Subtitution model
                 </b>
+                {substitutionModel && (
+                    <span className="opacity-50 ml-2">
+                        (output :&nbsp;
+                        <span className="font-mono">
+                            {getSubstitutionModelCommand(sequenceType, settings).join(' ')}
+                        </span>)
+                    </span>
+                )}
                 <br />
                 <select
                     className="px-1 py-2 w-full input-bordered bg-transparent"
@@ -73,6 +90,14 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 <b className="pb-2">
                     Allow proportion of invariable sites
                 </b>
+                {settings?.proportionOfInvariableSites && (
+                    <span className="opacity-50 ml-2">
+                        (output :&nbsp;
+                        <span className="font-mono">
+                            {getSubstitutionModelCommand(sequenceType, settings).join(' ')}
+                        </span>)
+                    </span>
+                )}
                 <br />
                 <BinaryOptions
                     value={proportionOfInvariableSites ?? false}
@@ -127,6 +152,14 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 <b className="pb-2">
                     State frequency
                 </b>
+                {(substitutionModel && settings?.stateFrequency) && (
+                    <span className="opacity-50 ml-2">
+                        (output :&nbsp;
+                        <span className="font-mono">
+                            {getSubstitutionModelCommand(sequenceType, settings).join(' ')}
+                        </span>)
+                    </span>
+                )}
                 <br />
                 <select
                     className="px-1 py-2 w-full input-bordered bg-transparent"
@@ -136,7 +169,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     })}
                     value={settings?.stateFrequency}>
                     {
-                        [{ name: 'None', type: undefined }, ...availableFrequencies]
+                        [{ name: 'None', type: '' }, ...availableFrequencies]
                             .map(option => {
                                 return (
                                     <option value={option.type}>
@@ -147,17 +180,28 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     }
                 </select>
             </div>
-            <div>
-                <b className="pb-2">
-                    Ascertainment bias correction
-                </b>
-                <br />
-                <BinaryOptions
-                    value={ascertainmentBiasCorrection ?? false}
-                    truthyText="On"
-                    falsyText="Off"
-                    onChange={v => onChange?.({ ...settings, ascertainmentBiasCorrection: v })} />
-            </div>
+            <DisableWrap disableText="Only available if sequence type is DNA/Morphology"
+                         disabled={!sequenceType || ![SequenceType.DNA, SequenceType.Morphology].includes(sequenceType)}>
+                <div>
+                    <b className="pb-2">
+                        Ascertainment bias correction
+                    </b>
+                    {settings?.ascertainmentBiasCorrection && (
+                        <span className="opacity-50 ml-2">
+                            (output :&nbsp;
+                            <span className="font-mono">
+                                {getSubstitutionModelCommand(sequenceType, settings).join(' ')}
+                            </span>)
+                        </span>
+                    )}
+                    <br />
+                    <BinaryOptions
+                        value={ascertainmentBiasCorrection ?? false}
+                        truthyText="On"
+                        falsyText="Off"
+                        onChange={v => onChange?.({ ...settings, ascertainmentBiasCorrection: v })} />
+                </div>
+            </DisableWrap>
         </div>
     )
 }
