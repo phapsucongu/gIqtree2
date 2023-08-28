@@ -29,7 +29,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [, setError] = useState<string>('');
     let buttons = useWindowsButtons();
-    let title = useTitle();
+    let title = useTitle(path);
     let content = <></>;
 
     switch (params.get(ParamKey.ProjectScreen)) {

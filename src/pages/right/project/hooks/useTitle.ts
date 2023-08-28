@@ -1,9 +1,11 @@
 import { basename } from "path";
 import { useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
+import useExecutionState from "./useExecutionState";
 
-function useTitle() {
+function useTitle(path: string) {
     let [params, ] = useSearchParams();
+    let [executing, _, [count, maxCount]] = useExecutionState(path);
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             return 'Settings';
@@ -13,7 +15,11 @@ function useTitle() {
             return basename(file);
         }
         case ProjectScreen.Log: {
-            return 'Console';
+            return 'Console' + (
+                executing
+                ? ` / In Progress (${count} / ${maxCount})`
+                : ''
+            );
         }
     }
 }
