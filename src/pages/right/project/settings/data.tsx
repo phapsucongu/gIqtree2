@@ -3,15 +3,23 @@ import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { MinusLogo, PlusLogo } from "../../../../icons";
 import { DisableWrap } from "../components/opaqueWrapping";
+import { useEffect, useState } from "react";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});
-    let { alignmentFiles } = settings || {};
+    let { alignmentFiles, alignmentFolder } = settings || {};
     if (alignmentFiles) {
         if (!alignmentFiles.filter(Boolean).length) {
             alignmentFiles = undefined;
         }
     }
+
+    let [isFolder, setIsFolder] = useState(!!alignmentFolder);
+    // useEffect(() => {
+    //     setIsFolder(!!alignmentFolder);
+    // }, [settings])
+
+    let isFile = !isFolder;
 
     return (
         <div className="flex flex-col gap-6">
@@ -69,24 +77,72 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
             </DisableWrap>
             <div>
                 <b className="pb-2">
-                    Alignment file
+                    Alignment&nbsp;&nbsp;
+                    <select className="font-bold"
+                        value={isFolder ? 'folder' : 'file'}
+                        onChange={e => {
+                            switch (e.target.value) {
+                                case 'file':
+                                    if (settings?.alignmentFolder) {
+                                        if (window.confirm('Remove configured alignment folder? (This will not delete anything.)')) {
+                                            onChange?.({ ...settings, alignmentFolder: undefined });
+                                        }
+                                        else
+                                        {
+                                            e.target.value = 'folder';
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            return;
+                                        }
+                                    }
+                                    setIsFolder(false);
+                                    break;
+                                case 'folder':
+                                    if (settings?.alignmentFiles?.length) {
+                                        if (window.confirm('Remove configured alignment file(s)? (This will not delete anything.)')) {
+                                            onChange?.({ ...settings, alignmentFiles: undefined });
+                                        }
+                                        else
+                                        {
+                                            e.target.value = 'file';
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            return;
+                                        }
+                                    }
+
+                                    setIsFolder(true);
+                                    break;
+                            }
+                        }}>
+                        <option value={'file'}>
+                            file
+                        </option>
+                        <option value={'folder'}>
+                            folder
+                        </option>
+                    </select>
                 </b>
                 <div className="flex flex-col gap-2">
-                    {(alignmentFiles ?? [undefined])
+                    {((isFile ? alignmentFiles : [alignmentFolder]) ?? [undefined])
                         .map((file, index) => {
                             return (
                                 <div className="flex flex-row items-center gap-2" key={(file ?? '') + index}>
                                     <SettingRowFile
-                                        isFile
-                                        name="Alignment file/folder"
+                                        isFile={isFile}
+                                        name="Choose a location"
                                         file={file}
                                         onChange={file => {
-                                            let newFiles = [...(settings?.alignmentFiles ?? [])];
-                                            newFiles[index] = file;
-                                            onChange?.({ ...settings, alignmentFiles: newFiles?.length ? newFiles : undefined })
+                                            if (isFile) {
+                                                let newFiles = [...(settings?.alignmentFiles ?? [])];
+                                                newFiles[index] = file;
+                                                onChange?.({ ...settings, alignmentFiles: newFiles?.length ? newFiles : undefined })
+                                            } else {
+                                                onChange?.({ ...settings, alignmentFolder: file ? file : undefined })
+                                            }
                                         }}
                                         />
-                                    {((settings?.alignmentFiles?.length ?? 0) > 1) && (
+                                    {((settings?.alignmentFiles?.length ?? 0) > 1) && (isFile) && (
                                         <div className={index ? '' : 'invisible pointer-events-none'}>
                                             <button
                                                 className="bg-pink-600 p-1 rounded-md"
@@ -101,19 +157,21 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                                             </button>
                                         </div>
                                     )}
-                                    <div>
-                                        <button
-                                            className="bg-pink-600 p-1 rounded-md"
-                                            onClick={() => {
-                                                let newFiles = [...(settings?.alignmentFiles ?? [])];
-                                                newFiles.splice(index + 1, 0, '');
-                                                onChange?.({ ...settings, alignmentFiles: newFiles })
-                                            }}>
-                                            <div className="h-6 w-6 mr-px">
-                                                <PlusLogo />
-                                            </div>
-                                        </button>
-                                    </div>
+                                    {isFile && (
+                                        <div>
+                                            <button
+                                                className="bg-pink-600 p-1 rounded-md"
+                                                onClick={() => {
+                                                    let newFiles = [...(settings?.alignmentFiles ?? [])];
+                                                    newFiles.splice(index + 1, 0, '');
+                                                    onChange?.({ ...settings, alignmentFiles: newFiles })
+                                                }}>
+                                                <div className="h-6 w-6 mr-px">
+                                                    <PlusLogo />
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )
                         })
@@ -126,7 +184,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 </b>
                 <SettingRowFile
                     isFile
-                    name="Partition file"
+                    name="Choose a location"
                     file={settings?.partitionFile}
                     onChange={file => onChange?.({ ...settings, partitionFile: file })}
                     />
