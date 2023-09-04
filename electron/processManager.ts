@@ -4,6 +4,8 @@ import { ipcMain } from 'electron-better-ipc';
 import merge from 'merge-stream';
 import { accessSync, chmodSync, constants, statSync } from 'fs';
 import { WriteStream } from 'tty';
+import { Stream } from 'stream';
+import EventEmitter from 'events';
 
 const currentProcess = new Map<string, Task[]>();
 
@@ -13,12 +15,14 @@ interface SpawnData {
     binary: string;
 }
 
-export class Task {
+export class Task extends EventEmitter {
     public readonly binary: string = '';
     public readonly arguments: string[] = [];
     public process: ChildProcess | undefined;
-    public outputStream: ReReadable | undefined;
+    public outputStream?: Stream;
+    public outputBuffer : Buffer[] = [];
     public constructor(binary: string, execArguments: string[]) {
+        super();
         this.binary = binary;
         this.arguments = execArguments;
     }
@@ -27,9 +31,12 @@ export class Task {
         this.process = execFile(this.binary, this.arguments, {
             maxBuffer: 1024 * 1024 * 50
         })
-        this.outputStream = merge(this.process.stdout! as WriteStream, this.process.stderr! as WriteStream)!.pipe(new ReReadable({
-            length: 1024 * 1024 * 50
-        }));
+        this.outputStream = merge(this.process.stdout! as WriteStream, this.process.stderr! as WriteStream)!;
+        this.outputStream.on('data', c => {
+            this.outputBuffer.push(Buffer.from(c));
+            // this.emit('output', this.serialize());
+            this.emit('output');
+        });
 
         console.log(`spawning process id ${this.process.pid} with arguments "${this.arguments.join(' ')}"`);
         this.process.on('exit', () => {
@@ -39,6 +46,10 @@ export class Task {
         });
 
         return this.process;
+    }
+
+    serialize() {
+        return Buffer.concat(this.outputBuffer).toString('utf-8');
     }
 }
 
@@ -64,6 +75,9 @@ ipcMain.answerRenderer('spawn', async (data: SpawnData) => {
             let first : number | undefined;
             for (let task of tasks) {
                 task.start();
+                task.on('output', () => {
+                    ipcMain.sendToRenderers('command-data', { id: data.id, outputs: tasks.map(t => t.serialize()) })
+                })
                 if (first === undefined) {
                     first = task.process!.pid;
                     console.log(`Starting task, first PID is ${first}`);
@@ -98,30 +112,14 @@ ipcMain.answerRenderer('get', (id: string) => {
     );
 })
 
-ipcMain.answerRenderer('get-stdout', async (id: string) => {
-    if (!currentProcess.has(id)) {
-        return false;
-    }
+// ipcMain.answerRenderer('get-stdout', async (id: string) => {
+//     if (!currentProcess.has(id)) {
+//         return false;
+//     }
 
-    let tasks = currentProcess.get(id)!;
-    let result = tasks.map(async t => {
-        const chunks: Buffer[] = [];
-        if (!t.outputStream) return '';
-
-        let stdout = await new Promise((res, rej) => {
-            let stream = t.outputStream!.rewind();
-            stream.on('data', c => chunks.push(Buffer.from(c)));
-            stream.on('error', rej);
-            let output = () => res(Buffer.concat(chunks).toString('utf-8'));
-            setTimeout(output, 100);
-            stream.on('end', output)
-        })
-
-        return stdout as string;
-    })
-
-    return await Promise.all(result);
-})
+//     let tasks = currentProcess.get(id)!;
+//     return tasks.map(t => t.serialize());
+// })
 
 ipcMain.answerRenderer('kill', async (id: string) => {
     if (!currentProcess.has(id)) {
@@ -134,5 +132,5 @@ ipcMain.answerRenderer('kill', async (id: string) => {
 
 ipcMain
     .on('spawn', console.log)
-    .on('get-stdout', console.log)
+    // .on('get-stdout', console.log)
     .on('get', console.log);

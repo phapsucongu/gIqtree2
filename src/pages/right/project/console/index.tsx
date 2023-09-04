@@ -24,21 +24,11 @@ function Console({ path } : { path: string }) {
     }, [path, executing]);
 
     useEffect(() => {
-        let refreshLog = async () => {
-            let result: string[] | false = await ipcRenderer.callMain('get-stdout', path);
-            if (result) {
-                setLog(result);
+        ipcRenderer.on('command-data', (ev, data : { id: string, outputs: string[] }) => {
+            if (data.id === path) {
+                setLog(data.outputs);
             }
-        };
-        if (executing) {
-            let interval = setInterval(refreshLog, 100);
-            return () => {
-                clearInterval(interval)
-            }
-        }
-        else {
-            refreshLog();
-        }
+        });
     }, [path, executing])
 
     return (
