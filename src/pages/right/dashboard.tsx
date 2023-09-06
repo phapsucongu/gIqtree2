@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useWindowsButtons from "../../hooks/useWindowsButtons";
 import { CloseLogo } from "../../icons";
-import { ParamKey } from "../../paramKey";
+import { ParamKey, ProjectScreen } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
 import { readSettingsFileSync } from "../../utils/settingsFile";
@@ -129,7 +129,8 @@ function Dashboard() {
                     return (
                         valid
                         ? (
-                            <Link key={r.path} to={normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))}>
+                            <Link key={r.path}
+                                to={normalize(AppRoute.Project + "/" + encodeURIComponent(r.path)) + `?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`}>
                                 {content}
                             </Link>
                         )
