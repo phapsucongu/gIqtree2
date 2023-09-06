@@ -112,14 +112,14 @@ ipcMain.answerRenderer('get', (id: string) => {
     );
 })
 
-// ipcMain.answerRenderer('get-stdout', async (id: string) => {
-//     if (!currentProcess.has(id)) {
-//         return false;
-//     }
+ipcMain.answerRenderer('get-stdout', async (id: string) => {
+    if (!currentProcess.has(id)) {
+        return false;
+    }
 
-//     let tasks = currentProcess.get(id)!;
-//     return tasks.map(t => t.serialize());
-// })
+    let tasks = currentProcess.get(id)!;
+    return tasks.map(t => t.serialize());
+})
 
 ipcMain.answerRenderer('kill', async (id: string) => {
     if (!currentProcess.has(id)) {

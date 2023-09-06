@@ -5,7 +5,7 @@ import useExecutionState from "./useExecutionState";
 
 function useTitle(path: string) {
     let [params, ] = useSearchParams();
-    let [executing, _, [count, maxCount]] = useExecutionState(path);
+    let [executing, , [count, maxCount]] = useExecutionState(path);
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             return 'Settings';

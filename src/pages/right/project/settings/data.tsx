@@ -3,7 +3,7 @@ import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { MinusLogo, PlusLogo } from "../../../../icons";
 import { DisableWrap } from "../components/opaqueWrapping";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSettings>) {
     let multipleGenes = isMultipleGene(settings || {});

@@ -24,6 +24,14 @@ function Console({ path } : { path: string }) {
     }, [path, executing]);
 
     useEffect(() => {
+        ipcRenderer.callMain('get-stdout', (res : false | string[]) => {
+            if (res) {
+                setLog(res);
+            }
+        })
+    }, [])
+
+    useEffect(() => {
         ipcRenderer.on('command-data', (ev, data : { id: string, outputs: string[] }) => {
             if (data.id === path) {
                 setLog(data.outputs);
