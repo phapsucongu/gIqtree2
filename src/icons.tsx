@@ -130,3 +130,20 @@ export const MinusLogo = memo(
         </svg>
     )
 )
+
+export const MagnifierLogo = memo(
+    () => (
+        <svg width="25" height="25" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_677_19)">
+                <path d="M5.5 9.5C7.70914 9.5 9.5 7.70914 9.5 5.5C9.5 3.29086 7.70914 1.5 5.5 1.5C3.29086 1.5 1.5 3.29086 1.5 5.5C1.5 7.70914 3.29086 9.5 5.5 9.5Z" stroke="#8B8B8B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M11 11L9 9" stroke="#8B8B8B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </g>
+            <defs>
+                <clipPath id="clip0_677_19">
+                    <rect width="12" height="12" fill="white"/>
+                </clipPath>
+            </defs>
+        </svg>
+
+    )
+)

@@ -3,7 +3,7 @@ import { basename, normalize, sep } from "path";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useWindowsButtons from "../../hooks/useWindowsButtons";
-import { CloseLogo } from "../../icons";
+import { CloseLogo, MagnifierLogo } from "../../icons";
 import { ParamKey, ProjectScreen } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
@@ -70,13 +70,14 @@ function Dashboard() {
                         Recent
                     </b>
                 </div>
-                <div className="pr-2">
+                <div className="px-2 flex flex-row gap-3 h-fit items-center border-2 border-gray-400 rounded-md">
+                    <MagnifierLogo />
                     <input
                         onChange={e => {
                             setSearch(e.target.value);
                         }}
-                        className="w-full p-2 border-b border-b-black"
-                        placeholder="Search..."
+                        className="w-full p-2 pb-1"
+                        placeholder="Search your project..."
                         />
                 </div>
             </div>
