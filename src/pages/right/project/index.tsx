@@ -28,6 +28,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let [settings, setSettings] = useState<Settings | null>();
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
     let [, setError] = useState<string>('');
+    let [wordWrap, setWordWrap] = useState(false);
     let buttons = useWindowsButtons();
     let title = useTitle(path);
     let content = <></>;
@@ -44,11 +45,11 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
             break;
         }
         case ProjectScreen.File: {
-            content = <File />
+            content = <File wrap={wordWrap} />
             break;
         }
         case ProjectScreen.Log: {
-            content = <Console path={path} />;
+            content = <Console path={path} wrap={wordWrap} />;
             break;
         }
         case ProjectScreen.Copy: {
@@ -98,6 +99,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                 setOriginalSettings(settings);
                 writeSettingsFileSync(path, settings);
             }
+        },
+        {
+            enabled: wordWrap,
+            onChange: (e) => setWordWrap(e)
         }
     );
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import TextView from "../components/textView";
 import useExecutionState from "../hooks/useExecutionState";
 
-function Console({ path } : { path: string }) {
+function Console({ path, wrap } : { path: string, wrap?: boolean }) {
     let [executing] = useExecutionState(path);
     let [log, setLog] = useState<string[]>([]);
 
@@ -41,7 +41,7 @@ function Console({ path } : { path: string }) {
 
     return (
         <>
-            <TextView autoscroll={true} content={log.join('\n')} />
+            <TextView wrap={wrap} autoscroll={true} content={log.join('\n')} />
         </>
     )
 }

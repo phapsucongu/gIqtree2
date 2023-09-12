@@ -7,21 +7,45 @@ import { getBinaryPath } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
 import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
+import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
+
+interface WordWrapSettings {
+    enabled: boolean,
+    onChange: (enabled: boolean) => void;
+}
 
 function useActionButtons(
     path: string,
     preparedCommand: string[][],
     preparedCommandWithRedo: string[][],
-    onSaveSettings: () => void | undefined
+    onSaveSettings?: () => void | undefined,
+    wordWrap?: WordWrapSettings
 ) {
     let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
 
+    let wordWrapButton = wordWrap?.enabled
+        ? (
+            <PositiveButton onClick={() => wordWrap?.onChange(!wordWrap?.enabled)}>
+                <div className="flex flex-row gap-4">
+                    <WrapLogoLight /> Word wrap
+                </div>
+            </PositiveButton>
+        )
+        : (
+            <NegativeButton onClick={() => wordWrap?.onChange(!wordWrap?.enabled)}>
+                <div className="flex flex-row gap-4">
+                    <WrapLogoOpaque /> Word wrap
+                </div>
+            </NegativeButton>
+        )
+
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             return (
                 <>
+                    {wordWrapButton}
                     <NegativeButton onClick={() => navigate(-1)}>
                         Cancel
                     </NegativeButton>
@@ -74,6 +98,13 @@ function useActionButtons(
                         }}>
                         Execute
                     </PositiveButton>
+                </>
+            )
+        }
+        case ProjectScreen.File: {
+            return (
+                <>
+                    {wordWrapButton}
                 </>
             )
         }

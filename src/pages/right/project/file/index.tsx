@@ -8,7 +8,7 @@ import { ParamKey } from "../../../../paramKey";
 import TextView from "../components/textView";
 import TreeView from "../components/treeView";
 
-function File() {
+function File({ wrap } : { wrap?: boolean }) {
     let [params] = useSearchParams();
     let file = params.get(ParamKey.ProjectFile)!;
     let [content, setContent] = useState('');
@@ -60,7 +60,7 @@ function File() {
                 </div>
             )}
             {!error && (
-                isTree ? <TreeView file={file} content={content} /> : <TextView autoscroll={false} content={content} />
+                isTree ? <TreeView file={file} content={content} /> : <TextView wrap={wrap} autoscroll={false} content={content} />
             )}
         </div>
     )
