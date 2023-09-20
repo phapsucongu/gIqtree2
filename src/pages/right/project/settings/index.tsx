@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataSetting from './data';
 import ModelSetting from './model';
 import AssessmentSetting from './assessment';
@@ -18,10 +18,15 @@ enum CurrentSetting {
 }
 
 function SettingsSubPage(
-    { setting, onChange }:
-    { setting: Settings, onChange?: (newSetting: Settings) => void }
+    { setting, onChange, onReset }:
+    { setting: Settings, onChange?: (newSetting: Settings) => void, onReset?: () => void }
 ) {
     let [current, setCurrent] = useState(CurrentSetting.Data);
+    useEffect(() => {
+        return () => {
+            onReset?.();
+        }
+    }, [onReset])
 
     let settingCategories = [
         {

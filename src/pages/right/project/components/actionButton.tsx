@@ -3,7 +3,9 @@ const NegativeButton = (props: React.ComponentProps<'button'>) => (
 )
 
 const PositiveButton = (props: React.ComponentProps<'button'>) => (
-    <button className="py-1 px-8 lg:px-16 border-2 text-white bg-pink-600 border-pink-600 rounded-lg" {...props} />
+    <button
+        className={`py-1 px-8 lg:px-16 border-2 text-white bg-pink-600 border-pink-600 disabled:border-pink-300 disabled:bg-pink-300 rounded-lg`}
+        {...props} />
 )
 
 export { PositiveButton, NegativeButton };

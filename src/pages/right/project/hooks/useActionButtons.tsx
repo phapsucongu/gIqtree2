@@ -14,12 +14,17 @@ interface WordWrapSettings {
     onChange: (enabled: boolean) => void;
 }
 
-function useActionButtons(
+interface ActionButtonsConfig {
     path: string,
     preparedCommand: string[][],
     preparedCommandWithRedo: string[][],
     onSaveSettings?: () => void | undefined,
-    wordWrap?: WordWrapSettings
+    wordWrap?: WordWrapSettings,
+    canSaveSettings?: boolean
+}
+
+function useActionButtons(
+    { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings } : ActionButtonsConfig
 ) {
     let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
@@ -45,11 +50,11 @@ function useActionButtons(
         case ProjectScreen.Setting: {
             return (
                 <>
-                    {wordWrapButton}
                     <NegativeButton onClick={() => navigate(-1)}>
                         Cancel
                     </NegativeButton>
                     <PositiveButton
+                        disabled={!canSaveSettings}
                         onClick={() => {
                             onSaveSettings?.();
                             setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy });

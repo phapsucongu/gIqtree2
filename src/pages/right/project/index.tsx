@@ -40,6 +40,9 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     setting={settings!}
                     onChange={s => {
                         setSettings(s);
+                    }}
+                    onReset={() => {
+                        setSettings(originalSettings);
                     }}/>
                 : <></>
             break;
@@ -91,19 +94,22 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     }
 
     let actions = useActionButtons(
-        path,
-        preparedCommand,
-        preparedCommandWithRedo,
-        () => {
-            if (settings) {
-                setOriginalSettings(settings);
-                writeSettingsFileSync(path, settings);
-            }
-        },
         {
-            enabled: wordWrap,
-            onChange: (e) => setWordWrap(e)
-        }
+            path,
+            preparedCommand,
+            preparedCommandWithRedo,
+            onSaveSettings: () => {
+                if (settings) {
+                    setOriginalSettings(settings);
+                    writeSettingsFileSync(path, settings);
+                }
+            },
+            wordWrap: {
+                enabled: wordWrap,
+                onChange: (e) => setWordWrap(e)
+            },
+            canSaveSettings: originalSettings !== settings
+        },
     );
 
     return (
