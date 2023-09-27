@@ -6,6 +6,7 @@
   "private": true,
   "author": "gIqtree team <test@example.com>",
   "dependencies": {
+    "@asymme1/phylotree-visualization-demo": "^1.2.7",
     "@craco/craco": "7.0.0-alpha.3",
     "@electron/remote": "^2.0.8",
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -57,7 +58,7 @@
     "web-vitals": "^2.1.4"
   },
   "resolutions": {
-    "@types/react": "^17.0.39"
+    "phylotree-visualization-demo/d3-react-axis/react": "^17.0.2"
   },
   "scripts": {
     "start": "craco start",
