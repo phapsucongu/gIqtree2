@@ -1,5 +1,5 @@
 import { basename, join, normalize } from "path";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useMatch, useSearchParams } from "react-router-dom";
 import { Settings } from "../../../interfaces";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
@@ -33,6 +33,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
     let title = useTitle(path);
     let content = <></>;
 
+    let resetCallback = useCallback(() => {
+        setSettings(originalSettings);
+    }, [originalSettings]);
+
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             content = settings
@@ -41,9 +45,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                     onChange={s => {
                         setSettings(s);
                     }}
-                    onReset={() => {
-                        setSettings(originalSettings);
-                    }}/>
+                    onReset={resetCallback}/>
                 : <></>
             break;
         }
