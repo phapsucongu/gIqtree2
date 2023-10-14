@@ -83,7 +83,8 @@ function useActionButtons(
                                 await ipcRenderer.callMain('spawn', {
                                     id: path,
                                     arguments: preparedCommand,
-                                    binary: getBinaryPath()
+                                    binary: getBinaryPath(),
+                                    cwd: path
                                 });
                                 refresh();
                             }}>
@@ -97,7 +98,8 @@ function useActionButtons(
                             await ipcRenderer.callMain('spawn', {
                                 id: path,
                                 arguments: preparedCommandWithRedo,
-                                binary: getBinaryPath()
+                                binary: getBinaryPath(),
+                                cwd: path
                             });
                             refresh();
                         }}>

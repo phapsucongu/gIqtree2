@@ -1,10 +1,16 @@
 import { Settings } from "../interfaces";
+import { BootstrapMethod } from "../interfaces/assessmentSettings";
 import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop } from "../interfaces/treeSearchSettings";
 
-function prepare({ treeSearch } : Settings) {
+function prepare({ treeSearch, assessment } : Settings) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, constrainedTreeFile, referenceTreeFile, outgroupTaxa } = treeSearch;
     let output : string[] = [];
-    if (!enabled) output.push('-n', '0');
+    if (!enabled) {
+        // conflict with UFBoot.
+        if (assessment?.bootstrapMethod !== BootstrapMethod.UltraFastBootstrap) {
+            output.push('-n', '0');
+        }
+    }
     if (unsuccessfulIterationsStop !== DefaultUnsuccessfulIterationStop && unsuccessfulIterationsStop) {
         output.push('--nstop', unsuccessfulIterationsStop.toString())
     }

@@ -10,7 +10,7 @@ function useExecutionState(path: string) {
         let processes: { process: ChildProcess }[] | false = await ipcRenderer.callMain('get', path);
         if (processes) {
             let runningCount = processes
-                .map(p => +!!(p.process.exitCode === null && !p.process.signalCode))
+                .map(p => +!!(p.process && p.process.exitCode === null && !p.process.signalCode))
                 .reduce((a, b) => a + b, 0);
             setExecuting(!!runningCount);
             setCount([runningCount, processes.length]);

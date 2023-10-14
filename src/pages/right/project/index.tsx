@@ -60,7 +60,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         case ProjectScreen.Copy: {
             content = <Copy
                 files={
-                    listDependentFileEntries(settings!)
+                    listDependentFileEntries(settings)
                         .map(f => {
                             return {
                                 source: f,

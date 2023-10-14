@@ -13,23 +13,27 @@ interface SpawnData {
     id: string;
     arguments: string[][];
     binary: string;
+    cwd: string
 }
 
 export class Task extends EventEmitter {
     public readonly binary: string = '';
     public readonly arguments: string[] = [];
+    public readonly cwd: string = '';
     public process: ChildProcess | undefined;
     public outputStream?: Stream;
     public outputBuffer : Buffer[] = [];
-    public constructor(binary: string, execArguments: string[]) {
+    public constructor(binary: string, execArguments: string[], cwd: string) {
         super();
         this.binary = binary;
         this.arguments = execArguments;
+        this.cwd = cwd;
     }
 
     start() {
         this.process = execFile(this.binary, this.arguments, {
-            maxBuffer: 1024 * 1024 * 50
+            maxBuffer: 1024 * 1024 * 50,
+            cwd: this.cwd
         })
         this.outputStream = merge(this.process.stdout! as WriteStream, this.process.stderr! as WriteStream)!;
         this.outputStream.on('data', c => {
@@ -60,13 +64,14 @@ ipcMain.answerRenderer('spawn', async (data: SpawnData) => {
             return false;
     }
 
-    let tasks = data.arguments.map(process => new Task(data.binary, process));
+    let tasks = data.arguments.map(process => new Task(data.binary, process, data.cwd));
     currentProcess.set(data.id, tasks);
 
     let split = async () => {
         try {
             try {
                 accessSync(data.binary, constants.X_OK);
+
             } catch {
                 let fileStat = statSync(data.binary);
                 chmodSync(data.binary, fileStat.mode | constants.S_IXUSR);

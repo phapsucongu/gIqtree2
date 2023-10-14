@@ -45,7 +45,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
     }
 
     if (setting.assessment.scf?.quartet) {
-        final.push('-s', setting.data.alignmentFolder || setting.data.alignmentFiles!.join(','));
+        final.push('-s', setting.data.alignmentFolder || setting.data.alignmentFiles?.join(',') || '');
         final.push('--scf', setting.assessment.scf?.quartet.toString())
     }
 
