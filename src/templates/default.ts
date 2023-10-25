@@ -1,7 +1,7 @@
 
 import { Settings } from "../interfaces";
 import { PartitionType } from "../interfaces/dataSettings";
-import { AutoMergePartitions } from "../interfaces/modelSettings";
+// import { AutoMergePartitions } from "../interfaces/modelSettings";
 
 function defaultSettings(): Settings {
     return {
@@ -12,7 +12,7 @@ function defaultSettings(): Settings {
         assessment: {},
         dating: {},
         model: {
-            autoMergePartitions: AutoMergePartitions.RClusterF
+            // autoMergePartitions: AutoMergePartitions.RClusterF
         }
     }
 }
