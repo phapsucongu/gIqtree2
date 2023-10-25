@@ -18,12 +18,14 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
     if (alignmentFiles?.length) alignmentFiles = alignmentFiles.filter(file => file);
 
     let multipleGene = isMultipleGene(data);
+    let alreadyAddedSingleAlignmentFile = false;
 
     if (multipleGene) {
         let partition: string;
         if (data.partitionFile) {
             partition = data.partitionFile;
             output.push('-s', data.alignmentFolder || alignmentFiles!.join(','));
+            alreadyAddedSingleAlignmentFile = alignmentFiles?.length === 1;
         }
         else {
             partition = data.alignmentFolder || alignmentFiles!.join(',');
@@ -48,7 +50,7 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
         }
     }
 
-    if (alignmentFiles?.length === 1) {
+    if (alignmentFiles?.length === 1 && !alreadyAddedSingleAlignmentFile) {
         output.push('-s', alignmentFiles[0]);
     }
 
