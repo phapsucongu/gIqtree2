@@ -217,14 +217,19 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     sCF quartet number (0 to disable sCF)
                 </b>
                 <input
-                    min={0}
                     className="px-1 py-2 w-full input-bordered bg-transparent"
                     type="number"
-                    onChange={e => onChange?.({
-                        ...settings,
-                        scf: { ...scf, quartet: e.target.valueAsNumber || undefined }
-                    })}
-                    value={scf?.quartet ?? 0} />
+                    onChange={e => {
+                        let quartet = e.target.valueAsNumber || undefined;
+                        if (typeof quartet === 'number' && quartet < 0) {
+                            quartet = undefined;
+                        }
+                        onChange?.({
+                            ...settings,
+                            scf: { ...scf, quartet }
+                        })
+                    }}
+                    value={scf?.quartet ?? undefined} />
             </div>
             <div>
                 <b className="pb-2">

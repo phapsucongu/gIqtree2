@@ -44,9 +44,9 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         }
     }
 
-    if (setting.assessment.scf?.quartet) {
+    if (setting.assessment.scf?.quartet! > 0) {
         final.push('-s', setting.data.alignmentFolder || setting.data.alignmentFiles?.join(',') || '');
-        final.push('--scf', setting.assessment.scf?.quartet.toString())
+        final.push('--scf', setting.assessment.scf!.quartet!.toString())
     }
 
     let geneTree : string[] = [];
