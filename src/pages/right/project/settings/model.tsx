@@ -69,10 +69,16 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                 <br />
                 <select
                     className="px-1 py-2 w-full input-bordered bg-transparent"
-                    onChange={e => onChange?.({
-                        ...settings,
-                        substitutionModel: (e.target.value || undefined) as SubstitutionModel | undefined
-                    })}
+                    onChange={e => {
+                        let value = (e.target.value || undefined) as SubstitutionModel | undefined;
+                        if (value?.toString() === 'Automatic') {
+                            value = undefined;
+                        }
+                        onChange?.({
+                            ...settings,
+                            substitutionModel: value
+                        })
+                    }}
                     value={substitutionModel}>
                     {
                         availableModels
