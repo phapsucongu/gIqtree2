@@ -19,6 +19,8 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
         ...datingSetting(setting)
     ]
 
+    let overwriteBasename = setting?.others?.prefix;
+
     let speciesTree : string[] = [];
     let concordanceFactorEnabled = !!(setting.assessment.scf?.quartet || setting.assessment.gcf?.enabled);
     let commonThreadCount = setting.others?.thread ? setting.others?.thread : cpus().length;
@@ -77,7 +79,7 @@ export function prepareCommand (setting: Settings, basename: string, outputPath?
     final = final
         .concat(...othersSetting(
             setting,
-            outputPath ? join(outputPath, basename) : undefined,
+            outputPath ? join(outputPath, overwriteBasename ?? basename) : undefined,
             concordanceFactorEnabled ? commonThreadCount : undefined
         ))
         .concat(...(resume ? [] : ['--redo']))

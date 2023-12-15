@@ -6,13 +6,13 @@ export function getThreadCommand(threadCount? : number) {
 
 function prepare({ others }: Settings, defaultPrefix?: string, threadOverwrite?: number) {
     let output: string[] = [];
-    let { thread, prefix } = others ?? {};
+    let { thread } = others ?? {};
     if (threadOverwrite)
         thread = threadOverwrite;
     output.push(...getThreadCommand(thread))
 
-    if (prefix || defaultPrefix)
-        output.push('--prefix', (prefix || defaultPrefix)!);
+    if (defaultPrefix)
+        output.push('--prefix', defaultPrefix);
 
     return output;
 }
