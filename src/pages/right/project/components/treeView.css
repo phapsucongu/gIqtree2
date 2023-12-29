@@ -1,0 +1,12 @@
+.dropdown-item {
+    background-color: white;
+    border-bottom-width: 1px;
+    border-color: black;
+    padding: 0.5rem;
+}
+
+.dropdown-menu {
+    display: flex !important;
+    flex-direction: column;
+    box-shadow: 1px 1px 1px 1px;
+}
