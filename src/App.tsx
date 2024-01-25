@@ -3,8 +3,8 @@ import { HashRouter } from 'react-router-dom';
 import BinaryDownload from './pages/binarydownload';
 import SplitPane from 'react-split-pane';
 import useResizeObserver from 'use-resize-observer';
-import Left from './pages/left';
-import Right from './pages/right';
+import Left from './pages/left/index';
+import Right from './pages/right/index';
 
 let width = window.visualViewport.width;
 let initial = Math.max(200, Math.floor(width / 5));

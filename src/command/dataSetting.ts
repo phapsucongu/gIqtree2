@@ -25,6 +25,7 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
         if (data.partitionFile) {
             partition = data.partitionFile;
             output.push('-s', data.alignmentFolder || alignmentFiles!.join(','));
+            // alignment folder might be added - however if alignment folder is used, there would be no alignment file
             alreadyAddedSingleAlignmentFile = alignmentFiles?.length === 1;
         }
         else {

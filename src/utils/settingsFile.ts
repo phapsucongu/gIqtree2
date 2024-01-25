@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 import { Settings } from '../interfaces';
-import { getTemplateSettings } from '../templates';
+import { getTemplateSettings } from '../templates/index';
 
 const filename = 'settings.json';
 

@@ -1,0 +1,1 @@
+export type RecentRecord = { path: string, timestamp: string };

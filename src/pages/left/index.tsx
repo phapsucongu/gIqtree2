@@ -1,8 +1,8 @@
 import { normalize } from 'path';
 import { Routes, Route } from 'react-router-dom'
 import { AppRoute } from '../../routes';
-import Dashboard from './dashboard/';
-import Project from './project/';
+import Dashboard from './dashboard/index';
+import Project from './project/index';
 function Left() {
     return (
         <Routes>

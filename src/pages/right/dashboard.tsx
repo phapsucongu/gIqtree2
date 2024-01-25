@@ -9,23 +9,22 @@ import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
 import { readSettingsFileSync } from "../../utils/settingsFile";
 import { ClockIcon, FileIcon } from "./icons";
+import type { RecentRecord } from "../../record";
 
 const types = [
     { name: "Blank Project", type: 0 },
     ...TemplateTypes
 ]
 
-export type Record = { path: string, timestamp: string };
-
 function Dashboard() {
-    let [records, setRecord] = useState<Record[]>([]);
+    let [records, setRecord] = useState<RecentRecord[]>([]);
     let [search, setSearch] = useState('');
     let buttons = useWindowsButtons();
 
     let load = () => {
         ipcRenderer.callMain('db_list')
             .then(r => setRecord(
-                (r as Record[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
+                (r as RecentRecord[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
             ))
     }
 

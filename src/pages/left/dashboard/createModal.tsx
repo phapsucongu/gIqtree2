@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { useWindow } from "../../../hooks/useWindow";
 import { getTemplateSettings, TemplateType, TemplateTypes } from "../../../templates";
-import type { Record } from '../../right/dashboard';
 import { normalize, join } from 'path';
 import { accessSync, constants, existsSync, lstatSync, mkdirSync } from "fs";
 import { hasSettingsFileSync, writeSettingsFileSync } from "../../../utils/settingsFile";
@@ -13,6 +12,7 @@ import './createModal.css';
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../../routes";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
+import { RecentRecord } from "../../../record";
 
 interface ModalProps extends ReactModal.Props {
     template: TemplateType | 0;
@@ -44,7 +44,7 @@ function CreateModal (props: ModalProps) {
     useEffect(() => {
         ipcRenderer.callMain('db_list')
             .then(r => {
-                let record = (r as Record[]);
+                let record = (r as RecentRecord[]);
                 if (record.length !== 0)
                     setBasePath(normalize(join(record[0].path, '..')));
             })
