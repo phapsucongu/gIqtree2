@@ -1,0 +1,10 @@
+diff --git a/node_modules/@types/ssh2/index.d.ts b/node_modules/@types/ssh2/index.d.ts
+index 8b1445b..f19b075 100644
+--- a/node_modules/@types/ssh2/index.d.ts
++++ b/node_modules/@types/ssh2/index.d.ts
+@@ -1,5 +1,3 @@
+-/// <reference types="node" />
+-
+ import { EventEmitter } from "events";
+ import { Agent as BaseHTTPAgent, AgentOptions } from "http";
+ import { Agent as BaseHTTPSAgent } from "https";

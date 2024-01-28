@@ -1,4 +1,3 @@
-import { readFileSync } from "fs-extra";
 import { extname } from "path";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -7,6 +6,16 @@ import BinaryOptions from "../../../../component/binaryoptions";
 import { ParamKey } from "../../../../paramKey";
 import TextView from "../components/textView";
 import TreeView from "../components/treeView";
+import useSsh from "../../../../hooks/useSsh";
+import { ipcRenderer } from "electron-better-ipc";
+
+async function readFile(path: string, key: string) {
+    let result: string = key
+            ? await ipcRenderer.callMain('file_read_string_ssh', [key, path])
+            : await ipcRenderer.callMain('file_read_string', path);
+
+    return result;
+}
 
 function File({ wrap } : { wrap?: boolean }) {
     let [params] = useSearchParams();
@@ -16,20 +25,23 @@ function File({ wrap } : { wrap?: boolean }) {
     let [loading, setLoading] = useState(false);
     let [isTree, setIsTree] = useState(false);
     let { ref: containerRef } = useResizeObserver();
+    let ssh = useSsh();
 
     let isTreeFile = ['.treefile'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
 
     useEffect(() => {
-        try {
-            setLoading(true);
-            setContent(readFileSync(file, 'utf8'));
-            setError('');
-            setLoading(false);
-        } catch (e) {
-            setError(`${e}`);
-            setLoading(false);
-        }
+        (async () => {
+            try {
+                setLoading(true);
+                setContent(await readFile(file, ssh));
+                setError('');
+                setLoading(false);
+            } catch (e) {
+                setError(`${e}`);
+                setLoading(false);
+            }
+        })();
     }, [file]);
 
     return (

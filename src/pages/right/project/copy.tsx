@@ -1,7 +1,22 @@
-import { realpathSync } from 'fs';
-import { copySync } from 'fs-extra';
+import { ipcRenderer } from 'electron-better-ipc';
+import { dirname } from 'path';
 import { useEffect, useState } from 'react';
-import { sync as rimraf } from 'rimraf';
+import useSsh from '../../../hooks/useSsh';
+
+async function copy(src: string, dst: string, ssh: string = '') {
+    if (ssh) {
+        return await ipcRenderer.callMain('file_copy_ssh', [src, [ssh, dst]]) as boolean;
+    }
+    return await ipcRenderer.callMain('file_copy', [src, dst]) as boolean;
+}
+
+async function mkdir(path: string, ssh: string = '') {
+    if (ssh) {
+        let res = await ipcRenderer.callMain('create_directory_ssh', [ssh, path, true]);
+        return res;
+    }
+    return await ipcRenderer.callMain('create_directory', [path, true]);
+}
 
 function listDupes(str : string[]) {
     let m = new Map<string, number>();
@@ -16,36 +31,40 @@ function listDupes(str : string[]) {
 }
 
 function Copy({ files, onReady } : { files: { source: string, destination: string }[], onReady?: (copied: Map<string, string>) => void }) {
+    let ssh = useSsh();
     files = files.filter(a => a.source);
     let [copied, setCopied] = useState<Map<string, string>>(new Map());
     let dupes = listDupes(files.map(v => v.destination));
     let [err, setErr] = useState('');
 
     useEffect(() => {
-        setErr('');
-        if (dupes.length) return;
+        async function c() {
+            setErr('');
+            if (dupes.length) return;
 
-        try {
-            let c = new Map<string, string>();
+            try {
+                let c = new Map<string, string>();
 
-            for (let { source, destination } of files) {
-                if (realpathSync(source) !== destination) {
-                    rimraf(destination);
-                    copySync(source, destination);
+                for (let { source, destination } of files) {
+                    let basedir = dirname(destination);
+                    await mkdir(basedir, ssh);
+                    await copy(source, destination, ssh);
+
+                    setCopied(
+                        c = new Map([
+                            ...copied,
+                            [source, destination]
+                        ])
+                    );
                 }
 
-                setCopied(
-                    c = new Map([
-                        ...copied,
-                        [source, destination]
-                    ])
-                );
+                onReady?.(c);
+            } catch (e) {
+                setErr(`${e}`);
             }
-
-            onReady?.(c);
-        } catch (e) {
-            setErr(`${e}`);
         }
+
+        c();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

@@ -1,11 +1,12 @@
 import { Tree } from "react-arborist";
-import { statSync, readdirSync } from "fs";
-import { basename, join } from "path";
+import { basename } from "path";
 import { memo, useContext, useEffect, useState } from "react";
 import { LeftPaneWidthContext } from "../../../App";
 import { Link, useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { diff } from 'deep-object-diff';
+import { ipcRenderer } from "electron-better-ipc";
+import useSsh from "../../../hooks/useSsh";
 
 type Node = {
     id: string;
@@ -15,44 +16,35 @@ type Node = {
     isFolder: boolean;
 }
 
-function recurse(path: string) {
-    const baseNode: Node = { id: path, name: basename(path), path, isFolder: false }
-
-    try {
-        if (statSync(path).isDirectory()) {
-            baseNode.isFolder = true;
-            baseNode.children = readdirSync(path)
-                .map(dir => join(path, dir))
-                .map(recurse);
-        }
-    } catch (e: any) {
-        if (e.code !== 'ENOENT') {
-            // ENOENTs happen because the statSync call may run when the file is gone
-            throw e;
-        }
+async function recurse(path: string, ssh : string | null = '') {
+    if (ssh) {
+        return await ipcRenderer.callMain('recurse_ssh', [ssh, path]) as Node;
     }
-
-    return baseNode;
+    return await ipcRenderer.callMain('recurse', path) as Node;
 }
 
 function Files({ path, current,  height, width }: { path: string, current: string, height: number, width: number }) {
+    let ssh = useSsh();
     let [tree, setTree] = useState({ id: path, name: basename(path), path, isFolder: false });
 
     useEffect(() => {
-        setTree(recurse(path));
-    }, [path])
+        (async function () {
+            let r = await recurse(path, ssh);
+            setTree(r);
+        })();
+    }, [path, ssh]);
 
     useEffect(() => {
-        let interval = setInterval(() => {
+        let interval = setInterval(async () => {
             let old = tree;
-            let current = recurse(path);
+            let current = recurse(path, ssh);
             if (Object.keys(diff(old, current)).length)
             {
-                setTree(recurse(path));
+                setTree(await recurse(path, ssh));
             }
         }, 1500);
         return () => clearInterval(interval);
-    }, [path, tree]);
+    }, [path, tree, ssh]);
 
     return (
         <div>
@@ -67,7 +59,7 @@ function Files({ path, current,  height, width }: { path: string, current: strin
                     let chosen = current === data.path;
                     let link = (
                         <Link
-                            to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}
+                            to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}&${ParamKey.SshConnection}=${ssh || ''}`}
                             className={chosen ? ' bg-pink-600 p-0.5 rounded-md text-white' : ''}>
                             {data.name}
                         </Link>

@@ -11,16 +11,20 @@ import SettingsSubPage from "./settings/index";
 import useActionButtons from "./hooks/useActionButtons";
 import useTitle from "./hooks/useTitle";
 import { prepareCommand } from "../../../command/index";
-import { getInputFolder, getOutputFolder } from "./folder";
+import { ensureInputOutputFolder, getInputFolder, getOutputFolder } from "./folder";
 import useWindowsButtons from "../../../hooks/useWindowsButtons";
 import useResizeObserver from "use-resize-observer";
 import { HeightContext } from "../../../App";
 import Copy from "./copy";
 import remap from "../../../utils/remapInputFiles";
 import listDependentFileEntries from "../../../utils/listDependentFileEntries";
+import BinaryDownload from "../../binarydownload";
+import useSsh from "../../../hooks/useSsh";
 
 function Project({ onOpenProject } : { onOpenProject?: (path: string) => void }) {
     let height = useContext(HeightContext);
+    let [ready, setReady] = useState(false);
+    let ssh = useSsh();
     let { ref: titleRef, height: titleHeight } = useResizeObserver();
 
     let { params: { path = '' } } = useMatch(normalize(AppRoute.Project + '/:path'))!;
@@ -68,29 +72,38 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                             }
                         })
                 }
-                onReady={(copied) => {
+                onReady={async (copied) => {
                     let remapped = remap(settings!, copied);
-                    writeSettingsFileSync(path, remapped)
-                    setOriginalSettings(remapped);
-                    setSettings(remapped);
-                    setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Log })
+                    await writeSettingsFileSync(path, remapped, ssh)
+                        .then(() => {
+                            setOriginalSettings(remapped);
+                            setSettings(remapped);
+                        })
+                    setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Log, [ParamKey.SshConnection]: ssh })
                 }} />
         }
     }
 
+    useEffect(() => {
+        ensureInputOutputFolder(path)
+    }, [path])
     useEffect(() => onOpenProject?.(path), [onOpenProject, path]);
     useEffect(() => {
-        try {
-            let setting = readSettingsFileSync(path);
-            setSettings(setting);
-            setOriginalSettings(setting);
-        } catch (e) {
-            setError(`${e}`)
+        async function read() {
+            try {
+                let setting = await readSettingsFileSync(path, ssh);
+                setOriginalSettings(setting);
+                setSettings(setting);
+            } catch (e) {
+                setError(`${e}`)
+            }
         }
+
+        read();
     }, [path]);
 
     let preparedCommand : string[][] = [], preparedCommandWithRedo : string[][] = [];
-    if (settings) {
+    if (settings && originalSettings) {
         preparedCommand = prepareCommand(originalSettings!, 'output', getOutputFolder(path), true);
         preparedCommandWithRedo = prepareCommand(originalSettings!, 'output', getOutputFolder(path));
     }
@@ -101,9 +114,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
             preparedCommand,
             preparedCommandWithRedo,
             onSaveSettings: () => {
+                setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy, [ParamKey.SshConnection]: ssh });
                 if (settings) {
                     setOriginalSettings(settings);
-                    writeSettingsFileSync(path, settings);
+                    writeSettingsFileSync(path, settings, ssh);
                 }
             },
             wordWrap: {
@@ -113,6 +127,10 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
             canSaveSettings: originalSettings !== settings
         },
     );
+
+    if (!ready) {
+        return <BinaryDownload onReady={() => setReady(true)} />
+    }
 
     return (
         <div className="h-full">

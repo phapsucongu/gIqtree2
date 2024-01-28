@@ -1,11 +1,10 @@
 import { dialog } from "@electron/remote";
 import { ipcRenderer } from "electron-better-ipc";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { useWindow } from "../../../hooks/useWindow";
 import { getTemplateSettings, TemplateType, TemplateTypes } from "../../../templates";
 import { normalize, join } from 'path';
-import { accessSync, constants, existsSync, lstatSync, mkdirSync } from "fs";
 import { hasSettingsFileSync, writeSettingsFileSync } from "../../../utils/settingsFile";
 import Select from 'react-select';
 import './createModal.css';
@@ -33,11 +32,18 @@ const templateOptions = [
 let inputTextStyles = "w-full p-2 input-bordered";
 let buttonBaseStyles = "text-white py-2 px-4 rounded-lg";
 
+async function ensureDirectory(path: string) : Promise<boolean> {
+    return await ipcRenderer.callMain('create_directory', [path, true]);
+}
+
 function CreateModal (props: ModalProps) {
     let window = useWindow();
     let navigate = useNavigate();
     let [name, setName] = useState('');
     let [basePath, setBasePath] = useState('');
+    let [tolerable, setTolerable] = useState(false);
+    let [error, setError] = useState('');
+    let [validPath, setValidPath] = useState(false);
 
     let { template, onClose, onSetTemplate } = props;
 
@@ -50,31 +56,48 @@ function CreateModal (props: ModalProps) {
             })
     }, [])
 
-    let validPath = false;
-    let error = '', tolerable = false;
+    // let validPath = false;
+    // let error = '', tolerable = false;
     let pathToMakeAndNavigate = join(...(name ? [basePath, name] : [basePath]));
-    try {
-        if (basePath) {
-            let lstat = lstatSync(basePath);
-            accessSync(basePath, constants.W_OK | constants.R_OK);
 
-            validPath = lstat.isDirectory();
-            if (!lstat.isDirectory()) {
-                error = 'Path is not a directory!';
+    let check = useCallback(async () => {
+        setValidPath(false);
+        setError('');
+        setTolerable(false);
+        try {
+            if (basePath) {
+                let result : { result: boolean, is_dir: boolean } = await ipcRenderer.callMain('check_directory_writable', basePath);
+                if (!result.result) {
+                    throw new Error('project not writable or not existent');
+                }
+
+                setValidPath(result.is_dir);
+                if (!result.is_dir) {
+                    setError('Path is not a directory!');
+                }
+                // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
+                // eslint-disable-next-line
+                if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
+                    setError('Path needs to consist of ASCII characters only!')
+                }
+
+                let hasSetting = await hasSettingsFileSync(pathToMakeAndNavigate);
+
+                if (hasSetting) {
+                    setError('Folder ALREADY contains a project - creating a new one WILL OVERWRITE IT!');
+                    setTolerable(true);
+                }
             }
-            // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
-            // eslint-disable-next-line
-            if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
-                error = 'Path needs to consist of ASCII characters only!'
-            }
-            if (hasSettingsFileSync(pathToMakeAndNavigate)) {
-                error = 'Folder ALREADY contains a project - creating a new one WILL OVERWRITE IT!';
-                tolerable = true;
-            }
-        }
-    } catch {
-        error = `Couldn't check the project path. Make sure the directory exists & it is writable.`;
-    };
+        } catch {
+            setError(`Couldn't check the project path. Make sure the directory exists & it is writable.`);
+        };
+    }, [basePath, pathToMakeAndNavigate])
+
+    useEffect(() => {
+        check();
+    }, [pathToMakeAndNavigate, check]);
+
+
 
     return (
         <ReactModal
@@ -157,17 +180,17 @@ function CreateModal (props: ModalProps) {
                     <button
                         disabled={(!!error && !tolerable) || !validPath}
                         className={buttonBaseStyles + " bg-pink-600 disabled:bg-pink-300"}
-                        onClick={() => {
-                            if (!existsSync(pathToMakeAndNavigate)) {
-                                mkdirSync(pathToMakeAndNavigate);
-                            }
-                            writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(template || undefined));
-                            navigate({
-                                pathname: normalize(
-                                    AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
-                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
-                                )
-                            })
+                        onClick={async () => {
+                            await ensureDirectory(pathToMakeAndNavigate);
+                            writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(template || undefined))
+                                .then(() => {
+                                    navigate({
+                                        pathname: normalize(
+                                            AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
+                                            + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                        )
+                                    })
+                                });
                         }}>
                         Create
                     </button>

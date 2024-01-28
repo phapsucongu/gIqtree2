@@ -2,18 +2,34 @@ import { useEffect, useState } from 'react';
 import { app } from '@electron/remote';
 import axios from 'axios';
 import { type } from 'os';
-import decompress from 'decompress';
 import prettyBytes from 'pretty-bytes';
 import './index.css';
 import { downloadPath, isPlatformSupported, supportedPlatforms, getArchiveUrl, getBinaryPath } from '../../platform';
-import { existsSync } from 'fs';
+import { ipcRenderer } from 'electron-better-ipc';
+import useSsh from '../../hooks/useSsh';
 
 let supported = isPlatformSupported()
 let binaryUrl = getArchiveUrl();
 let binaryPath = getBinaryPath();
 
+async function decompress(zip: Uint8Array, path: string) {
+    return await ipcRenderer.callMain('decompress', [zip, path])
+}
+
+async function decompressSsh(connection: string, zip: Uint8Array, path: string) {
+    return await ipcRenderer.callMain('decompress_ssh', [connection, zip, path]);
+}
+
+async function exists(p: string) {
+    return await ipcRenderer.callMain('file_exists_string', p) as boolean;
+}
+
+async function existsSsh(connection: string, p: string) {
+    return await ipcRenderer.callMain('file_exists_string_ssh', [connection, p]) as boolean;
+}
 
 function BinaryDownload({ onReady }: { onReady?: () => void }) {
+    let ssh_connection = useSsh();
     let [error, setError] = useState('');
     let [progress, setProgress] = useState(0);
     let [[loaded, total], setProgressStats] = useState([0, 0]);
@@ -22,30 +38,42 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
     let downloadCompleted = progress >= 100;
 
     useEffect(() => {
-        if (binaryPath && existsSync(binaryPath)) {
-            onReady?.();
+        async function c() {
+            if (binaryPath) {
+                let e = ssh_connection ? await existsSsh(ssh_connection, binaryPath) : await exists(binaryPath);
+                if (e) {
+                    onReady?.();
+                }
+            }
+
+            if (binaryUrl) {
+                axios.get(binaryUrl, {
+                    withCredentials: false,
+                    responseType: 'arraybuffer',
+                    onDownloadProgress: (event) => {
+                        setProgress(event.loaded / event.total * 100);
+                        setProgressStats([event.loaded, event.total]);
+                    }
+                })
+                    .then(res => res.data as ArrayBuffer)
+                    .then(buffer => {
+                        setUnpacking(true);
+
+                        if (ssh_connection) {
+                            decompressSsh(ssh_connection, new Uint8Array(buffer), downloadPath)
+                        } else {
+                            return decompress(new Uint8Array(buffer), downloadPath)
+                        }
+                    })
+                    .then(() => setUnpacking(false))
+                    .then(() => onReady?.())
+                    .catch(e => setError(`${e}`))
+            }
         }
 
-        if (binaryUrl) {
-            axios.get(binaryUrl, {
-                withCredentials: false,
-                responseType: 'arraybuffer',
-                onDownloadProgress: (event) => {
-                    setProgress(event.loaded / event.total * 100);
-                    setProgressStats([event.loaded, event.total]);
-                }
-            })
-                .then(res => res.data as ArrayBuffer)
-                .then(buffer => {
-                    setUnpacking(true);
-                    return decompress(Buffer.from(buffer), downloadPath)
-                })
-                .then(() => setUnpacking(false))
-                .then(() => onReady?.())
-                .catch(e => setError(`${e}`))
-        }
+        c();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [ssh_connection])
 
     if (error) {
         return (

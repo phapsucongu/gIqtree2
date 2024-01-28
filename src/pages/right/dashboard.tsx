@@ -20,12 +20,27 @@ function Dashboard() {
     let [records, setRecord] = useState<RecentRecord[]>([]);
     let [search, setSearch] = useState('');
     let buttons = useWindowsButtons();
+    let [validProjects, setValidProjects] = useState<Map<string, boolean>>(new Map());
 
     let load = () => {
         ipcRenderer.callMain('db_list')
-            .then(r => setRecord(
-                (r as RecentRecord[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
-            ))
+            .then(r => {
+                setRecord(
+                    (r as RecentRecord[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
+                );
+
+                return r as RecentRecord[];
+            })
+            .then(async r => {
+                let valid = r.map(record => {
+                    return readSettingsFileSync(record.path)
+                        .then(() => [record.path, true] as const)
+                        .catch(() => [record.path, false] as const)
+                });
+
+                let p = await Promise.all(valid);
+                setValidProjects(new Map(p));
+            })
     }
 
     useEffect(load, []);
@@ -82,12 +97,7 @@ function Dashboard() {
             </div>
             <div className="flex flex-col gap-2 flex-grow overflow-y-auto my-2">
                 {filteredRecord.map(r => {
-                    let valid = true;
-                    try {
-                        readSettingsFileSync(r.path);
-                    }
-                    catch { valid = false };
-
+                    let valid = validProjects.get(r.path) || false;
                     let content = (
                         <div className="p-6 bg-gray-200" key={r.path}>
                             <div className="flex flex-row gap-2 items-center">

@@ -6,6 +6,7 @@ import { ConsoleLogo, HomeLogo, IQTREELogo, SettingsLogo } from "../../../icons"
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import Tree from "./tree";
+import useSsh from "../../../hooks/useSsh";
 
 let useResizeObserverOptions = {
     box: 'border-box' as const
@@ -17,6 +18,7 @@ function Project({ path } : { path: string }) {
     let { ref: lowerRef, height: lowerHeight = 0 } = useResizeObserver(useResizeObserverOptions);
     let { ref: inputTitleRef, height: inputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
     let { ref: outputTitleRef, height: outputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
+    let ssh = useSsh();
 
     let remaining = containerHeight - upperHeight - lowerHeight - inputTitleHeight - outputTitleHeight;
 
@@ -40,7 +42,7 @@ function Project({ path } : { path: string }) {
             </div>
             <div className="flex-grow"></div>
             <div ref={lowerRef}>
-                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`} className='flex flex-row items-center gap-2 pb-3'>
+                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Log}&${ParamKey.SshConnection}=${ssh}`} className='flex flex-row items-center gap-2 pb-3'>
                     <div className='p-2'>
                         <ConsoleLogo />
                     </div>
@@ -48,7 +50,7 @@ function Project({ path } : { path: string }) {
                         Console
                     </div>
                 </Link>
-                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Setting}`} className='flex flex-row items-center gap-2 pb-3'>
+                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Setting}&${ParamKey.SshConnection}=${ssh}`} className='flex flex-row items-center gap-2 pb-3'>
                     <div className='p-2'>
                         <SettingsLogo />
                     </div>

@@ -3,18 +3,22 @@ import { useEffect, useState } from "react";
 import TextView from "../components/textView";
 import useExecutionState from "../hooks/useExecutionState";
 import { IpcRendererEvent } from "electron";
+import useSsh from "../../../../hooks/useSsh";
 
 function Console({ path, wrap } : { path: string, wrap?: boolean }) {
     let [executing] = useExecutionState(path);
     let [log, setLog] = useState<string[]>([]);
+    let ssh = useSsh()
 
     useEffect(() => {
-        ipcRenderer.callMain('get-stdout', (res : false | string[]) => {
-            if (res) {
-                setLog(res);
-            }
-        })
-    }, [])
+        (ipcRenderer.callMain(ssh ? 'get-stdout_ssh' : 'get-stdout', path) as Promise<any>)
+            .then((res : false | string[]) => {
+                if (res) {
+                    setLog(res);
+                }
+            })
+
+    }, [ssh, path])
 
     useEffect(() => {
         let listener = (ev: IpcRendererEvent, data : { id: string, outputs: string[] }) => {

@@ -205,7 +205,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                             PartitionTypes
                                 .map(option => {
                                     return (
-                                        <option value={option.type}>
+                                        <option value={option.type} key={option.name}>
                                             {option.name}
                                         </option>
                                     )

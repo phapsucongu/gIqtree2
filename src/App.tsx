@@ -14,14 +14,9 @@ export const HeightContext = createContext(window.visualViewport.height);
 
 
 function App() {
-    let [ready, setReady] = useState(false);
     let { ref, width = window.visualViewport.width } = useResizeObserver();
     let [paneWidth, setPaneWidth] = useState(initial);
     let { ref: remainingRef, width: remainingWidth = window.visualViewport.width - width, height } = useResizeObserver();
-
-    if (!ready) {
-        return <BinaryDownload onReady={() => setReady(true)} />
-    }
 
     return (
         <div className='h-full' ref={ref}>

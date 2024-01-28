@@ -3,11 +3,12 @@ import { join } from "path";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import rimraf from "rimraf";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
-import { getBinaryPath } from "../../../../platform";
+import { getBinaryPath, getBinaryPathRemote } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
 import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
 import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
+import useSsh from "../../../../hooks/useSsh";
 
 interface WordWrapSettings {
     enabled: boolean,
@@ -29,6 +30,7 @@ function useActionButtons(
     let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
+    let ssh = useSsh();
 
     let wordWrapButton = wordWrap?.enabled
         ? (
@@ -57,7 +59,6 @@ function useActionButtons(
                         disabled={!canSaveSettings}
                         onClick={() => {
                             onSaveSettings?.();
-                            setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy });
                         }}>
                         Save
                     </PositiveButton>
@@ -71,7 +72,7 @@ function useActionButtons(
                         <NegativeButton
                             disabled={!executing}
                             onClick={() => {
-                                ipcRenderer.callMain('kill', path);
+                                ipcRenderer.callMain(ssh ? 'kill_ssh' : 'kill', path);
                             }}>
                             Pause
                         </NegativeButton>
@@ -80,11 +81,12 @@ function useActionButtons(
                         <NegativeButton
                             disabled={executing}
                             onClick={async () => {
-                                await ipcRenderer.callMain('spawn', {
+                                await ipcRenderer.callMain(ssh ? 'spawn_ssh' : 'spawn', {
                                     id: path,
                                     arguments: preparedCommand,
-                                    binary: getBinaryPath(),
-                                    cwd: path
+                                    binary: ssh ? getBinaryPathRemote() : getBinaryPath(),
+                                    cwd: ssh ? '' : path,
+                                    connection: ssh
                                 });
                                 refresh();
                             }}>
@@ -94,12 +96,15 @@ function useActionButtons(
                     <PositiveButton
                         disabled={executing}
                         onClick={async () => {
+                            // TODO: Handle remote
                             rimraf.sync(join(getOutputFolder(path), '*'));
-                            await ipcRenderer.callMain('spawn', {
+                            console.log(ssh ? 'spawn_ssh' : 'spawn');
+                            await ipcRenderer.callMain(ssh ? 'spawn_ssh' : 'spawn', {
                                 id: path,
                                 arguments: preparedCommandWithRedo,
-                                binary: getBinaryPath(),
-                                cwd: path
+                                binary: ssh ? getBinaryPathRemote() : getBinaryPath(),
+                                cwd: ssh ? '' : path,
+                                connection: ssh
                             });
                             refresh();
                         }}>
