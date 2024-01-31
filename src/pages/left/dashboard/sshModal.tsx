@@ -32,7 +32,7 @@ interface ModalProps extends ReactModal.Props {
 
 function SshModal(props: ModalProps) {
     let { onClose } = props;
-    let [params, setSearchParams] = useSearchParams();
+    let [params] = useSearchParams();
     let navigate = useNavigate();
 
     let [user, setUser] = useState('');

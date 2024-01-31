@@ -42,7 +42,7 @@ function File({ wrap } : { wrap?: boolean }) {
                 setLoading(false);
             }
         })();
-    }, [file]);
+    }, [file, ssh]);
 
     return (
         <div ref={containerRef} className="h-full">

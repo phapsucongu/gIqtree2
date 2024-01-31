@@ -1,6 +1,5 @@
 import { createContext, useState } from 'react';
 import { HashRouter } from 'react-router-dom';
-import BinaryDownload from './pages/binarydownload';
 import SplitPane from 'react-split-pane';
 import useResizeObserver from 'use-resize-observer';
 import Left from './pages/left/index';

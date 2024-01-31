@@ -100,7 +100,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
         }
 
         read();
-    }, [path]);
+    }, [path, ssh]);
 
     let preparedCommand : string[][] = [], preparedCommandWithRedo : string[][] = [];
     if (settings && originalSettings) {

@@ -27,7 +27,7 @@ interface ActionButtonsConfig {
 function useActionButtons(
     { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings } : ActionButtonsConfig
 ) {
-    let [params, setSearchParams] = useSearchParams();
+    let [params, ] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
     let ssh = useSsh();
