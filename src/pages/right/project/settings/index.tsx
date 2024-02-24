@@ -6,7 +6,7 @@ import TreeSearchSetting from './treesearch';
 import DatingSetting from './dating';
 import OtherSetting from './other';
 import { Settings } from "../../../../interfaces";
-import { isMultipleGene } from "../../../../interfaces/dataSettings";
+import { isMultipleGene } from "../../../../interfaces/settings/dataSettings";
 
 enum CurrentSetting {
     Data = 1,

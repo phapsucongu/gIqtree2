@@ -1,5 +1,5 @@
 import { getThreadCommand } from "../../../../command/otherSetting";
-import { OthersSettings } from "../../../../interfaces/othersSettings";
+import { OthersSettings } from "../../../../interfaces/settings/othersSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import split from 'argv-split';
 

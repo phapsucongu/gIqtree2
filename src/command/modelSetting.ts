@@ -1,6 +1,6 @@
 import { Settings } from "../interfaces";
-import { SequenceType, isMultipleGene } from "../interfaces/dataSettings";
-import { DefaultRateCategories, getAvailableFrequencies as getAvailableStateFrequencies, ModelSettings, RHASModel } from "../interfaces/modelSettings";
+import { SequenceType, isMultipleGene } from "../interfaces/settings/dataSettings";
+import { DefaultRateCategories, getAvailableFrequencies as getAvailableStateFrequencies, ModelSettings, RHASModel } from "../interfaces/settings/modelSettings";
 
 export function getSubstitutionModelCommand(sequenceType?: SequenceType, model?: ModelSettings) {
     let { substitutionModel, rhasModel, proportionOfInvariableSites, rateCategories, stateFrequency, ascertainmentBiasCorrection } = model ?? {};

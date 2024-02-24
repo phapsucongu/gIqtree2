@@ -1,6 +1,6 @@
 import { Settings } from "../interfaces";
-import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, SingleBranchTest } from "../interfaces/assessmentSettings";
-import { isMultipleGene } from "../interfaces/dataSettings";
+import { BootstrapMethod, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, SingleBranchTest } from "../interfaces/settings/assessmentSettings";
+import { isMultipleGene } from "../interfaces/settings/dataSettings";
 
 function prepare(settings: Settings) {
     let output: string[] = [];

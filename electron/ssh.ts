@@ -21,10 +21,21 @@ export function getConnection(key: string) {
     return r;
 }
 
+ipcMain.answerRenderer('ssh_get', (id: string) => {
+    let r = sshTunnels.get(id);
+    if (!r) return false;
+
+    if (r.connection === null) {
+        return false;
+    }
+})
 
 ipcMain.answerRenderer('ssh_create', async (d: [string, TunnelOption]) => {
     if (sshTunnels.has(d[0])) {
-        return [true];
+        let c = sshTunnels.get(d[0]);
+        if (c!.connection) {
+            return [true];
+        }
     }
 
     try {

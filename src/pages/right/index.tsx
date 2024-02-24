@@ -1,4 +1,3 @@
-import { ipcRenderer } from "electron-better-ipc"
 import { normalize } from "path"
 import { Routes, Route } from "react-router-dom"
 import { AppRoute } from "../../routes"
@@ -11,7 +10,7 @@ function App() {
             <Route path={AppRoute.Dashboard} element={<Dashboard />} />
             <Route
                 path={normalize(AppRoute.Project + '/:path')}
-                element={<Project onOpenProject={path => ipcRenderer.callMain('db_record', path)} />} />
+                element={<Project />} />
         </Routes>
     )
 }

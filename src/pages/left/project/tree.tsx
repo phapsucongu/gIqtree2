@@ -1,50 +1,40 @@
 import { Tree } from "react-arborist";
 import { basename } from "path";
-import { memo, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { LeftPaneWidthContext } from "../../../App";
 import { Link, useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { diff } from 'deep-object-diff';
-import { ipcRenderer } from "electron-better-ipc";
 import useSsh from "../../../hooks/useSsh";
+import { NativeContext } from "../../../natives/nativeContext";
 
-type Node = {
-    id: string;
-    path: string;
-    children?: Node[];
-    name: string;
-    isFolder: boolean;
-}
-
-async function recurse(path: string, ssh : string | null = '') {
-    if (ssh) {
-        return await ipcRenderer.callMain('recurse_ssh', [ssh, path]) as Node;
-    }
-    return await ipcRenderer.callMain('recurse', path) as Node;
-}
-
-function Files({ path, current,  height, width }: { path: string, current: string, height: number, width: number }) {
+function Files({ path, current, height, width }: { path: string, current: string, height: number, width: number }) {
     let ssh = useSsh();
+    let native = useContext(NativeContext);
     let [tree, setTree] = useState({ id: path, name: basename(path), path, isFolder: false });
+
+    let recurse = useCallback(path => {
+        return native.recurse({ path, host: ssh })
+    }, [native, ssh]);
 
     useEffect(() => {
         (async function () {
-            let r = await recurse(path, ssh);
+            let r = await recurse(path);
             setTree(r);
         })();
-    }, [path, ssh]);
+    }, [path, ssh, native, recurse]);
 
     useEffect(() => {
         let interval = setInterval(async () => {
             let old = tree;
-            let current = recurse(path, ssh);
+            let current = recurse(path);
             if (Object.keys(diff(old, current)).length)
             {
-                setTree(await recurse(path, ssh));
+                setTree(await recurse(path));
             }
-        }, 1500);
+        }, 5000);
         return () => clearInterval(interval);
-    }, [path, tree, ssh]);
+    }, [path, tree, ssh, recurse]);
 
     return (
         <div>

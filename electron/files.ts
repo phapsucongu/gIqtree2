@@ -141,3 +141,7 @@ ipcMain.answerRenderer('directory_create', (data: [string, boolean]) => {
     let [path, recursive] = data;
     mkdirSync(path, { recursive });
 })
+
+ipcMain.answerRenderer('rimraf', (path: string) => {
+    rimraf(path);
+})

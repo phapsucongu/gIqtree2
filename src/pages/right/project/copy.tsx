@@ -1,22 +1,7 @@
-import { ipcRenderer } from 'electron-better-ipc';
 import { dirname } from 'path';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import useSsh from '../../../hooks/useSsh';
-
-async function copy(src: string, dst: string, ssh: string = '') {
-    if (ssh) {
-        return await ipcRenderer.callMain('file_copy_ssh', [src, [ssh, dst]]) as boolean;
-    }
-    return await ipcRenderer.callMain('file_copy', [src, dst]) as boolean;
-}
-
-async function mkdir(path: string, ssh: string = '') {
-    if (ssh) {
-        let res = await ipcRenderer.callMain('create_directory_ssh', [ssh, path, true]);
-        return res;
-    }
-    return await ipcRenderer.callMain('create_directory', [path, true]);
-}
+import { NativeContext } from '../../../natives/nativeContext';
 
 function listDupes(str : string[]) {
     let m = new Map<string, number>();
@@ -32,6 +17,7 @@ function listDupes(str : string[]) {
 
 function Copy({ files, onReady } : { files: { source: string, destination: string }[], onReady?: (copied: Map<string, string>) => void }) {
     let ssh = useSsh();
+    let native = useContext(NativeContext);
     files = files.filter(a => a.source);
     let [copied, setCopied] = useState<Map<string, string>>(new Map());
     let dupes = listDupes(files.map(v => v.destination));
@@ -47,8 +33,8 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
 
                 for (let { source, destination } of files) {
                     let basedir = dirname(destination);
-                    await mkdir(basedir, ssh);
-                    await copy(source, destination, ssh);
+                    await native.directory_create({ path: basedir, host: ssh }, true);
+                    await native.file_copy({ path: basedir, host: '' }, { path: basedir, host: ssh });
 
                     setCopied(
                         c = new Map([

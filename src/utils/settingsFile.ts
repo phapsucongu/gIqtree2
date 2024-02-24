@@ -1,51 +1,50 @@
 import { join } from 'path';
 
-import { Settings } from '../interfaces';
-import { ipcRenderer } from 'electron-better-ipc';
+import { NativeIntegration, Settings } from '../interfaces';
 import { getTemplateSettings } from '../templates';
+import { File } from '../interfaces/natives';
 
 const filename = 'settings.json';
 
-export async function hasSettingsFileSync(projectPath: string, sshConnection: string | null | undefined = '') {
-    let path = join(projectPath, filename);
-    let result: boolean;
-    if (sshConnection) {
-        result = await ipcRenderer.callMain('file_exists_string', [sshConnection, path]);
-    } else {
-        result = await ipcRenderer.callMain('file_exists_string', path);
+export class SettingsFile {
+    private native: NativeIntegration
+    constructor(native: NativeIntegration) {
+        this.native = native;
     }
-    return result;
-}
 
-export async function readSettingsFileSync(projectPath: string, sshConnection: string | null | undefined = '') {
-    let path = join(projectPath, filename);
-    try {
-        let result: string = sshConnection
-            ? await ipcRenderer.callMain('file_read_string_ssh', [sshConnection, path])
-            : await ipcRenderer.callMain('file_read_string', path)
-        return JSON.parse(result);
-    } catch (e) {
-        let t = getTemplateSettings();
-        let text = JSON.stringify(t);
-        if (sshConnection) {
-            await ipcRenderer.callMain('file_write_string_ssh', [sshConnection, path, text]);
-        } else {
-            await ipcRenderer.callMain('file_write_string', [path, text]);
+    hasFile(path: File) {
+        let r = {...path};
+        r.path = join(r.path, filename);
+        return this.native.file_exists(r);
+    }
+
+    async readFile(path: File) {
+        let r = {...path};
+        r.path = join(r.path, filename);
+        try {
+            let l = await this.native.file_exists(r);
+            if (!l) {
+                throw new Error('create');
+            }
+
+            let res = await this.native.file_read_string(r);
+            return JSON.parse(res);
+        } catch (e) {
+            if (e instanceof Error && e.message === 'create') {
+                let t = getTemplateSettings();
+                await this.native.file_write_string(r, JSON.stringify(t));
+
+                let res = await this.native.file_read_string(r);
+                return JSON.parse(res);
+            } else {
+                throw e;
+            }
         }
-
-        let r2: string = sshConnection
-            ? await ipcRenderer.callMain('file_read_string_ssh', [sshConnection, path])
-            : await ipcRenderer.callMain('file_read_string', path)
-        return JSON.parse(r2);
     }
-}
 
-export async function writeSettingsFileSync(projectPath: string, setting : Settings, sshConnection: string | null | undefined = '') {
-    let file = join(projectPath, filename);
-    let text = JSON.stringify(setting);
-    if (sshConnection) {
-        await ipcRenderer.callMain('file_write_string_ssh', [sshConnection, file, text]);
-    } else {
-        await ipcRenderer.callMain('file_write_string', [file, text]);
+    async writeFile(path: File, setting: Settings) {
+        let r = {...path};
+        r.path = join(r.path, filename);
+        return this.native.file_write_string(r, JSON.stringify(setting));
     }
 }

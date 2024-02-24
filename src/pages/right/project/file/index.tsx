@@ -1,5 +1,5 @@
 import { extname } from "path";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
 import BinaryOptions from "../../../../component/binaryoptions";
@@ -7,17 +7,10 @@ import { ParamKey } from "../../../../paramKey";
 import TextView from "../components/textView";
 import TreeView from "../components/treeView";
 import useSsh from "../../../../hooks/useSsh";
-import { ipcRenderer } from "electron-better-ipc";
-
-async function readFile(path: string, key: string) {
-    let result: string = key
-            ? await ipcRenderer.callMain('file_read_string_ssh', [key, path])
-            : await ipcRenderer.callMain('file_read_string', path);
-
-    return result;
-}
+import { NativeContext } from "../../../../natives/nativeContext";
 
 function File({ wrap } : { wrap?: boolean }) {
+    let native = useContext(NativeContext);
     let [params] = useSearchParams();
     let file = params.get(ParamKey.ProjectFile)!;
     let [content, setContent] = useState('');
@@ -34,7 +27,7 @@ function File({ wrap } : { wrap?: boolean }) {
         (async () => {
             try {
                 setLoading(true);
-                setContent(await readFile(file, ssh));
+                setContent(await native.file_read_string({ path: file, host: ssh }));
                 setError('');
                 setLoading(false);
             } catch (e) {
@@ -42,7 +35,7 @@ function File({ wrap } : { wrap?: boolean }) {
                 setLoading(false);
             }
         })();
-    }, [file, ssh]);
+    }, [file, ssh, native]);
 
     return (
         <div ref={containerRef} className="h-full">

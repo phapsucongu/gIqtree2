@@ -1,7 +1,5 @@
-import { ipcRenderer } from "electron-better-ipc";
 import { join } from "path";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import rimraf from "rimraf";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
 import { getBinaryPath, getBinaryPathRemote } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
@@ -9,6 +7,8 @@ import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
 import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
 import useSsh from "../../../../hooks/useSsh";
+import { useContext } from "react";
+import { NativeContext } from "../../../../natives/nativeContext";
 
 interface WordWrapSettings {
     enabled: boolean,
@@ -31,6 +31,7 @@ function useActionButtons(
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
     let ssh = useSsh();
+    let native = useContext(NativeContext);
 
     let wordWrapButton = wordWrap?.enabled
         ? (
@@ -72,7 +73,7 @@ function useActionButtons(
                         <NegativeButton
                             disabled={!executing}
                             onClick={() => {
-                                ipcRenderer.callMain(ssh ? 'kill_ssh' : 'kill', path);
+                                native.killAllTask(path);
                             }}>
                             Pause
                         </NegativeButton>
@@ -81,13 +82,15 @@ function useActionButtons(
                         <NegativeButton
                             disabled={executing}
                             onClick={async () => {
-                                await ipcRenderer.callMain(ssh ? 'spawn_ssh' : 'spawn', {
-                                    id: path,
-                                    arguments: preparedCommand,
-                                    binary: ssh ? getBinaryPathRemote() : getBinaryPath(),
-                                    cwd: ssh ? '' : path,
-                                    connection: ssh
-                                });
+                                native.spawn(preparedCommand.map(command => {
+                                    return {
+                                        id: path,
+                                        arguments: command,
+                                        binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
+                                        cwd: ssh ? '' : path,
+                                        host: ssh
+                                    }
+                                }))
                                 refresh();
                             }}>
                             Continue
@@ -97,15 +100,21 @@ function useActionButtons(
                         disabled={executing}
                         onClick={async () => {
                             // TODO: Handle remote
-                            rimraf.sync(join(getOutputFolder(path), '*'));
-                            console.log(ssh ? 'spawn_ssh' : 'spawn');
-                            await ipcRenderer.callMain(ssh ? 'spawn_ssh' : 'spawn', {
-                                id: path,
-                                arguments: preparedCommandWithRedo,
-                                binary: ssh ? getBinaryPathRemote() : getBinaryPath(),
-                                cwd: ssh ? '' : path,
-                                connection: ssh
-                            });
+                            native.rimraf({
+                                path: join(getOutputFolder(path), '*'),
+                                host: ssh
+                            })
+                                .then(() => {
+                                    native.spawn(preparedCommandWithRedo.map(command => {
+                                        return {
+                                            id: path,
+                                            arguments: command,
+                                            binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
+                                            cwd: ssh ? '' : path,
+                                            host: ssh
+                                        }
+                                    }))
+                                })
                             refresh();
                         }}>
                         Execute

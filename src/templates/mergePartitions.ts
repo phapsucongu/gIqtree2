@@ -1,5 +1,5 @@
 import { Settings } from "../interfaces";
-import { AutoMergePartitions } from "../interfaces/modelSettings";
+import { AutoMergePartitions } from "../interfaces/settings/modelSettings";
 
 export default function mergePartitions() : Partial<Settings> {
     return {

@@ -23,6 +23,10 @@ export class Task extends EventEmitter {
     public process: ChildProcess | undefined;
     public outputStream?: Stream;
     public outputBuffer : Buffer[] = [];
+
+    public exitCode?: number;
+    public signal?: string;
+
     public constructor(binary: string, execArguments: string[], cwd: string) {
         super();
         this.binary = binary;
@@ -31,6 +35,7 @@ export class Task extends EventEmitter {
     }
 
     start() {
+        console.log(this.binary, this.arguments);
         this.process = execFile(this.binary, this.arguments, {
             maxBuffer: 1024 * 1024 * 50,
             cwd: this.cwd
@@ -45,8 +50,13 @@ export class Task extends EventEmitter {
         console.log(`spawning process id ${this.process.pid} with arguments "${this.arguments.join(' ')}"`);
         this.process.on('exit', () => {
             console.log(`child process id ${this.process!.pid} exited with exit code ${this.process!.exitCode}`);
-            if (this.process!.signalCode !== null)
-                console.log(`child process id ${this.process!.pid} seems to be killed with code ${this.process!.signalCode}`)
+            if (this.process!.exitCode !== null) {
+                this.exitCode = this.process!.exitCode;
+            }
+            if (this.process!.signalCode !== null) {
+                console.log(`child process id ${this.process!.pid} seems to be killed with code ${this.process!.signalCode}`);
+                this.signal = this.process!.signalCode!;
+            }
         });
 
         return this.process;
@@ -112,9 +122,14 @@ ipcMain.answerRenderer('get', (id: string) => {
         return false;
     }
 
-    return JSON.parse(
-        JSON.stringify(currentProcess.get(id)!)
-    );
+    let r = currentProcess.get(id)!;
+    r = r.map(r => {
+        (r as any).id = id;
+        (r as any).host = '@';
+        return r;
+    })
+
+    return JSON.parse(JSON.stringify(r));
 })
 
 ipcMain.answerRenderer('get-stdout', async (id: string) => {

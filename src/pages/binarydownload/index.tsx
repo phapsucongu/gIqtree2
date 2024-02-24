@@ -1,35 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { app } from '@electron/remote';
 import axios from 'axios';
 import { type } from 'os';
 import prettyBytes from 'pretty-bytes';
 import './index.css';
-import { downloadPath, isPlatformSupported, supportedPlatforms, getArchiveUrl, getBinaryPath } from '../../platform';
-import { ipcRenderer } from 'electron-better-ipc';
+import { downloadPath, isPlatformSupported, supportedPlatforms, getArchiveUrl, getBinaryPath, getBinaryPathRemote } from '../../platform';
 import useSsh from '../../hooks/useSsh';
+import { NativeContext } from '../../natives/nativeContext';
 
 let supported = isPlatformSupported()
 let binaryUrl = getArchiveUrl();
-let binaryPath = getBinaryPath();
-
-async function decompress(zip: Uint8Array, path: string) {
-    return await ipcRenderer.callMain('decompress', [zip, path])
-}
-
-async function decompressSsh(connection: string, zip: Uint8Array, path: string) {
-    return await ipcRenderer.callMain('decompress_ssh', [connection, zip, path]);
-}
-
-async function exists(p: string) {
-    return await ipcRenderer.callMain('file_exists_string', p) as boolean;
-}
-
-async function existsSsh(connection: string, p: string) {
-    return await ipcRenderer.callMain('file_exists_string_ssh', [connection, p]) as boolean;
-}
-
 function BinaryDownload({ onReady }: { onReady?: () => void }) {
-    let ssh_connection = useSsh();
+    let native = useContext(NativeContext);
+    let ssh = useSsh();
     let [error, setError] = useState('');
     let [progress, setProgress] = useState(0);
     let [[loaded, total], setProgressStats] = useState([0, 0]);
@@ -39,8 +22,10 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
 
     useEffect(() => {
         async function c() {
+            let binaryPath = ssh ? getBinaryPathRemote() : getBinaryPath();
+
             if (binaryPath) {
-                let e = ssh_connection ? await existsSsh(ssh_connection, binaryPath) : await exists(binaryPath);
+                let e = await native.file_exists({ path: binaryPath, host: ssh });
                 if (e) {
                     onReady?.();
                 }
@@ -59,11 +44,10 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
                     .then(buffer => {
                         setUnpacking(true);
 
-                        if (ssh_connection) {
-                            decompressSsh(ssh_connection, new Uint8Array(buffer), downloadPath)
-                        } else {
-                            return decompress(new Uint8Array(buffer), downloadPath)
-                        }
+                        return native.decompress(new Uint8Array(buffer), {
+                            path: downloadPath,
+                            host: ssh
+                        })
                     })
                     .then(() => setUnpacking(false))
                     .then(() => onReady?.())
@@ -73,7 +57,7 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
 
         c();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ssh_connection])
+    }, [native])
 
     if (error) {
         return (

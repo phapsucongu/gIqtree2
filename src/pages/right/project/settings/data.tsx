@@ -1,4 +1,4 @@
-import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/dataSettings";
+import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/settings/dataSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { MinusLogo, PlusLogo } from "../../../../icons";

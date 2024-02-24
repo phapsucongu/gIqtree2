@@ -1,6 +1,6 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import SettingRowFile from "../../../../component/settingrowfile";
-import { TreeSearchSettings } from "../../../../interfaces/treeSearchSettings";
+import { TreeSearchSettings } from "../../../../interfaces/settings/treeSearchSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
 function TreeSearch({ settings, onChange } : SettingCategoryCommonProp<TreeSearchSettings>) {
