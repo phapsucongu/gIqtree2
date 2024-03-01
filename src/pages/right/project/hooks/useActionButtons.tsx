@@ -99,7 +99,6 @@ function useActionButtons(
                     <PositiveButton
                         disabled={executing}
                         onClick={async () => {
-                            // TODO: Handle remote
                             native.rimraf({
                                 path: join(getOutputFolder(path), '*'),
                                 host: ssh

@@ -71,10 +71,13 @@ ipcMain.answerRenderer('db_list', async () => {
                     password: c.values[0][4],
                 } as Record['connection'];
                 out.connection = r;
+                out.connectionId = +cId;
             }
         }
-
         return out;
+    }).sort((a, b) => {
+        let _1 = +new Date(a.timestamp), _2 = +new Date(b.timestamp);
+        return _2 - _1;
     })
 })
 
@@ -96,7 +99,7 @@ ipcMain.answerRenderer('db_record', async (record: Record) => {
     let database = await ensureDatabaseOpen();
 
     let r = database.exec(`SELECT id FROM project WHERE path = ? AND connectionId = ?`, [record.path, record.connectionId]);
-
+    console.log(`Found ${r.length} record with path ${record.path} & connectionId ${record.connectionId}`);
     if (r.length === 0) {
         let c = record.connection;
         let cid = 0;
@@ -109,6 +112,7 @@ ipcMain.answerRenderer('db_record', async (record: Record) => {
             ]);
             let r2 = database.exec(`SELECT id FROM connections ORDER BY id DESC LIMIT 1`);
             cid = +r2[0].values[0][0]!;
+            console.log('New connectionId is', cid);
         }
 
         database.exec(`INSERT INTO project (path, timestamp, connectionId) VALUES (?, ?, ?)`, [
@@ -121,7 +125,7 @@ ipcMain.answerRenderer('db_record', async (record: Record) => {
         database.exec(`UPDATE project SET timestamp = ? WHERE id = ?`, [new Date().toJSON(), id]);
         let c = database.exec(`SELECT connectionId FROM project WHERE id = ?`, [id]);
         let cid = c[0].values[0][0];
-        if (cid) {
+        if (cid && record.connection) {
             let conn = record.connection!;
             database.exec(`UPDATE connections SET host = ?, port = ?, username = ?, password = ? WHERE id = ?`, [
                 conn.host, +conn.port, conn.username, conn.password

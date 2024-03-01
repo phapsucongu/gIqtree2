@@ -32,6 +32,7 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
         let l = new LocalNative();
         l.database_get_connection(connectionId)
             .then(r => {
+                console.log(connectionId, r);
                 if (r) {
                     setConnectionInfo(r);
                 } else {
@@ -41,43 +42,55 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
 
     }, [connectionId, loadError, connected])
 
-    useEffect(() => {
-        let load = async () => {
-            if (!connected && connectionInfo) {
-                let integration = new SshIntegration();
-                let { username, password, host, port } = connectionInfo;
-                let key = ssh_connection;
-                let present = await integration.checkConnection(key);
-
-                if (present) {
-                    return;
-                }
-
-                await integration.createConnection(
-                    key,
-                    {
-                        host,
-                        port,
-                        username,
-                        password
-                    }
-                )
-                    .then(([success, err]) => {
-                        if (!success) {
-                            setRetry(retry + 1);
-                            setConnectionError(err!);
-                        }
-                    })
-                    .catch(err => {
-                        setConnectionError(`${err}`)
-                    })
+    let load = async () => {
+        if (!connected && connectionInfo) {
+            let integration = new SshIntegration();
+            let { username, password, host, port } = connectionInfo;
+            let key = ssh_connection;
+            let present = await integration.checkConnection(key);
+            if (present) {
+                console.log('connected!');
+                setConnected(true);
+                return;
             }
-        };
 
+            console.log('trying', key, connectionInfo);
+
+            await integration.createConnection(
+                key,
+                {
+                    host,
+                    port,
+                    username,
+                    password
+                }
+            )
+                .then(([success, err]) => {
+                    if (!success) {
+                        setRetry(retry + 1);
+                        setConnectionError(err!);
+                        setConnected(false);
+                    } else {
+                        setConnected(true);
+                    }
+                })
+                .catch(err => {
+                    setConnectionError(`${err}`);
+                    setConnected(false);
+                })
+        }
+    };
+
+    useEffect(() => {
         if (retry < retryLimit) {
             load();
         }
-    }, [retry, connectionInfo, connected, ssh_connection]);
+    }, [retry, connectionInfo, connected, ssh_connection, load]);
+
+    useEffect(() => {
+        load();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     if (connectionError) {
         if (retry < retryLimit) {

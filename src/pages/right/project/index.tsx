@@ -4,13 +4,13 @@ import useSsh from "../../../hooks/useSsh";
 import { LocalNative } from "../../../natives";
 import { NativeContext } from "../../../natives/nativeContext";
 import ProjectMain from './project';
+import { RemoteNative } from "../../../natives/remote";
 
 function Project() {
     let [ready, setReady] = useState(false);
 
     let key = useSsh();
-    let integration = key ? new LocalNative() : new LocalNative();
-
+    let integration = key ? new RemoteNative(key) : new LocalNative();
 
     if (!ready) {
         return (

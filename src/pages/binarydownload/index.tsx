@@ -25,9 +25,11 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
             let binaryPath = ssh ? getBinaryPathRemote() : getBinaryPath();
 
             if (binaryPath) {
+                console.log('checking binary path at', binaryPath);
                 let e = await native.file_exists({ path: binaryPath, host: ssh });
                 if (e) {
                     onReady?.();
+                    return;
                 }
             }
 
@@ -57,7 +59,7 @@ function BinaryDownload({ onReady }: { onReady?: () => void }) {
 
         c();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [native])
+    }, [native, onReady])
 
     if (error) {
         return (

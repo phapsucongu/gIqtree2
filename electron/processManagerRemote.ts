@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import { getConnection } from './ssh';
 import { NodeSSH, SSHExecCommandResponse } from 'node-ssh';
-import { Stream } from 'stream';
+import { PassThrough, Stream, Transform } from 'stream';
 import { ipcMain } from 'electron-better-ipc';
 
 const currentProcess = new Map<string, RemoteTask[]>();
@@ -24,7 +24,12 @@ export class RemoteTask extends EventEmitter {
     public outputStream?: Stream;
     public outputBuffer : Buffer[] = [];
     public errorBuffer : Buffer[] = [];
-    public result? : SSHExecCommandResponse;
+    public result?: SSHExecCommandResponse;
+    public stdin?: Transform;
+
+    exitCode?: number;
+    signal?: string;
+    kill?: boolean;
 
     public constructor(binary: string, execArguments: string[], cwd: string, connection: NodeSSH) {
         super();
@@ -40,21 +45,24 @@ export class RemoteTask extends EventEmitter {
 
     async start() {
         await this.connection?.exec('chmod +x', [this.binary]);
+        this.stdin = new PassThrough();
 
         this.connection!.exec(this.binary, this.arguments, {
             stream: 'both',
             cwd: this.cwd,
+            stdin: this.stdin,
             onStdout: (c) => {
                 this.outputBuffer.push(c);
                 this.emit('output');
             },
             onStderr: (c) => {
                 this.errorBuffer.push(c);
-
             },
         })
             .then(result => {
                 this.result = result;
+                this.exitCode = this.result.code ?? undefined;
+                this.signal = this.result.signal ?? undefined;
                 this.emit('done');
             })
             .catch(e => {
@@ -67,6 +75,10 @@ export class RemoteTask extends EventEmitter {
         console.log('Executing', this.binary, 'w/ args', `"${this.arguments.join(' ')}"`);
 
         return this;
+    }
+
+    async stop() {
+        this.stdin?.write('\u0003');
     }
 }
 
@@ -112,9 +124,17 @@ ipcMain.answerRenderer('get_ssh', (id: string) => {
         return false;
     }
 
-    return JSON.parse(
-        JSON.stringify(currentProcess.get(id)!)
-    );
+    let record = currentProcess.get(id)!;
+    let out = record.map(r => {
+        return {
+            ...r,
+            outputStream: undefined,
+            stdin: undefined,
+            connection: undefined,
+        }
+    })
+
+    return JSON.parse(JSON.stringify(out));
 })
 
 ipcMain.answerRenderer('get-stdout_ssh', async (id: string) => {
@@ -132,6 +152,9 @@ ipcMain.answerRenderer('kill_ssh', async (id: string) => {
     }
 
     let tasks = currentProcess.get(id)!;
+    for (let task of tasks) {
+        task.stop();
+    }
 })
 
 ipcMain

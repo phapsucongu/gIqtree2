@@ -4,6 +4,7 @@ import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-insta
 import './processManager';
 import './sqlite';
 import './files';
+import './filesRemote';
 import './filesTree';
 import './ssh';
 import './binaryDecompress';

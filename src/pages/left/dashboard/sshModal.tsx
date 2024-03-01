@@ -7,6 +7,8 @@ import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import { normalize } from 'path';
 import { getInputFolder, getOutputFolder } from "../../right/project/folder";
+import { LocalNative } from "../../../natives";
+import { connectionKey } from "../../../utils/connectionKey";
 
 type TunnelOption = Parameters<NodeSSH['connect']>[0]
 
@@ -34,6 +36,7 @@ function SshModal(props: ModalProps) {
     let { onClose } = props;
     let [params] = useSearchParams();
     let navigate = useNavigate();
+    let native = new LocalNative();
 
     let [user, setUser] = useState('');
     let [server, setServer] = useState('');
@@ -109,7 +112,7 @@ function SshModal(props: ModalProps) {
                                 setConnecting(true);
                                 setError('');
 
-                                let key = `${user}@${server}:${port}:${path}`;
+                                let key = connectionKey(server, port, user, password);
 
                                 connect(key, {
                                     username: user,
@@ -121,6 +124,22 @@ function SshModal(props: ModalProps) {
                                         let [success, error] = res;
                                         if (success) {
                                             let p = new URLSearchParams(params);
+
+                                            await native.database_recent_push({
+                                                id: 0, timestamp: '',
+                                                path: path,
+                                                connectionId: -1,
+                                                connection: {
+                                                    host: server,
+                                                    port,
+                                                    username: user,
+                                                    password
+                                                }
+                                            })
+
+                                            let res = await native.database_recent_list();
+                                            console.log(res[0]);
+
                                             await ensureDirectory(key, path);
                                             await ensureDirectoryInOut(key, path);
 
@@ -128,8 +147,9 @@ function SshModal(props: ModalProps) {
                                             navigate({
                                                 pathname: normalize(
                                                     AppRoute.Project + '/' + encodeURIComponent(path)
-                                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
-                                                    + '&' + p.toString()
+                                                        + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                                        + '&' + p.toString()
+                                                        + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
                                                 )
                                             })
                                         } else {
