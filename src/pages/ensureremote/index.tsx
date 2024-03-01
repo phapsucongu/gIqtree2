@@ -105,7 +105,7 @@ export function EnsureRemote({ onReady, requireDownload = true }: { onReady?: ()
                 onReady?.();
             }
         }
-    }, [connectionError, loadError, connected, requireDownload]);
+    }, [connectionError, loadError, connected, requireDownload, onReady]);
 
     if (connectionError) {
         if (retry < retryLimit) {

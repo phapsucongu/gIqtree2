@@ -6,8 +6,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import { normalize } from 'path';
-import { getInputFolder, getOutputFolder } from "../../right/project/folder";
-import { LocalNative } from "../../../natives";
 import { connectionKey } from "../../../utils/connectionKey";
 
 type TunnelOption = Parameters<NodeSSH['connect']>[0]
@@ -19,15 +17,6 @@ async function connect(path: string, options: TunnelOption) {
     return await ipcRenderer.callMain('ssh_create', [path, options]) as [boolean, string?];
 }
 
-async function ensureDirectory(key: string, path: string) : Promise<boolean> {
-    return await ipcRenderer.callMain('create_directory_ssh', [key, path, true]);
-}
-
-async function ensureDirectoryInOut(key: string, path: string) {
-    await ipcRenderer.callMain('create_directory_ssh', [key, getInputFolder(path), true]);
-    await ipcRenderer.callMain('create_directory_ssh', [key, getOutputFolder(path), true]);
-}
-
 interface ModalProps extends ReactModal.Props {
     onClose?: () => void;
 }
@@ -36,7 +25,6 @@ function SshModal(props: ModalProps) {
     let { onClose } = props;
     let [params] = useSearchParams();
     let navigate = useNavigate();
-    let native = new LocalNative();
 
     let [user, setUser] = useState('');
     let [server, setServer] = useState('');

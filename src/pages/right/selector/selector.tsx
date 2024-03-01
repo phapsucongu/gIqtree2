@@ -1,5 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { NativeContext } from "../../../natives/nativeContext";
+import { useCallback, useEffect, useState } from "react";
 import useSsh from "../../../hooks/useSsh";
 import { ipcRenderer } from "electron-better-ipc";
 import { join, normalize } from 'path';
@@ -44,6 +43,7 @@ function Selector() {
 
     useEffect(() => {
         pwd();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -54,7 +54,7 @@ function Selector() {
                     f.filter(r => r.isDir).map(r => r.name)
                 );
             })
-    }, [cwd])
+    }, [cwd, ssh])
 
     return (
         <>
