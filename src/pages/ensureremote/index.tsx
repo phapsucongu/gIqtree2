@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import useSsh from "../../hooks/useSsh";
 import { ParamKey } from "../../paramKey";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SshIntegration } from "../../natives/ssh";
 import { LocalNative } from "../../natives";
 import { RecentRecord } from "../../interfaces/natives";
@@ -42,44 +42,46 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
 
     }, [connectionId, loadError, connected])
 
-    let load = async () => {
-        if (!connected && connectionInfo) {
-            let integration = new SshIntegration();
-            let { username, password, host, port } = connectionInfo;
-            let key = ssh_connection;
-            let present = await integration.checkConnection(key);
-            if (present) {
-                console.log('connected!');
-                setConnected(true);
-                return;
-            }
-
-            console.log('trying', key, connectionInfo);
-
-            await integration.createConnection(
-                key,
-                {
-                    host,
-                    port,
-                    username,
-                    password
+    let load = useCallback(() => {
+        return async () => {
+            if (!connected && connectionInfo) {
+                let integration = new SshIntegration();
+                let { username, password, host, port } = connectionInfo;
+                let key = ssh_connection;
+                let present = await integration.checkConnection(key);
+                if (present) {
+                    console.log('connected!');
+                    setConnected(true);
+                    return;
                 }
-            )
-                .then(([success, err]) => {
-                    if (!success) {
-                        setRetry(retry + 1);
-                        setConnectionError(err!);
-                        setConnected(false);
-                    } else {
-                        setConnected(true);
+
+                console.log('trying', key, connectionInfo);
+
+                await integration.createConnection(
+                    key,
+                    {
+                        host,
+                        port,
+                        username,
+                        password
                     }
-                })
-                .catch(err => {
-                    setConnectionError(`${err}`);
-                    setConnected(false);
-                })
-        }
-    };
+                )
+                    .then(([success, err]) => {
+                        if (!success) {
+                            setRetry(retry + 1);
+                            setConnectionError(err!);
+                            setConnected(false);
+                        } else {
+                            setConnected(true);
+                        }
+                    })
+                    .catch(err => {
+                        setConnectionError(`${err}`);
+                        setConnected(false);
+                    })
+            }
+        };
+    }, [retry, connectionInfo, connected, ssh_connection]);
 
     useEffect(() => {
         if (retry < retryLimit) {
