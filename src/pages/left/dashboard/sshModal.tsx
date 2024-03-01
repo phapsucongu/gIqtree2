@@ -43,7 +43,7 @@ function SshModal(props: ModalProps) {
     let [port, setPort] = useState(22);
     let [password, setPassword] = useState('');
     let [connecting, setConnecting] = useState(false);
-    let [path, setPath] = useState('');
+    // let [path, setPath] = useState('');
     let [error, setError] = useState('');
 
     return (
@@ -89,13 +89,13 @@ function SshModal(props: ModalProps) {
                                 className={inputTextStyles}
                                 placeholder="Password" />
                         </div>
-                        <div className="flex flex-row gap-2">
+                        {/* <div className="flex flex-row gap-2">
                             <input
                                 value={path || undefined}
                                 onChange={e => setPath(e.target.value)}
                                 className={inputTextStyles}
                                 placeholder="Path" />
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="flex flex-row justify-end gap-6">
@@ -106,7 +106,7 @@ function SshModal(props: ModalProps) {
                             Cancel
                         </button>
                         <button
-                            disabled={!user || !port || !server || connecting || !path}
+                            disabled={!user || !port || !server || connecting}
                             className={buttonBaseStyles + " bg-pink-600 disabled:bg-pink-300"}
                             onClick={() => {
                                 setConnecting(true);
@@ -124,34 +124,51 @@ function SshModal(props: ModalProps) {
                                         let [success, error] = res;
                                         if (success) {
                                             let p = new URLSearchParams(params);
-
-                                            await native.database_recent_push({
-                                                id: 0, timestamp: '',
-                                                path: path,
-                                                connectionId: -1,
-                                                connection: {
-                                                    host: server,
-                                                    port,
-                                                    username: user,
-                                                    password
-                                                }
-                                            })
-
-                                            let res = await native.database_recent_list();
-                                            console.log(res[0]);
-
-                                            await ensureDirectory(key, path);
-                                            await ensureDirectoryInOut(key, path);
-
                                             p.set(ParamKey.SshConnection, key);
+
+                                            localStorage.clear();
+                                            localStorage.setItem('host', server);
+                                            localStorage.setItem('port', port.toString());
+                                            localStorage.setItem('user', user);
+                                            localStorage.setItem('pass', password);
+
                                             navigate({
                                                 pathname: normalize(
-                                                    AppRoute.Project + '/' + encodeURIComponent(path)
+                                                    AppRoute.FolderSelector
                                                         + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
                                                         + '&' + p.toString()
-                                                        + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
+                                                        // + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
                                                 )
                                             })
+
+
+                                            // await native.database_recent_push({
+                                            //     id: 0, timestamp: '',
+                                            //     path: path,
+                                            //     connectionId: -1,
+                                            //     connection: {
+                                            //         host: server,
+                                            //         port,
+                                            //         username: user,
+                                            //         password
+                                            //     }
+                                            // })
+
+                                            // let res = await native.database_recent_list();
+                                            // console.log(res[0]);
+
+                                            // await ensureDirectory(key, path);
+                                            // await ensureDirectoryInOut(key, path);
+
+
+                                            // navigate({
+                                            //     pathname: normalize(
+                                            //         AppRoute.Project + '/' + encodeURIComponent(path)
+                                            //             + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                            //             + '&' + p.toString()
+                                            //             + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
+                                            //     )
+                                            // })
                                         } else {
                                             setError(error!);
                                         }

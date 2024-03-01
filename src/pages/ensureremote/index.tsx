@@ -6,10 +6,11 @@ import { SshIntegration } from "../../natives/ssh";
 import { LocalNative } from "../../natives";
 import { RecentRecord } from "../../interfaces/natives";
 import BinaryDownload from "../binarydownload";
+import { ipcRenderer } from "electron-better-ipc";
 
 const retryLimit = 5;
 
-export function EnsureRemote({ onReady }: { onReady?: () => void }) {
+export function EnsureRemote({ onReady, requireDownload = true }: { onReady?: () => void, requireDownload?: boolean }) {
     let ssh_connection = useSsh();
     let [params] = useSearchParams();
     let connectionId = +params.get(ParamKey.ConnectionId)!;
@@ -42,45 +43,49 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
 
     }, [connectionId, loadError, connected])
 
-    let load = useCallback(() => {
-        return async () => {
-            if (!connected && connectionInfo) {
-                let integration = new SshIntegration();
-                let { username, password, host, port } = connectionInfo;
-                let key = ssh_connection;
-                let present = await integration.checkConnection(key);
-                if (present) {
-                    console.log('connected!');
-                    setConnected(true);
-                    return;
-                }
+    let load = useCallback(async () => {
+        let check: boolean = await ipcRenderer.callMain('ssh_check_connection', ssh_connection);
+        if (check) {
+            setConnected(true);
+            return;
+        }
 
-                console.log('trying', key, connectionInfo);
-
-                await integration.createConnection(
-                    key,
-                    {
-                        host,
-                        port,
-                        username,
-                        password
-                    }
-                )
-                    .then(([success, err]) => {
-                        if (!success) {
-                            setRetry(retry + 1);
-                            setConnectionError(err!);
-                            setConnected(false);
-                        } else {
-                            setConnected(true);
-                        }
-                    })
-                    .catch(err => {
-                        setConnectionError(`${err}`);
-                        setConnected(false);
-                    })
+        if (!connected && connectionInfo) {
+            let integration = new SshIntegration();
+            let { username, password, host, port } = connectionInfo;
+            let key = ssh_connection;
+            let present = await integration.checkConnection(key);
+            if (present) {
+                console.log('connected!');
+                setConnected(true);
+                return;
             }
-        };
+
+            console.log('trying', key, connectionInfo);
+
+            await integration.createConnection(
+                key,
+                {
+                    host,
+                    port,
+                    username,
+                    password
+                }
+            )
+                .then(([success, err]) => {
+                    if (!success) {
+                        setRetry(retry + 1);
+                        setConnectionError(err!);
+                        setConnected(false);
+                    } else {
+                        setConnected(true);
+                    }
+                })
+                .catch(err => {
+                    setConnectionError(`${err}`);
+                    setConnected(false);
+                })
+        }
     }, [retry, connectionInfo, connected, ssh_connection]);
 
     useEffect(() => {
@@ -93,6 +98,14 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (!connectionError && !loadError) {
+            if (connected && !requireDownload) {
+                onReady?.();
+            }
+        }
+    }, [connectionError, loadError, connected, requireDownload]);
 
     if (connectionError) {
         if (retry < retryLimit) {
@@ -123,6 +136,12 @@ export function EnsureRemote({ onReady }: { onReady?: () => void }) {
             <>
                 Connecting...
             </>
+        )
+    }
+
+    if (!requireDownload) {
+        return (
+            <></>
         )
     }
 

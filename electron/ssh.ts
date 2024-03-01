@@ -47,3 +47,37 @@ ipcMain.answerRenderer('ssh_create', async (d: [string, TunnelOption]) => {
         return [false, `${e}`];
     }
 })
+
+ipcMain.answerRenderer('ssh_check_connection', (key: string) => {
+    return !!sshTunnels.get(key)?.connection;
+})
+
+// key, command
+ipcMain.answerRenderer('ssh_exec', async (d: [string, { command: string, args: string[] }]) => {
+    let [key, { command, args }] = d;
+
+    let c = getConnection(key);
+    console.log(key, '| executing command |', command, args);
+    return await c.exec(command, args);
+})
+
+// key, path
+ipcMain.answerRenderer('ssh_read_dir', async ([key, path]: [string, string]) => {
+    let c = getConnection(key);
+    let out : { name: string, isDir: boolean }[] = [];
+    await c.withSFTP(async ftp => {
+        await new Promise<void>((res, rej) => {
+            ftp.readdir(path, (err, list) => {
+                if (err) return rej(err);
+                out = list.map(r => ({
+                    name: r.filename,
+                    isDir: r.attrs.isDirectory()
+                }))
+
+                res()
+            })
+        })
+    })
+
+    return out;
+})

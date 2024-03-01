@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom"
 import { AppRoute } from "../../routes"
 import Dashboard from "./dashboard"
 import Project from "./project/index"
+import Selector from "./selector/index"
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
             <Route
                 path={normalize(AppRoute.Project + '/:path')}
                 element={<Project />} />
+            <Route path={AppRoute.FolderSelector} element={<Selector />} />
         </Routes>
     )
 }

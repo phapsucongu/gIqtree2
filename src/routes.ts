@@ -1,4 +1,5 @@
 export enum AppRoute {
     Dashboard = "/",
-    Project = "/project/"
+    Project = "/project/",
+    FolderSelector = "/folder/"
 }
