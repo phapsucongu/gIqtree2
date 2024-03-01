@@ -2,27 +2,27 @@ import { basename } from "path";
 import { useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
 import useExecutionState from "./useExecutionState";
-import { ipcRenderer } from "electron-better-ipc";
-import { useEffect, useState } from "react";
-import { ChildProcess } from "child_process";
+import { useContext, useEffect, useState } from "react";
+import { NativeContext } from "../../../../natives/nativeContext";
 
 function useTitle(path: string) {
     let [params, ] = useSearchParams();
     let [executing, , [count, maxCount]] = useExecutionState(path);
     let [failed, setFailed] = useState(false);
-
+    let native = useContext(NativeContext);
 
     useEffect(() => {
         if (!executing) {
-            ipcRenderer.callMain('get', path)
+            native.getState(path)
                 .then(res => {
-                    let processes = res as { process: ChildProcess }[] | false;
+                    let processes = res
                     if (processes) {
-                        let failed = processes.some(p => p.process.exitCode !== 0 && !p.process.killed);
+                        let failed = processes.some(p => p.exitCode !== 0 && !p.kill);
                         setFailed(failed);
                     }
                 })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, executing]);
 
     switch (params.get(ParamKey.ProjectScreen)) {

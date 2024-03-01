@@ -1,19 +1,19 @@
-import type { ChildProcess } from "child_process";
-import { ipcRenderer } from "electron-better-ipc";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { NativeContext } from "../../../../natives/nativeContext";
 
 function useExecutionState(path: string) {
+    let native = useContext(NativeContext);
     let [executing, setExecuting] = useState(false);
     let [count, setCount] = useState([0, 0])
 
     async function refresh() {
-        let processes: { process: ChildProcess }[] | false = await ipcRenderer.callMain('get', path);
+        let processes = await native.getState(path);
         if (processes) {
             let executedCount = processes
-                .map(p => +!!(p.process && typeof p.process.exitCode === 'number' && !p.process.signalCode))
+                .map(p => +!!(typeof p.exitCode === 'number' && !p.signal))
                 .reduce((a, b) => a + b, 0);
             let anyExecuting = processes
-                .some(p => p.process && p.process.exitCode === null && !p.process.signalCode);
+                .some(p => p.exitCode === undefined && !p.signal);
             setExecuting(anyExecuting);
             setCount([executedCount + 1, processes.length]);
         }

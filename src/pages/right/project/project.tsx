@@ -11,7 +11,7 @@ import SettingsSubPage from "./settings/index";
 import useActionButtons from "./hooks/useActionButtons";
 import useTitle from "./hooks/useTitle";
 import { prepareCommand } from "../../../command/index";
-import { ensureInputOutputFolder, getInputFolder, getOutputFolder } from "./folder";
+import { Folder, getInputFolder, getOutputFolder } from "./folder";
 import useWindowsButtons from "../../../hooks/useWindowsButtons";
 import useResizeObserver from "use-resize-observer";
 import { HeightContext } from "../../../App";
@@ -89,8 +89,9 @@ function Project() {
     }
 
     useEffect(() => {
-        ensureInputOutputFolder(path)
-    }, [path])
+        new Folder(native).ensureInputOutputFolder({ path, host: ssh });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [path, ssh])
     useEffect(() => {
         native.database_recent_push({
             path: path,

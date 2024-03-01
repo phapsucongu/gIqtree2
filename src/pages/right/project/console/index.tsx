@@ -1,24 +1,29 @@
 import { ipcRenderer } from "electron-better-ipc";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TextView from "../components/textView";
 import useExecutionState from "../hooks/useExecutionState";
 import { IpcRendererEvent } from "electron";
 import useSsh from "../../../../hooks/useSsh";
+import { NativeContext } from "../../../../natives/nativeContext";
 
 function Console({ path, wrap } : { path: string, wrap?: boolean }) {
     let [executing] = useExecutionState(path);
     let [log, setLog] = useState<string[]>([]);
-    let ssh = useSsh()
+    let ssh = useSsh();
+    let native = useContext(NativeContext);
 
     useEffect(() => {
-        (ipcRenderer.callMain(ssh ? 'get-stdout_ssh' : 'get-stdout', path) as Promise<any>)
-            .then((res : false | string[]) => {
-                if (res) {
-                    setLog(res);
+        native.getState(path)
+            .then(res => {
+                if (res.length) {
+                    let result = res.map(r => new TextDecoder().decode(
+                        r.outputBuffer as any as ArrayBuffer
+                    ));
+                    setLog(result);
                 }
             })
 
-    }, [ssh, path])
+    }, [ssh, path, native])
 
     useEffect(() => {
         let listener = (ev: IpcRendererEvent, data : { id: string, outputs: string[] }) => {

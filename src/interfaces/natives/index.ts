@@ -30,6 +30,7 @@ export interface Task {
     outputBuffer: Uint8Array[];
     exitCode?: number;
     signal?: string;
+    kill?: boolean;
 }
 
 export interface RecentRecord {

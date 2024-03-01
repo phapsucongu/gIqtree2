@@ -26,6 +26,7 @@ export class Task extends EventEmitter {
 
     public exitCode?: number;
     public signal?: string;
+    public kill?: boolean;
 
     public constructor(binary: string, execArguments: string[], cwd: string) {
         super();
@@ -56,6 +57,9 @@ export class Task extends EventEmitter {
             if (this.process!.signalCode !== null) {
                 console.log(`child process id ${this.process!.pid} seems to be killed with code ${this.process!.signalCode}`);
                 this.signal = this.process!.signalCode!;
+                if (this.signal === 'SIGKILL') {
+                    this.kill = true;
+                }
             }
         });
 

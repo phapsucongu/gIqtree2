@@ -1,10 +1,24 @@
-
-import { ipcRenderer } from "electron-better-ipc";
 import { join, sep } from "path";
+import { NativeIntegration } from "../../../interfaces";
+import { File } from "../../../interfaces/natives";
 
-export async function ensureInputOutputFolder(projectPath: string) {
-    await ipcRenderer.callMain('directory_create', [getInputFolder(projectPath), true]);
-    await ipcRenderer.callMain('directory_create', [getOutputFolder(projectPath), true]);
+export class Folder {
+    private native: NativeIntegration;
+    constructor(native: NativeIntegration) {
+        this.native = native;
+    }
+
+    async ensureInputOutputFolder(path: File) {
+        await this.native.directory_create({
+            path: getInputFolder(path.path),
+            host: path.host
+        }, true);
+
+        await this.native.directory_create({
+            path: getOutputFolder(path.path),
+            host: path.host
+        }, true);
+    }
 }
 
 export function getOutputFolder(projectPath: string) {
