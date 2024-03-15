@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import useSsh from "../../../hooks/useSsh";
 import { ipcRenderer } from "electron-better-ipc";
 import { join, normalize } from 'path';
@@ -7,6 +7,7 @@ import { LocalNative } from "../../../natives";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import { getInputFolder, getOutputFolder } from "../project/folder";
+import { HeightContext } from "../../../App";
 
 function exec(key: string, command: string, args: string[]) {
     return ipcRenderer.callMain('ssh_exec', [key, { command, args }]) as Promise<string>;
@@ -28,6 +29,7 @@ async function ensureDirectoryInOut(key: string, path: string) {
 
 
 function Selector() {
+    let height = useContext(HeightContext);
     let ssh = useSsh();
     let [cwd, setCwd] = useState('');
     let [folder, setFolders] = useState<string[]>([]);
@@ -51,19 +53,21 @@ function Selector() {
         list(ssh, cwd)
             .then(f => {
                 setFolders(
-                    f.filter(r => r.isDir).map(r => r.name)
+                    f.filter(r => r.isDir)
+                        .map(r => r.name)
+                        .sort((a, b) => a.localeCompare(b))
                 );
             })
     }, [cwd, ssh])
 
     return (
         <>
-            <div className="p-4">
-                <h3 className="font-bold">
+            <div className="p-4 overflow-y-scroll" style={{ height: height }}>
+                <h3 className="font-bold sticky top-0 bg-white">
                     Pick the project folder...
                 </h3>
                 <br />
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row justify-between sticky top-0 bg-white">
                     <div>
                         Current directory : <b>{cwd}</b>
                     </div>
