@@ -34,7 +34,7 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
                 for (let { source, destination } of files) {
                     let basedir = dirname(destination);
                     await native.directory_create({ path: basedir, host: ssh }, true);
-                    await native.file_copy({ path: basedir, host: '' }, { path: basedir, host: ssh });
+                    await native.file_copy({ path: source, host: '' }, { path: destination, host: ssh });
 
                     setCopied(
                         c = new Map([
@@ -46,6 +46,7 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
 
                 onReady?.(c);
             } catch (e) {
+                console.log(e);
                 setErr(`${e}`);
             }
         }
