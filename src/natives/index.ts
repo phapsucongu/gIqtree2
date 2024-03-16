@@ -2,6 +2,7 @@ import { SetOptional } from "type-fest";
 import { NativeIntegration } from "../interfaces";
 import { File, FileNode, RecentRecord, Task } from "../interfaces/natives";
 import { ipcRenderer } from 'electron-better-ipc';
+import { mergeBuffer } from "../utils/mergeBuffer";
 
 class LocalNative implements NativeIntegration {
     file_exists (file: File) {
