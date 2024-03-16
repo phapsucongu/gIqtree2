@@ -87,7 +87,7 @@ function useActionButtons(
                                         id: path,
                                         arguments: command,
                                         binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
-                                        cwd: ssh ? '' : path,
+                                        cwd: path,
                                         host: ssh
                                     }
                                 }))
@@ -109,14 +109,14 @@ function useActionButtons(
                                             id: path,
                                             arguments: command,
                                             binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
-                                            cwd: ssh ? '' : path,
+                                            cwd: path,
                                             host: ssh
                                         }
                                     }))
                                 })
                             refresh();
                         }}>
-                        Execute
+                        Submit
                     </PositiveButton>
                 </>
             )

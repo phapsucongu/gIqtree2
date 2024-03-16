@@ -64,7 +64,7 @@ class RemoteNative implements NativeIntegration {
         return ipcRenderer.callMain('get_ssh', id);
     }
     spawn = (t: Parameters<LocalNative['spawn']>[0]) => {
-        let res = ipcRenderer.callMain('spawn_ssh', {
+        let res = ipcRenderer.callMain('spawn_ssh_job', {
             id: t[0].id,
             binary: t[0].binary,
             cwd: t[0].cwd,

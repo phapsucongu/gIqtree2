@@ -3,15 +3,81 @@ import { getConnection } from './ssh';
 import { NodeSSH, SSHExecCommandResponse } from 'node-ssh';
 import { PassThrough, Stream, Transform } from 'stream';
 import { ipcMain } from 'electron-better-ipc';
+import { createJobFile } from './jobGenerator';
+import { basename, join } from 'path';
+import { mkdtempSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import rimraf from 'rimraf';
 
 const currentProcess = new Map<string, RemoteTask[]>();
+const currentProcessJob = new Map<string, Job[]>();
 
-interface SpawnData {
+export interface SpawnData {
     id: string;
     arguments: string[][];
     binary: string;
     cwd: string,
     connection: string
+}
+
+export interface SpawnDataJob extends SpawnData {
+    thread?: number;
+}
+
+export class Job extends EventEmitter {
+    id: string;
+    job_id: number = 0;
+    public readonly binary: string = '';
+    public readonly arguments: string[] = [];
+    public readonly cwd: string = '';
+    public readonly thread: number = 1;
+    public pending = true;
+
+    constructor(connection: string, binary: string, execArguments: string[], cwd: string, thread?: number) {
+        super();
+        this.id = connection;
+        this.binary = binary;
+        this.arguments = execArguments;
+        this.cwd = cwd;
+        this.thread = Math.floor(thread ?? 0) <= 0 ? 1 : Math.floor(thread ?? 0);
+    }
+
+    async submitJob() {
+        let connection = getConnection(this.id);
+
+        let absBinary = await connection.exec('realpath', [this.binary]);
+
+        let file = createJobFile(
+            'iqtree',
+            this.thread,
+            this.cwd,
+            absBinary,
+            this.arguments
+        );
+
+        let tmp = mkdtempSync(join(tmpdir(), 'iqtree-tmp'));
+        let tmpFile = join(tmp, 'run.sh');
+        writeFileSync(tmpFile, file);
+
+        let remoteFile = join(this.cwd, 'test.sh');
+        await connection.putFile(tmpFile, remoteFile);
+        console.log('Written shell script to', remoteFile);
+        rimraf.sync(tmp);
+
+        await connection.exec('chmod', ['+x', remoteFile]);
+
+        let res = await connection.execCommand(`cd ${this.cwd}; rm ${join(this.cwd, 'output', '*')}; bsub < ${remoteFile}`);
+        let id = +(res.stderr.match(/Job <(\d+)>/)?.[1] ?? '');
+        console.log('stdout', res.stdout)
+        console.log('stderr', res.stderr)
+        if (id === 0) {
+            return false;
+        }
+
+        this.job_id = id;
+
+        return true;
+    }
 }
 
 export class RemoteTask extends EventEmitter {
@@ -161,3 +227,35 @@ ipcMain
     .on('spawn_ssh', console.log)
     // .on('get-stdout', console.log)
     .on('get_ssh', console.log);
+
+
+ipcMain.answerRenderer('spawn_ssh_job', async (data: SpawnDataJob) => {
+    if (currentProcessJob.has(data.id)) {
+        let records = currentProcessJob.get(data.id)!
+        if (records.some(r => r.pending))
+            return false;
+    }
+
+    let jobs = data.arguments.map(process => new Job(data.connection, data.binary, process, data.cwd, 1));
+    currentProcessJob.set(data.id, jobs);
+
+    let split = async () => {
+        try {
+            for (let [idx, job] of jobs.entries()) {
+                await job.submitJob();
+                // job.on('output', () => {
+                //     ipcMain.sendToRenderers('command-data', { id: data.id, outputs: jobs.map(t => t.serialize()) })
+                // })
+                console.log(`Submitted job ${idx} on connection ${data.connection}. Job ID is ${job.job_id}`);
+                // await new Promise(res => job.on('done', res));
+            }
+        } catch (e) {
+            console.error('An error occurred trying to spawn job.')
+            console.error(e);
+            return false;
+        }
+    };
+
+    // don't block
+    split();
+})
