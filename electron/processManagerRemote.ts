@@ -67,9 +67,7 @@ export class Job extends EventEmitter {
         await connection.exec('chmod', ['+x', remoteFile]);
 
         let res = await connection.execCommand(`cd ${this.cwd}; rm ${join(this.cwd, 'output', '*')}; bsub < ${remoteFile}`);
-        let id = +(res.stderr.match(/Job <(\d+)>/)?.[1] ?? '');
-        console.log('stdout', res.stdout)
-        console.log('stderr', res.stderr)
+        let id = +((res.stderr + res.stdout).match(/Job <(\d+)>/)?.[1] ?? '');
         if (id === 0) {
             return false;
         }
@@ -229,6 +227,16 @@ ipcMain
     .on('get_ssh', console.log);
 
 
+ipcMain.answerRenderer('get-stdout_ssh_job', async (id: string) => {
+    if (!currentProcessJob.has(id)) {
+        return false;
+    }
+
+    let tasks = currentProcessJob.get(id)!;
+    return tasks.map(t => `Spawned as job ${t.job_id}`);
+})
+
+
 ipcMain.answerRenderer('spawn_ssh_job', async (data: SpawnDataJob) => {
     if (currentProcessJob.has(data.id)) {
         let records = currentProcessJob.get(data.id)!
@@ -246,7 +254,8 @@ ipcMain.answerRenderer('spawn_ssh_job', async (data: SpawnDataJob) => {
                 // job.on('output', () => {
                 //     ipcMain.sendToRenderers('command-data', { id: data.id, outputs: jobs.map(t => t.serialize()) })
                 // })
-                console.log(`Submitted job ${idx} on connection ${data.connection}. Job ID is ${job.job_id}`);
+                console.log(`Submitted job index ${idx} on connection ${data.connection}. Job ID is ${job.job_id}`);
+                ipcMain.sendToRenderers('command-data', { id: data.id, outputs: jobs.map(t => `Submitted as job ${t.job_id}`) })
                 // await new Promise(res => job.on('done', res));
             }
         } catch (e) {

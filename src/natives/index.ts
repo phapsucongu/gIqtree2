@@ -48,6 +48,12 @@ class LocalNative implements NativeIntegration {
     getState(id: string) {
         return ipcRenderer.callMain('get', id) as Promise<Task[]>
     }
+    async getOutput(id: string) {
+        let r = await this.getState(id);
+        return r.map(r => {
+            return new TextDecoder().decode(mergeBuffer(r.outputBuffer));
+        })
+    }
     spawn (t: SetOptional<Task, 'outputBuffer' | 'exitCode' | 'signal'>[]) {
         let res = ipcRenderer.callMain('spawn', {
             id: t[0].id,

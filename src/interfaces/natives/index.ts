@@ -69,7 +69,7 @@ export interface NativeIntegration {
 
     // process management
     getState: (id: string) => Promise<Task[]>;
-    // getOutput: () => Promise<string[]>;
+    getOutput: (id: string) => Promise<string[]>;
     spawn: (t: SetOptional<Task, 'outputBuffer' | 'exitCode' | 'signal'>[]) => Promise<void>;
     killAllTask: (id: string) => Promise<void>;
 

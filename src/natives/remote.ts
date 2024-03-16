@@ -63,6 +63,11 @@ class RemoteNative implements NativeIntegration {
     getState = (id: string): Promise<Task[]> => {
         return ipcRenderer.callMain('get_ssh', id);
     }
+    getOutput = async (id: string) => {
+        let r = await ipcRenderer.callMain('get-stdout_ssh_job', id);
+        if (r === false) return [];
+        return r as string[];
+    }
     spawn = (t: Parameters<LocalNative['spawn']>[0]) => {
         let res = ipcRenderer.callMain('spawn_ssh_job', {
             id: t[0].id,

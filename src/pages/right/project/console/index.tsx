@@ -13,22 +13,10 @@ function Console({ path, wrap } : { path: string, wrap?: boolean }) {
     let native = useContext(NativeContext);
 
     useEffect(() => {
-        native.getState(path)
+        native.getOutput(path)
             .then(res => {
                 if (res.length) {
-                    let result = res.map(r => {
-                        let all = r.outputBuffer;
-                        let allLength = all.reduce((r, a) => r + a.length, 0);
-                        let merged = new Uint8Array(allLength);
-                        let offset = 0;
-                        all.forEach(item => {
-                            merged.set(item, offset);
-                            offset += item.length;
-                        });
-
-                        return new TextDecoder().decode(merged);
-                    });
-                    setLog(result);
+                    setLog(res);
                 }
             })
 
