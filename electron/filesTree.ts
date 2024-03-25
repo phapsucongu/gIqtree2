@@ -32,27 +32,38 @@ function recurse(path: string) {
     return baseNode;
 }
 
-async function recurseSsh(connection: NodeSSH, path: string) {
+// async function
+function recurseSsh(s: string[], path: string) {
     const baseNode: Node = { id: path, name: basename(path), path, isFolder: false };
 
-    try {
-        let res = await connection.exec('ls -ld', [path]);
-        let is_dir = res.startsWith('d');
+        try {
+            let res = s.find(r => r === path || r === path + '/');
+            let is_dir = res?.endsWith('/') || false;
+            if (res !== undefined) {
+                if (res === path + '/') {
+                    path += '/';
+                }
+            }
 
-        if (is_dir) {
-            baseNode.isFolder = true;
+            if (is_dir) {
+                baseNode.isFolder = true;
 
-            let sub = await connection.exec('ls', [path]);
-            let p = sub.split('\n').filter(Boolean).map(dir => join(path, dir));
-            let p2 = p.map(r => recurseSsh(connection, r));
-
-            baseNode.children = await Promise.all(p2);
+                let sub = s.filter(r => {
+                    if (r.startsWith(path) && r !== path) {
+                        let l = r.slice(path.length).split('/');
+                        return l.length <= 2 && !l[1];
+                    } else {
+                        return false;
+                    }
+                });
+                let p2 = sub.map(r => recurseSsh(s, r));
+                baseNode.children = p2;
+            }
+        } catch (e) {
+            console.log(e);
         }
-    } catch (e: any) {
-        console.log(e);
-    }
 
-    return baseNode;
+        return baseNode;
 }
 
 ipcMain.answerRenderer('recurse', (path: string) => {
@@ -63,5 +74,7 @@ ipcMain.answerRenderer('recurse', (path: string) => {
 ipcMain.answerRenderer('recurse_ssh', async (data: [string, string]) => {
     let [key, path] = data;
     let c = getConnection(key);
-    return await recurseSsh(c, path);
+    let lines = await c.exec('find', [path, '-type', 'd', '-printf', '%p/\\n', '-or', '-print']);
+    let l = lines.split('\n').filter(Boolean);
+    return recurseSsh(l, path);
 })
