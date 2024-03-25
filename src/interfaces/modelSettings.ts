@@ -85,7 +85,8 @@ export enum SubstitutionModel {
     KOSI07 = 'KOSI07',
     SCHN05 = 'SCHN05',
     MK = 'MK',
-    ORDERED = 'ORDERED'
+    ORDERED = 'ORDERED',
+    GTR20 = 'GTR20'
 }
 
 export const AutoMergePartitionsAlgorithms : { type: AutoMergePartitions, name: string }[] = [
@@ -105,7 +106,7 @@ export const SubstitutionModels: { sequenceType: SequenceType, models: Substitut
     },
     {
         sequenceType: SequenceType.Protein,
-        models: [SubstitutionModel.Blosum62, SubstitutionModel.cpREV, SubstitutionModel.Dayhoff, SubstitutionModel.DCMut, SubstitutionModel.FLU, SubstitutionModel.HIVb, SubstitutionModel.HIVw, SubstitutionModel.JTT, SubstitutionModel.JTTDCMut, SubstitutionModel.LG, SubstitutionModel.mtART, SubstitutionModel.mtMAM, SubstitutionModel.PMB, SubstitutionModel.rtREV, SubstitutionModel.VT, SubstitutionModel.WAG]
+        models: [SubstitutionModel.Blosum62, SubstitutionModel.cpREV, SubstitutionModel.Dayhoff, SubstitutionModel.DCMut, SubstitutionModel.FLU, SubstitutionModel.HIVb, SubstitutionModel.HIVw, SubstitutionModel.JTT, SubstitutionModel.JTTDCMut, SubstitutionModel.LG, SubstitutionModel.mtART, SubstitutionModel.mtMAM, SubstitutionModel.PMB, SubstitutionModel.rtREV, SubstitutionModel.VT, SubstitutionModel.WAG, SubstitutionModel.GTR, SubstitutionModel.GTR20]
     },
     {
         sequenceType: SequenceType.DNAToProtein,
