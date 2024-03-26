@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DataSetting from './data';
 import ModelSetting from './model';
 import AssessmentSetting from './assessment';
@@ -18,15 +18,10 @@ enum CurrentSetting {
 }
 
 function SettingsSubPage(
-    { setting, onChange, onReset }:
-    { setting: Settings, onChange?: (newSetting: Settings) => void, onReset?: () => void }
+    { setting, onChange, path, onReset }:
+    { setting: Settings, path: string, onChange?: (newSetting: Settings) => void, onReset?: () => void }
 ) {
     let [current, setCurrent] = useState(CurrentSetting.Data);
-    useEffect(() => {
-        return () => {
-            onReset?.();
-        }
-    }, [onReset])
 
     let settingCategories = [
         {
@@ -90,8 +85,20 @@ function SettingsSubPage(
     ]
 
     let currentPage = settingCategories.find(f => f.setting === current);
+
+    let wrongPath = setting.lastPath && setting.lastPath !== path;
+
     return (
         <div className="h-full">
+            {wrongPath && (
+                <div className="text-yellow-400 text-sm font-bold px-6 py-1">
+                    This project's current path does not match its recorded path. Was it copied?
+                    <br />
+                    <span className="text-yellow-600">
+                        Pressing save will remove this warning permanently, please double-check!
+                    </span>
+                </div>
+            )}
             <div className="flex flex-row gap-4 h-full px-6">
                 <div className="basis-1/5 h-full flex flex-col gap-2 pt-6 border-r border-r-black/10">
                     {settingCategories.map(r => {
