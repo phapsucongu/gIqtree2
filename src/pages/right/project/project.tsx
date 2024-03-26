@@ -1,5 +1,5 @@
 import { basename, join, normalize } from "path";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useMatch, useSearchParams } from "react-router-dom";
 import { Settings } from "../../../interfaces";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
@@ -39,10 +39,6 @@ function Project() {
     let title = useTitle(path);
     let content = <></>;
 
-    let resetCallback = useCallback(() => {
-        setSettings(originalSettings);
-    }, [originalSettings]);
-
     let settingFile = useMemo(() => new SettingsFile(native), [native]);
 
     switch (params.get(ParamKey.ProjectScreen)) {
@@ -53,8 +49,7 @@ function Project() {
                     setting={settings!}
                     onChange={s => {
                         setSettings(s);
-                    }}
-                    onReset={resetCallback}/>
+                    }}/>
                 : <></>
             break;
         }

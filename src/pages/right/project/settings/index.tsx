@@ -18,8 +18,8 @@ enum CurrentSetting {
 }
 
 function SettingsSubPage(
-    { setting, onChange, path, onReset }:
-    { setting: Settings, path: string, onChange?: (newSetting: Settings) => void, onReset?: () => void }
+    { setting, onChange, path }:
+    { setting: Settings, path: string, onChange?: (newSetting: Settings) => void }
 ) {
     let [current, setCurrent] = useState(CurrentSetting.Data);
 
