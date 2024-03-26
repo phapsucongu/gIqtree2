@@ -1,0 +1,22 @@
+diff --git a/node_modules/lru-cache/dist/commonjs/index.d.ts b/node_modules/lru-cache/dist/commonjs/index.d.ts
+index 0b48062..c6fad1b 100644
+--- a/node_modules/lru-cache/dist/commonjs/index.d.ts
++++ b/node_modules/lru-cache/dist/commonjs/index.d.ts
+@@ -17,7 +17,7 @@ export type { ZeroArray };
+ export type { Stack };
+ export type StackLike = Stack | Index[];
+ declare class Stack {
+-    #private;
++    // #private;
+     heap: NumberArray;
+     length: number;
+     static create(max: number): StackLike;
+@@ -576,7 +576,7 @@ export declare namespace LRUCache {
+  * but is otherwise safe.
+  */
+ export declare class LRUCache<K extends {}, V extends {}, FC = unknown> implements Map<K, V> {
+-    #private;
++    // #private;
+     /**
+      * {@link LRUCache.OptionsBase.ttl}
+      */

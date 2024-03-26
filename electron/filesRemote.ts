@@ -7,6 +7,23 @@ import { copyFileSync } from 'fs-extra';
 import { tmpdir } from "os";
 import { join } from "path";
 
+import { LRUCache } from 'lru-cache';
+
+const cache = new Map<string, LRUCache<string, [number, string]>>();
+
+function getCache(connnectionId: string) {
+    if (!cache.has(connnectionId)) {
+        cache.set(connnectionId, new LRUCache({
+            max: 50,
+            // 1GiB
+            maxSize: 1024 ** 3,
+            ttl: 3600 * 1000
+        }));
+    }
+
+    return cache.get(connnectionId)!;
+}
+
 // key, path
 ipcMain.answerRenderer('file_exists_string_ssh', async (data: [string, string]) => {
     let [key, path] = data;
@@ -24,8 +41,27 @@ ipcMain.answerRenderer('file_exists_string_ssh', async (data: [string, string]) 
 ipcMain.answerRenderer('file_read_string_ssh', async (data: [string, string]) => {
     let [key, path] = data;
     let connection = getConnection(key);
-    let result = await connection.exec('cat', [path]);
+
+    let updatedTime = +(await connection.exec(`stat`, ['-c', '%Y', path]));
+    let cache = getCache(key);
+
+    if (cache.has(path)) {
+        let [timestamp, content] = cache.get(path)!;
+        if (timestamp === updatedTime) {
+            console.log('Connection', key, 'serving file', path, 'from cache');
+            return content;
+        } else {
+            console.log('Connection', key, 'has modified file', path, 'at', timestamp, ' - busting cache');
+            cache.delete(path);
+        }
+    }
+
     console.log('reading file', path);
+    let result = await connection.exec('cat', [path]);
+    cache.set(path, [updatedTime, result], {
+        size: result.length
+    });
+    console.log('Connection', key, 'caching file', path, 'at', updatedTime);
 
     return result;
 })
@@ -41,6 +77,8 @@ ipcMain.answerRenderer('file_write_string_ssh', async (data: [string, string, st
 
     await connection.putFile(file, path);
     console.log('Connection', key, 'copied from', file, 'to', path);
+    let cache = getCache(key);
+    cache.delete(path);
 
     rimraf(tmp);
     return true;
