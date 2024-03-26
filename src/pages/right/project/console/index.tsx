@@ -13,14 +13,27 @@ function Console({ path, wrap } : { path: string, wrap?: boolean }) {
     let native = useContext(NativeContext);
 
     useEffect(() => {
-        native.getOutput(path)
-            .then(res => {
-                if (res.length) {
-                    setLog(res);
-                }
-            })
+        if (ssh) {
+            let a = setInterval(() => {
+                native.getOutput(path)
+                    .then(res => {
+                        if (res.length) {
+                            setLog(res);
+                        }
+                    })
+            }, 50);
 
-    }, [ssh, path, native])
+            return () => clearInterval(a);
+        } else {
+            native.getOutput(path)
+                .then(res => {
+                    if (res.length) {
+                        setLog(res);
+                    }
+                })
+        }
+
+    }, [ssh, path, native]);
 
     useEffect(() => {
         let listener = (ev: IpcRendererEvent, data : { id: string, outputs: string[] }) => {

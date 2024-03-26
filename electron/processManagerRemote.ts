@@ -8,6 +8,7 @@ import { basename, join } from 'path';
 import { mkdtempSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import rimraf from 'rimraf';
+import { Task } from './interfaces';
 
 const currentProcess = new Map<string, RemoteTask[]>();
 const currentProcessJob = new Map<string, Job[]>();
@@ -32,6 +33,11 @@ export class Job extends EventEmitter {
     public readonly cwd: string = '';
     public readonly thread: number = 1;
     public pending = true;
+    public running = false;
+    public exited = 0;
+
+    private lastChecked = 0;
+    static CheckTimeLimit = 5000;
 
     constructor(connection: string, binary: string, execArguments: string[], cwd: string, thread?: number) {
         super();
@@ -40,6 +46,57 @@ export class Job extends EventEmitter {
         this.arguments = execArguments;
         this.cwd = cwd;
         this.thread = Math.floor(thread ?? 0) <= 0 ? 1 : Math.floor(thread ?? 0);
+    }
+
+    async check() {
+        let current = +new Date();
+        if (current - Job.CheckTimeLimit > this.lastChecked) {
+            this.lastChecked = current;
+            let connection = getConnection(this.id);
+            console.log('Checking job status for', this.id, 'job ID', this.job_id);
+            let result = await connection.exec('bjobs', [
+                `${this.job_id}`,
+                '-o',
+                'jobid stat [delimiter="/"]'
+            ]);
+
+            let line = result.split('\n').find(r => r.includes(`${this.job_id}`)) ?? '';
+            let status = line.split('/').pop();
+
+            console.log('Job status for', this.id, 'job ID', this.job_id, 'status', status);
+
+            switch (status?.trim()) {
+                case 'RUN': {
+                    this.running = true;
+                    this.pending = false;
+                    this.exited = 0;
+                    break;
+                }
+                case 'PEND': {
+                    this.running = false;
+                    this.pending = true;
+                    this.exited = 0;
+                    break;
+                }
+                case 'EXIT': {
+                    this.exited = 1;
+                    this.running = false;
+                    this.pending = false;
+                    break;
+                }
+                case 'DONE': {
+                    this.exited = 2;
+                    this.running = false;
+                    this.pending = false;
+                    break;
+                }
+                case '': {
+                    this.running = false;
+                    this.pending = false;
+                    this.exited = 0;
+                }
+            }
+        }
     }
 
     async submitJob() {
@@ -227,13 +284,61 @@ ipcMain
     .on('get_ssh', console.log);
 
 
+
+// Jobs support
+ipcMain.answerRenderer('get_ssh_job', async (id: string) => {
+    if (!currentProcessJob.has(id)) {
+        return false;
+    }
+
+    let record = currentProcessJob.get(id)!;
+    for (let r of record) {
+        await r.check();
+        if (r.pending) {
+            // exit early; later jobs wouldn't have a chance to execute
+            break;
+        }
+    }
+    let out = record.map(r => {
+        return {
+            ...r,
+            outputStream: undefined,
+            stdin: undefined,
+            connection: undefined,
+            host: '---remote---'
+        }
+    })
+
+    return JSON.parse(JSON.stringify(out));
+})
+
 ipcMain.answerRenderer('get-stdout_ssh_job', async (id: string) => {
     if (!currentProcessJob.has(id)) {
         return false;
     }
 
     let tasks = currentProcessJob.get(id)!;
-    return tasks.map(t => `Spawned as job ${t.job_id}`);
+    for (let r of tasks) {
+        await r.check();
+        if (r.pending) {
+            // exit early; later jobs wouldn't have a chance to execute
+            break;
+        }
+    }
+    return tasks.map(t => {
+        let p = `Spawned as job ${t.job_id}. `;
+        if (t.pending) {
+            p += 'Pending. ';
+        }
+        if (t.exited) {
+            p += `Job ${t.exited === 1 ? 'finished' : 'exited'}.`;
+        }
+        if (t.running) {
+            p += `Execution is in progress. `;
+        }
+
+        return p;
+    });
 })
 
 

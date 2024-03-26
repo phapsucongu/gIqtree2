@@ -32,7 +32,6 @@ function recurse(path: string) {
     return baseNode;
 }
 
-// async function
 function recurseSsh(s: string[], path: string) {
     const baseNode: Node = { id: path, name: basename(path), path, isFolder: false };
 
@@ -76,5 +75,6 @@ ipcMain.answerRenderer('recurse_ssh', async (data: [string, string]) => {
     let c = getConnection(key);
     let lines = await c.exec('find', [path, '-type', 'd', '-printf', '%p/\\n', '-or', '-print']);
     let l = lines.split('\n').filter(Boolean);
+    console.log(key, 'listing files under', path);
     return recurseSsh(l, path);
 })

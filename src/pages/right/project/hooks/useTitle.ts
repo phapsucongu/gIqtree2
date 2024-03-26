@@ -1,7 +1,7 @@
 import { basename } from "path";
 import { useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
-import useExecutionState from "./useExecutionState";
+import useExecutionState, { Job } from "./useExecutionState";
 import { useContext, useEffect, useState } from "react";
 import { NativeContext } from "../../../../natives/nativeContext";
 
@@ -15,9 +15,15 @@ function useTitle(path: string) {
         if (!executing) {
             native.getState(path)
                 .then(res => {
-                    let processes = res
+                    let processes = res;
                     if (processes) {
-                        let failed = processes.some(p => p.exitCode !== 0 && !p.kill);
+                        let failed: boolean;
+                        if (processes.some(r => 'pending' in r)) {
+                            let pp = processes as Job[];
+                            failed = pp.some(r => r.exited && r.exited !== 2);
+                        } else {
+                            failed = processes.some(p => p.exitCode !== 0 && !p.kill);
+                        }
                         setFailed(failed);
                     }
                 })

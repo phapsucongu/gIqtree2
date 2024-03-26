@@ -1,5 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { NativeContext } from "../../../../natives/nativeContext";
+import { Task } from "../../../../interfaces/natives";
+
+export interface Job extends Task {
+    pending: boolean;
+    running: boolean;
+    exited: number;
+}
 
 function useExecutionState(path: string) {
     let native = useContext(NativeContext);
@@ -8,12 +15,23 @@ function useExecutionState(path: string) {
 
     async function refresh() {
         let processes = await native.getState(path);
+        let executedCount = 0;
+        let anyExecuting = false;
         if (processes) {
-            let executedCount = processes
-                .map(p => +!!(typeof p.exitCode === 'number' && !p.signal))
-                .reduce((a, b) => a + b, 0);
-            let anyExecuting = processes
-                .some(p => p.exitCode === undefined && !p.signal);
+            if (processes.some(r => 'pending' in r)) {
+                let pp = processes as Job[];
+                executedCount = pp
+                    .map(p => +!!(p.exited))
+                    .reduce((a, b) => a + b, 0);
+                anyExecuting = pp.some(p => p.pending || p.running);
+            } else {
+                executedCount = processes
+                    .map(p => +!!(typeof p.exitCode === 'number' && !p.signal))
+                    .reduce((a, b) => a + b, 0);
+                anyExecuting = processes
+                    .some(p => p.exitCode === undefined && !p.signal);
+            }
+
             setExecuting(anyExecuting);
             setCount([executedCount + 1, processes.length]);
         }

@@ -61,7 +61,7 @@ class RemoteNative implements NativeIntegration {
     database_recent_push = (record: RecentRecord) => this.local.database_recent_push(record);
     database_get_connection = (id: number) => this.local.database_get_connection(id);
     getState = (id: string): Promise<Task[]> => {
-        return ipcRenderer.callMain('get_ssh', id);
+        return ipcRenderer.callMain('get_ssh_job', id);
     }
     getOutput = async (id: string) => {
         let r = await ipcRenderer.callMain('get-stdout_ssh_job', id);
