@@ -44,6 +44,7 @@ export class SettingsFile {
 
     async writeFile(path: File, setting: Settings) {
         let r = {...path};
+        setting.lastPath = path.path;
         r.path = join(r.path, filename);
         return this.native.file_write_string(r, JSON.stringify(setting));
     }

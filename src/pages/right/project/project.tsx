@@ -49,6 +49,7 @@ function Project() {
         case ProjectScreen.Setting: {
             content = settings
                 ? <SettingsSubPage
+                    path={path}
                     setting={settings!}
                     onChange={s => {
                         setSettings(s);
@@ -128,6 +129,7 @@ function Project() {
                 setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy, [ParamKey.SshConnection]: ssh });
                 if (settings) {
                     setOriginalSettings(settings);
+                    setSettings(settings);
                     settingFile.writeFile({ path, host: ssh }, settings);
                 }
             },

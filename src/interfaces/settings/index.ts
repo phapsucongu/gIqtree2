@@ -13,4 +13,6 @@ export interface Settings {
     others?: OthersSettings;
     model?: ModelSettings;
     dating: DatingSettings;
+
+    lastPath?: string;
 }
