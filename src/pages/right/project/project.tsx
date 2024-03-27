@@ -63,6 +63,7 @@ function Project() {
         }
         case ProjectScreen.Copy: {
             content = <Copy
+                path={path}
                 files={
                     listDependentFileEntries(settings)
                         .map(f => {
