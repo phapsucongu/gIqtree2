@@ -143,7 +143,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                                         }}
                                         />
                                     {((settings?.alignmentFiles?.length ?? 0) > 1) && (isFile) && (
-                                        <div className={index ? '' : 'invisible pointer-events-none'}>
+                                        <div>
                                             <button
                                                 className="bg-pink-600 p-1 rounded-md"
                                                 onClick={() => {
