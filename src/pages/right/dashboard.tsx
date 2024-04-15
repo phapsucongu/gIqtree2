@@ -109,6 +109,11 @@ function Dashboard() {
                 {filteredRecord.map(r => {
                     let valid = validProjects.get(r.path) || false;
                     let isRemote = !!r.connectionId;
+
+                    if (isRemote) {
+                        valid = true;
+                    }
+
                     let content = (
                         <div className="p-6 bg-gray-200" key={r.path}>
                             <div className="flex flex-row gap-2 items-center">
