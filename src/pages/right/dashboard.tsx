@@ -11,6 +11,8 @@ import { LocalNative } from "../../natives";
 import { RecentRecord } from "../../interfaces/natives";
 import { connectionKey } from "../../utils/connectionKey";
 import { SettingsFile } from "../../utils/settingsFile";
+import { faLink } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const types = [
     { name: "Blank Project", type: 0 },
@@ -119,7 +121,7 @@ function Dashboard() {
                             <div className="flex flex-row gap-2 items-center">
                                 <div className="flex-grow">
                                     <div className={valid ? '' : 'opacity-50 line-through'}>
-                                        {basename(r.path)}{isRemote ? '(remote)' : ''}
+                                        {basename(r.path)} {isRemote ? <FontAwesomeIcon icon={faLink} /> : <></>}
                                     </div>
                                     {!valid && !isRemote && (
                                         <span className='font-bold text-red-400'>
