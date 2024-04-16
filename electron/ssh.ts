@@ -28,6 +28,8 @@ ipcMain.answerRenderer('ssh_get', (id: string) => {
     if (r.connection === null) {
         return false;
     }
+
+    return true;
 })
 
 ipcMain.answerRenderer('ssh_create', async (d: [string, TunnelOption]) => {
