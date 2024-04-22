@@ -7,6 +7,7 @@ import DatingSetting from './dating';
 import OtherSetting from './other';
 import { Settings } from "../../../../interfaces";
 import { isMultipleGene } from "../../../../interfaces/settings/dataSettings";
+import useSsh from "../../../../hooks/useSsh";
 
 enum CurrentSetting {
     Data = 1,
@@ -22,6 +23,7 @@ function SettingsSubPage(
     { setting: Settings, path: string, onChange?: (newSetting: Settings) => void }
 ) {
     let [current, setCurrent] = useState(CurrentSetting.Data);
+    let ssh = useSsh();
 
     let settingCategories = [
         {
@@ -86,7 +88,8 @@ function SettingsSubPage(
 
     let currentPage = settingCategories.find(f => f.setting === current);
 
-    let wrongPath = setting.lastPath && setting.lastPath !== path;
+
+    let wrongPath = (setting.lastPath || ssh) && setting.lastPath !== path;
 
     return (
         <div className="h-full">
