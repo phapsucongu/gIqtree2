@@ -75,7 +75,7 @@ function Copy(
                 for (let file of f) {
                     let keep = false;
                     for (let { destination } of files) {
-                        if (destination.startsWith(file)) {
+                        if (destination.startsWith(file) || file.startsWith(destination)) {
                             keep = true;
                             break;
                         }
