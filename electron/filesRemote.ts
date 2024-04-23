@@ -2,7 +2,7 @@ import { ipcMain } from "electron-better-ipc";
 import { getConnection } from "./ssh";
 import { writeFileSync, mkdtempSync } from "fs";
 import { sync as rimraf } from 'rimraf';
-import { copyFileSync } from 'fs-extra';
+import { copyFileSync, statSync } from 'fs-extra';
 
 import { tmpdir } from "os";
 import { join } from "path";
@@ -83,7 +83,12 @@ ipcMain.answerRenderer('file_copy_ssh', async (data: [[string, string], [string,
             await connection.exec('cp', [src, dst])
         } else {
             console.log('Connection', key_d, 'copying from (local)', src, 'to', dst);
-            await connection.putFile(src, dst);
+            await connection.exec('rm', ['-rf', dst]);
+            if (statSync(src).isDirectory()) {
+                await connection.putDirectory(src, dst);
+            } else {
+                await connection.putFile(src, dst);
+            }
         }
     } else {
         if (!key_s) {
