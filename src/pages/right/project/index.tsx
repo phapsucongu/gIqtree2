@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { EnsureRemote } from "../../ensureremote";
 import useSsh from "../../../hooks/useSsh";
 import { LocalNative } from "../../../natives";
@@ -10,7 +10,9 @@ function Project() {
     let [ready, setReady] = useState(false);
 
     let key = useSsh();
-    let integration = key ? new RemoteNative(key) : new LocalNative();
+    let integration = useMemo(() => {
+        return key ? new RemoteNative(key) : new LocalNative();
+    }, [key]);
 
     if (!ready) {
         return (
