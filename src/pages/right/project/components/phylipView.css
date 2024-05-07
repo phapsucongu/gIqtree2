@@ -1,0 +1,19 @@
+.phylip-A {
+    background: rgb(122, 224, 122);
+}
+
+.phylip-T {
+    background: rgb(233, 114, 114);
+}
+
+.phylip-C {
+    background: rgb(110, 110, 223);
+}
+
+.phylip-G {
+    background: rgb(205, 91, 205);
+}
+
+.phylip-cell:hover {
+    background-color: yellow;
+}

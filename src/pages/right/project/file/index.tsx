@@ -1,5 +1,5 @@
 import { extname } from "path";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
 import BinaryOptions from "../../../../component/binaryoptions";
@@ -8,6 +8,7 @@ import TextView from "../components/textView";
 import TreeView from "../components/treeView";
 import useSsh from "../../../../hooks/useSsh";
 import { NativeContext } from "../../../../natives/nativeContext";
+import PhylipView from "../components/phylipView";
 
 function File({ wrap } : { wrap?: boolean }) {
     let native = useContext(NativeContext);
@@ -20,8 +21,31 @@ function File({ wrap } : { wrap?: boolean }) {
     let { ref: containerRef } = useResizeObserver();
     let ssh = useSsh();
 
-    let isTreeFile = ['.treefile'].some(ext => extname(file).toLowerCase() === ext);
+    let isTreeFile = ['.treefile', '.phy'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
+
+    let treeComponent = useMemo(() => {
+        if (!isTreeFile || error) {
+            return <></>;
+        }
+
+        if (isTree) {
+            switch (extname(file).toLowerCase()) {
+                case '.treefile': {
+                    return <TreeView file={file} content={content} />;
+                }
+
+                case '.phy': {
+                    return (
+                        <PhylipView file={file} content={content} />
+                    );
+                }
+            }
+        }
+
+        return <TextView wrap={wrap} autoscroll={false} content={content} />;
+
+    }, [content, file, isTreeFile, error, isTree, wrap]);
 
     useEffect(() => {
         (async () => {
@@ -64,9 +88,8 @@ function File({ wrap } : { wrap?: boolean }) {
                     </div>
                 </div>
             )}
-            {!error && (
-                isTree ? <TreeView file={file} content={content} /> : <TextView wrap={wrap} autoscroll={false} content={content} />
-            )}
+
+            {!error && treeComponent}
         </div>
     )
 }

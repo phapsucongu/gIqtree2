@@ -49,6 +49,7 @@
     "react-select": "^5.4.0",
     "react-split-pane": "^0.1.92",
     "react-waypoint": "^10.1.0",
+    "react-window": "^1.8.10",
     "rereadable-stream": "^1.4.13",
     "rimraf": "^3.0.2",
     "sql.js": "^1.6.2",
@@ -148,6 +149,8 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/react-modal": "^3.13.1",
+    "@types/react-window": "^1.8.8",
+    "@types/shell-escape": "^0.2.3",
     "@types/ssh2-streams": "^0.1.12",
     "concurrently": "^7.0.0",
     "cross-env": "^7.0.3",
