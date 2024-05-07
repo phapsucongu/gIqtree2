@@ -1,12 +1,13 @@
 import { readFileSync } from "fs-extra";
 import { extname } from "path";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
 import BinaryOptions from "../../../../component/binaryoptions";
 import { ParamKey } from "../../../../paramKey";
 import TextView from "../components/textView";
 import TreeView from "../components/treeView";
+import PhylipView from "../components/phylipView";
 
 function File({ wrap } : { wrap?: boolean }) {
     let [params] = useSearchParams();
@@ -17,8 +18,31 @@ function File({ wrap } : { wrap?: boolean }) {
     let [isTree, setIsTree] = useState(false);
     let { ref: containerRef } = useResizeObserver();
 
-    let isTreeFile = ['.treefile'].some(ext => extname(file).toLowerCase() === ext);
+    let isTreeFile = ['.treefile', '.phy'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
+
+    let treeComponent = useMemo(() => {
+        if (!isTreeFile || error) {
+            return <></>;
+        }
+
+        if (isTree) {
+            switch (extname(file).toLowerCase()) {
+                case '.treefile': {
+                    return <TreeView file={file} content={content} />;
+                }
+
+                case '.phy': {
+                    return (
+                        <PhylipView file={file} content={content} />
+                    );
+                }
+            }
+        }
+
+        return <TextView wrap={wrap} autoscroll={false} content={content} />;
+
+    }, [content, file, isTreeFile, error, isTree, wrap]);
 
     useEffect(() => {
         try {
@@ -59,9 +83,8 @@ function File({ wrap } : { wrap?: boolean }) {
                     </div>
                 </div>
             )}
-            {!error && (
-                isTree ? <TreeView file={file} content={content} /> : <TextView wrap={wrap} autoscroll={false} content={content} />
-            )}
+
+            {!error && treeComponent}
         </div>
     )
 }
