@@ -19,33 +19,24 @@ function PhylipView({ content } : { content: string, file: string }) {
 
         return (
             <Grid
-                columnCount={tree.max.length + 1}
+                columnCount={tree.taxa[0].taxon.length + 1}
                 // 1rem = 14px
                 columnWidth={(index) => index === 0 ? maxNameLength * 14 : 20}
                 height={400}
-                rowCount={tree.taxa.length + 1}
+                rowCount={tree.taxa.length}
                 rowHeight={() => 20}
                 width={width}>
                 {({ columnIndex, rowIndex, style }) => {
                     let content = '';
                     let cell = false;
 
-                    if (rowIndex === 0) {
-                        if (columnIndex === 0) {
-                            content = 'Names';
+                    if (columnIndex === 0) {
+                            content = tree?.taxa[rowIndex].name ?? ' ';
                         } else {
-                            content = tree?.max[columnIndex - 1].toUpperCase() ?? ' ';
-                            cell = true;
-                        }
-                    } else {
-                        if (columnIndex === 0) {
-                            content = tree?.taxa[rowIndex - 1].name ?? ' ';
-                        } else {
-                            content = tree?.taxa[rowIndex - 1]?.taxon[columnIndex - 1] ?? ' ';
+                            content = tree?.taxa[rowIndex]?.taxon[columnIndex - 1] ?? ' ';
                             content = content.toUpperCase();
                             cell = true;
                         }
-                    }
 
                     return (
                         <div
