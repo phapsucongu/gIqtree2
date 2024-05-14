@@ -92,7 +92,8 @@ function useActionButtons(
                                         cwd: path,
                                         host: ssh,
                                         submitCommand: settings?.others?.submitCommand,
-                                        submitTemplate: settings?.others?.submitTemplate
+                                        submitTemplate: settings?.others?.submitTemplate,
+                                        checkCommand: settings?.others?.checkCommand
                                     }
                                 }))
                                 refresh();
@@ -116,7 +117,8 @@ function useActionButtons(
                                             cwd: path,
                                             host: ssh,
                                             submitCommand: settings?.others?.submitCommand,
-                                            submitTemplate: settings?.others?.submitTemplate
+                                            submitTemplate: settings?.others?.submitTemplate,
+                                            checkCommand: settings?.others?.checkCommand
                                         }
                                     }))
                                 })

@@ -76,8 +76,22 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                         ...settings,
                         submitCommand: (e.target.value || undefined)
                     })}
-                    placeholder="Submission command"
+                    placeholder="Submission command (bsub for example)"
                     value={settings?.submitCommand} />
+            </div>
+            <div>
+                <b className="pb-2">
+                    Submission status command (for workload schedulers)
+                </b>
+                <input
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
+                    type="text"
+                    onChange={e => onChange?.({
+                        ...settings,
+                        checkCommand: (e.target.value || undefined)
+                    })}
+                    placeholder="Check command (bjobs for example)"
+                    value={settings?.checkCommand} />
             </div>
             <div>
                 <b className="pb-2">

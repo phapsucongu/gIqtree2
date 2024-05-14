@@ -11,4 +11,8 @@ export interface OthersSettings {
      * Template to append command line to.
      */
     submitTemplate?: string;
+    /**
+     * Command to check job status.
+     */
+    checkCommand?: string;
 }

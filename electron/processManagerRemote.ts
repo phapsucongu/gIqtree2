@@ -25,6 +25,7 @@ export interface SpawnDataJob extends SpawnData {
     thread?: number;
     submitCommand?: string;
     submitTemplate?: string;
+    checkCommand?: string;
 }
 
 export class Job extends EventEmitter {
@@ -39,6 +40,7 @@ export class Job extends EventEmitter {
     public exited = 0;
 
     public readonly submitCommand: string = 'bsub';
+    public readonly checkCommand: string = 'bjobs';
     public readonly submitTemplate: string = '#!/bin/bash';
 
     private lastChecked = 0;
@@ -46,7 +48,11 @@ export class Job extends EventEmitter {
 
     constructor(
         connection: string, binary: string, execArguments: string[], cwd: string, thread?: number,
-        submitCommand?: string, submitTemplate?: string
+        scheduler?: {
+            submitCommand?: string,
+            submitTemplate?: string,
+            checkCommand?: string
+        }
     ) {
         super();
         this.id = connection;
@@ -55,12 +61,20 @@ export class Job extends EventEmitter {
         this.cwd = cwd;
         this.thread = Math.floor(thread ?? 0) <= 0 ? 1 : Math.floor(thread ?? 0);
 
-        if (submitCommand) {
-            this.submitCommand = submitCommand;
-        }
+        if (scheduler) {
+            const { submitCommand, submitTemplate, checkCommand } = scheduler;
 
-        if (submitTemplate) {
-            this.submitTemplate = submitTemplate;
+            if (submitCommand) {
+                this.submitCommand = submitCommand;
+            }
+
+            if (submitTemplate) {
+                this.submitTemplate = submitTemplate;
+            }
+
+            if (checkCommand) {
+                this.checkCommand = checkCommand;
+            }
         }
     }
 
@@ -372,7 +386,11 @@ ipcMain.answerRenderer('spawn_ssh_job', async (data: SpawnDataJob) => {
     }
 
     let jobs = data.arguments.map(process =>
-        new Job(data.connection, data.binary, process, data.cwd, 1, data.submitCommand, data.submitTemplate)
+        new Job(data.connection, data.binary, process, data.cwd, 1, {
+            submitCommand: data.submitCommand,
+            submitTemplate: data.submitTemplate,
+            checkCommand: data.checkCommand
+        })
     );
     currentProcessJob.set(data.id, jobs);
 
