@@ -57,6 +57,7 @@ function PhylipView({ content } : { content: string, file: string }) {
     useEffect(() => {
         try {
             let p = phylipParse(content);
+            console.log(p);
             setTree(p);
         } catch (e: any) {
             setError(`${e}`);
