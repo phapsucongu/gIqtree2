@@ -38,7 +38,7 @@ function File({ wrap } : { wrap?: boolean }) {
     }
 
     let treeComponent = useMemo(() => {
-        if (!isTreeFile || error) {
+        if (error) {
             return <></>;
         }
 
