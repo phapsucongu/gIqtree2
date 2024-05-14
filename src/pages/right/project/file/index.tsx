@@ -24,6 +24,19 @@ function File({ wrap } : { wrap?: boolean }) {
     let isTreeFile = ['.treefile', '.phy'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
 
+    let text = '';
+    switch (extname(file).toLowerCase()) {
+        case '.treefile': {
+            text = 'Tree view';
+            break;
+        }
+
+        case '.phy': {
+            text = 'Matrix view';
+            break;
+        }
+    }
+
     let treeComponent = useMemo(() => {
         if (!isTreeFile || error) {
             return <></>;
@@ -78,7 +91,7 @@ function File({ wrap } : { wrap?: boolean }) {
             )}
             {isTreeFile && (
                 <div className="flex flex-row gap-8 items-center py-2">
-                    <div>Tree view : </div>
+                    <div>{text}: </div>
                     <div className="w-1/3">
                         <BinaryOptions
                             value={isTree ?? false}
