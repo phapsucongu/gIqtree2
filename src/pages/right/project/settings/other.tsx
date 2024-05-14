@@ -65,6 +65,33 @@ function Other({ settings, onChange } : SettingCategoryCommonProp<OthersSettings
                     </>
                 )}
             </div>
+            <div>
+                <b className="pb-2">
+                    Submission command (for workload schedulers)
+                </b>
+                <input
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
+                    type="text"
+                    onChange={e => onChange?.({
+                        ...settings,
+                        submitCommand: (e.target.value || undefined)
+                    })}
+                    placeholder="Submission command"
+                    value={settings?.submitCommand} />
+            </div>
+            <div>
+                <b className="pb-2">
+                    Template job file (IQ-TREE commands will be appended to this)
+                </b>
+                <textarea
+                    className="px-1 py-2 w-full input-bordered bg-transparent"
+                    onChange={e => onChange?.({
+                        ...settings,
+                        submitTemplate: (e.target.value || undefined)
+                    })}
+                    placeholder="Should start with #!/bin/bash"
+                    value={settings?.submitTemplate} />
+            </div>
         </div>
     )
 }

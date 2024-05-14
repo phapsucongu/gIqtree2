@@ -9,6 +9,7 @@ import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
 import useSsh from "../../../../hooks/useSsh";
 import { useContext } from "react";
 import { NativeContext } from "../../../../natives/nativeContext";
+import { Settings } from "../../../../interfaces";
 
 interface WordWrapSettings {
     enabled: boolean,
@@ -21,11 +22,12 @@ interface ActionButtonsConfig {
     preparedCommandWithRedo: string[][],
     onSaveSettings?: () => void | undefined,
     wordWrap?: WordWrapSettings,
-    canSaveSettings?: boolean
+    canSaveSettings?: boolean,
+    settings?: Settings
 }
 
 function useActionButtons(
-    { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings } : ActionButtonsConfig
+    { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings, settings } : ActionButtonsConfig
 ) {
     let [params, ] = useSearchParams();
     let navigate = useNavigate();
@@ -88,7 +90,9 @@ function useActionButtons(
                                         arguments: command,
                                         binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
                                         cwd: path,
-                                        host: ssh
+                                        host: ssh,
+                                        submitCommand: settings?.others?.submitCommand,
+                                        submitTemplate: settings?.others?.submitTemplate
                                     }
                                 }))
                                 refresh();
@@ -110,7 +114,9 @@ function useActionButtons(
                                             arguments: command,
                                             binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
                                             cwd: path,
-                                            host: ssh
+                                            host: ssh,
+                                            submitCommand: settings?.others?.submitCommand,
+                                            submitTemplate: settings?.others?.submitTemplate
                                         }
                                     }))
                                 })

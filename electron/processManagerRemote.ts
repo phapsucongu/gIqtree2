@@ -23,6 +23,8 @@ export interface SpawnData {
 
 export interface SpawnDataJob extends SpawnData {
     thread?: number;
+    submitCommand?: string;
+    submitTemplate?: string;
 }
 
 export class Job extends EventEmitter {
@@ -36,16 +38,30 @@ export class Job extends EventEmitter {
     public running = false;
     public exited = 0;
 
+    public readonly submitCommand: string = 'bsub';
+    public readonly submitTemplate: string = '#!/bin/bash';
+
     private lastChecked = 0;
     static CheckTimeLimit = 5000;
 
-    constructor(connection: string, binary: string, execArguments: string[], cwd: string, thread?: number) {
+    constructor(
+        connection: string, binary: string, execArguments: string[], cwd: string, thread?: number,
+        submitCommand?: string, submitTemplate?: string
+    ) {
         super();
         this.id = connection;
         this.binary = binary;
         this.arguments = execArguments;
         this.cwd = cwd;
         this.thread = Math.floor(thread ?? 0) <= 0 ? 1 : Math.floor(thread ?? 0);
+
+        if (submitCommand) {
+            this.submitCommand = submitCommand;
+        }
+
+        if (submitTemplate) {
+            this.submitTemplate = submitTemplate;
+        }
     }
 
     async check() {
@@ -105,9 +121,7 @@ export class Job extends EventEmitter {
         let absBinary = await connection.exec('realpath', [this.binary]);
 
         let file = createJobFile(
-            'iqtree',
-            this.thread,
-            this.cwd,
+            this.submitTemplate,
             absBinary,
             this.arguments
         );
@@ -123,7 +137,7 @@ export class Job extends EventEmitter {
 
         await connection.exec('chmod', ['+x', remoteFile]);
 
-        let res = await connection.execCommand(`cd ${this.cwd}; rm ${join(this.cwd, 'output', '*')}; bsub < ${remoteFile}`);
+        let res = await connection.execCommand(`cd ${this.cwd}; rm ${join(this.cwd, 'output', '*')}; ${this.submitCommand} < ${remoteFile}`);
         let id = +((res.stderr + res.stdout).match(/Job <(\d+)>/)?.[1] ?? '');
         if (id === 0) {
             return false;
@@ -293,7 +307,11 @@ ipcMain.answerRenderer('get_ssh_job', async (id: string) => {
 
     let record = currentProcessJob.get(id)!;
     for (let r of record) {
-        await r.check();
+        try {
+            await r.check();
+        } catch (e) {
+            console.log(e)
+        }
         if (r.pending) {
             // exit early; later jobs wouldn't have a chance to execute
             break;
@@ -319,7 +337,11 @@ ipcMain.answerRenderer('get-stdout_ssh_job', async (id: string) => {
 
     let tasks = currentProcessJob.get(id)!;
     for (let r of tasks) {
-        await r.check();
+        try {
+            await r.check();
+        } catch (e) {
+            console.log(e)
+        }
         if (r.pending) {
             // exit early; later jobs wouldn't have a chance to execute
             break;
@@ -349,7 +371,9 @@ ipcMain.answerRenderer('spawn_ssh_job', async (data: SpawnDataJob) => {
             return false;
     }
 
-    let jobs = data.arguments.map(process => new Job(data.connection, data.binary, process, data.cwd, 1));
+    let jobs = data.arguments.map(process =>
+        new Job(data.connection, data.binary, process, data.cwd, 1, data.submitCommand, data.submitTemplate)
+    );
     currentProcessJob.set(data.id, jobs);
 
     let split = async () => {

@@ -74,7 +74,10 @@ class RemoteNative implements NativeIntegration {
             binary: t[0].binary,
             cwd: t[0].cwd,
             arguments: t.map(r => r.arguments),
-            connection: t[0].host
+            connection: t[0].host,
+            submitCommand: (t as any)['submitCommand'],
+            submitTemplate: (t as any)['submitTemplate']
+
         })
             .then((v: unknown) => {
                 if (v === false) {
