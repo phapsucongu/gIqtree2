@@ -9,6 +9,7 @@ import TextView from "../components/textView";
 import TreeView from "../components/treeView";
 import PhylipView from "../components/phylipView";
 import FastaView from "../components/fastaView";
+import ClustalView from "../components/clustalView";
 
 function File({ wrap } : { wrap?: boolean }) {
     let [params] = useSearchParams();
@@ -19,7 +20,7 @@ function File({ wrap } : { wrap?: boolean }) {
     let [isTree, setIsTree] = useState(false);
     let { ref: containerRef } = useResizeObserver();
 
-    let isTreeFile = ['.treefile', '.phy', '.fasta'].some(ext => extname(file).toLowerCase() === ext);
+    let isTreeFile = ['.treefile', '.phy', '.fasta', '.aln'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
 
     let text = '';
@@ -29,6 +30,7 @@ function File({ wrap } : { wrap?: boolean }) {
             break;
         }
 
+        case '.aln':
         case '.phy':
         case '.fasta': {
             text = 'Matrix view';
@@ -56,6 +58,12 @@ function File({ wrap } : { wrap?: boolean }) {
                 case '.fasta': {
                     return (
                         <FastaView file={file} content={content} />
+                    )
+                }
+
+                case '.aln': {
+                    return (
+                        <ClustalView file={file} content={content} />
                     )
                 }
             }
