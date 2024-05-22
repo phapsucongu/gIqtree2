@@ -4,7 +4,7 @@ import PhylipView from './phylipView';
 
 function FastaView({ content, file } : { content: string, file: string }) {
     let [error, setError] = useState('');
-    let [parsed, setParsed] = useState<string>('1 1\nEmpty A');
+    let [parsed, setParsed] = useState<string>('');
 
     useEffect(() => {
         try {
