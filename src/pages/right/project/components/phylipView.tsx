@@ -9,7 +9,7 @@ function PhylipView({ content } : { content: string, file: string }) {
     let [error, setError] = useState('');
     let [tree, setTree] = useState<PhylipData | null>(null);
     let renderedTree = useMemo(() => {
-        if (!tree) {
+        if (!tree || !tree.taxa.length) {
             return <></>
         }
 
@@ -19,7 +19,7 @@ function PhylipView({ content } : { content: string, file: string }) {
 
         return (
             <Grid
-                columnCount={tree.taxa[0].taxon.length + 1}
+                columnCount={(tree.taxa[0]?.taxon.length ?? 0) + 1}
                 // 1rem = 14px
                 columnWidth={(index) => index === 0 ? maxNameLength * 14 : 20}
                 height={400}
