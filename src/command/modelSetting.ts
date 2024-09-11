@@ -25,16 +25,19 @@ export function getSubstitutionModelCommand(sequenceType?: SequenceType, model?:
 }
 
 export function getAutoMergePartitionCommand(v : NonNullable<Settings['model']>['autoMergePartitions']) {
-    if (v) return ['--merge', v];
+    if (v) return [v];
     return [];
 }
 
 function prepare({ model, data }: Settings) {
-    let { autoMergePartitions, substitutionModel, rhasModel } = model ?? {};
+    let { autoMergePartitions, substitutionModel, rhasModel,autoMergePartitionsThreshold } = model ?? {};
     let output: string[] = [];
     if (isMultipleGene(data)) {
         if (autoMergePartitions)
-            output.push(...getAutoMergePartitionCommand(autoMergePartitions));
+        {
+            output.push("-" + getAutoMergePartitionCommand(autoMergePartitions));
+            output.push(autoMergePartitionsThreshold?.toString() ?? '10');
+        }
     }
 
     if (substitutionModel) {

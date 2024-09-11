@@ -94,7 +94,7 @@ export const AutoMergePartitionsAlgorithms : { type: AutoMergePartitions, name: 
     { type: AutoMergePartitions.RCluster, name: 'RCluster' },
     { type: AutoMergePartitions.RClusterF, name: 'RClusterF' },
 ]
-
+export const autoMergePartitionsThreshold = 10;
 export const SubstitutionModels: { sequenceType: SequenceType, models: SubstitutionModel[] }[] = [
     {
         sequenceType: SequenceType.Binary,
@@ -171,4 +171,5 @@ export interface ModelSettings {
     stateFrequency?: StateFrequency;
     rhasModel?: RHASModel;
     substitutionModel?: SubstitutionModel;
+    autoMergePartitionsThreshold?: number;
 }

@@ -1,7 +1,7 @@
 import { getAutoMergePartitionCommand, getSubstitutionModelCommand } from "../../../../command/modelSetting";
 import BinaryOptions from "../../../../component/binaryoptions";
 import { SequenceType } from "../../../../interfaces/dataSettings";
-import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/modelSettings";
+import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels, autoMergePartitionsThreshold } from "../../../../interfaces/modelSettings";
 import { DisableWrap } from "../components/opaqueWrapping";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 
@@ -52,8 +52,29 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                                 })
                         }
                     </select>
+                    <div className=" py-2">
+                        <DisableWrap disabled={settings?.autoMergePartitions===undefined}
+                                    
+                                    disableText="Only available if auto merge partitions is set">
+                            <div>
+                                <b className="pb-2">
+                                    Auto merge partitions threshold
+                                </b>
+                                <input
+                                    min={0}
+                                    step={1}
+                                    className="px-1 py-2 w-full input-bordered bg-transparent"
+                                    type="number"
+                                    placeholder="10"
+                                    onChange={e => onChange?.({
+                                        ...settings,
+                                        autoMergePartitionsThreshold: (e.target.valueAsNumber || undefined)
+                                    })}
+                                    value={settings?.autoMergePartitionsThreshold} />
+                            </div>
+                        </DisableWrap>
+                    </div>
                 </div>
-            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Subtitution model
@@ -134,7 +155,9 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                             })
                     }
                 </select>
+            
             </div>
+            </DisableWrap>
             <DisableWrap disabled={!substitutionModel || !rhasModel}
                          disableText="Available if substitution model is set (not auto) and RHAS is enabled">
                 <div>
