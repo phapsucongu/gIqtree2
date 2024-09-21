@@ -201,6 +201,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                         value={localBootstrapReplicate ?? DefaultLocalBootstrapReplicate} />
                 </div>
             </DisableWrap>
+            <DisableWrap disabled={!isMultipleGene} disableText="Available for multiple genes">
             <div>
                 <b className="pb-2">
                     Enable gCF
@@ -212,6 +213,8 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     falsyText="Off"
                     onChange={v => onChange?.({ ...settings, gcf: { ...gcf, enabled: v } })} />
             </div>
+            </DisableWrap>
+            <DisableWrap disabled={!isMultipleGene} disableText="Available for multiple genes">
             <div>
                 <b className="pb-2">
                     sCF quartet number (0 to disable sCF)
@@ -231,6 +234,7 @@ function Assessment({ settings, isMultipleGene, onChange } : SettingCategoryComm
                     }}
                     value={scf?.quartet ?? undefined} />
             </div>
+            </DisableWrap>
             <div>
                 <b className="pb-2">
                     Gene tree (leave empty to generate)

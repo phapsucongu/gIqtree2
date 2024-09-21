@@ -145,7 +145,7 @@ function Model({ settings, onChange, sequenceType, isMultipleGene }: SettingCate
                     })}
                     value={settings?.rhasModel}>
                     {
-                        [{ name: 'None', type: undefined }, ...RHASModels]
+                        [...RHASModels]
                             .map(option => {
                                 return (
                                     <option value={option.type}>
