@@ -16,14 +16,14 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
             break;
     }
 
-    console.log(data.alignmentFiles);
+    //console.log(data.alignmentFiles);
     //console.log(data.partitionFile);
     //console.log(data.alignmentFolder);
     if (isMultipleGene(data) && data.alignmentFolder && data.alignmentFiles === undefined) {
         const folderPath = data.alignmentFolder;
         try {
-            const files = fs.readdirSync(folderPath); // Đọc danh sách file từ folder
-            data.alignmentFiles = files.map(file => path.join(folderPath, file)); // Gán đường dẫn đầy đủ của các file vào alignmentFiles
+            const files = fs.readdirSync(folderPath); 
+            data.alignmentFiles = files.map(file => path.join(folderPath, file));
         } catch (error) {
             console.error(`Lỗi khi truy cập thư mục: ${error}`);
         }
@@ -32,31 +32,25 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
     data.alignmentFiles = data.alignmentFiles ?? [];
 
     if(isMultipleGene(data)&& (data.alignmentFiles.length>1) && data.partitionFile){
-        // Đọc nội dung partitionFile
         let partitionContent = fs.readFileSync(data.partitionFile, 'utf-8');
-    
-        // Tìm tất cả các dòng chứa 'charset' và thay thế với các file trong alignmentFiles
         const charsetRegex = /(charset\s+[\w.]+\s*=\s*)[^;]+(;)/g;
         let i = 0;
 
         partitionContent = partitionContent.replace(charsetRegex, (match, prefix, suffix) => {
             if (data.alignmentFiles && i < data.alignmentFiles.length) {
-                // Thay thế phần đường dẫn bằng đường dẫn mới kèm theo dấu `:` và khoảng trắng trước dấu `;`
                 const newCharsetLine = `${prefix}${data.alignmentFiles[i]}: ${suffix}`;
-                console.log(newCharsetLine); // Kiểm tra nội dung của dòng mới
+                console.log(newCharsetLine);
                 i++;
                 return newCharsetLine;
             }
-            return match; // Nếu không còn file để thay, giữ nguyên dòng
+            return match;
         });
         
         
 
-        // Ghi lại partitionFile với nội dung mới
         fs.writeFileSync(data.partitionFile, partitionContent, 'utf-8');
-        console.log(data.partitionFile);
-        //console.log(partitionContent);
-        console.log("Đã cập nhật partitionFile thành công.");
+        //console.log(data.partitionFile);
+        //console.log("Đã cập nhật partitionFile thành công.");
     }
 
     console.log(data.alignmentFiles);
