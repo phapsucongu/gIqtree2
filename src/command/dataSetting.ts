@@ -39,7 +39,7 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
         partitionContent = partitionContent.replace(charsetRegex, (match, prefix, suffix) => {
             if (data.alignmentFiles && i < data.alignmentFiles.length) {
                 const newCharsetLine = `${prefix}${data.alignmentFiles[i]}: ${suffix}`;
-                console.log(newCharsetLine);
+                //console.log(newCharsetLine);
                 i++;
                 return newCharsetLine;
             }
@@ -53,7 +53,7 @@ function prepare({ data }: Settings, overwritePartitionType?: PartitionType) {
         //console.log("Đã cập nhật partitionFile thành công.");
     }
 
-    console.log(data.alignmentFiles);
+    //console.log(data.alignmentFiles);
     let { alignmentFiles } = data;
     let multipleGene = isMultipleGene(data);
     let alreadyAddedSingleAlignmentFile = false;

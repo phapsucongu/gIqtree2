@@ -1,3 +1,13 @@
+#file-content {
+    position: relative; /* Đảm bảo phần tử có thể định vị */
+    padding-right: 0; /* Xóa padding bên phải */
+}
+
 #file-content::-webkit-scrollbar {
-    display:  none;
+    width: 8px; /* Độ rộng thanh cuộn */
+}
+
+#file-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5); /* Màu sắc thanh cuộn */
+    border-radius: 10px; /* Bo tròn góc */
 }

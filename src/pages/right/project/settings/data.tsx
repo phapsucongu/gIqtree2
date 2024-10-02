@@ -179,16 +179,32 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                 </div>
             </div>
             <div>
-                <b className="pb-2">
-                    Partition file
-                </b>
-                <SettingRowFile
-                    isFile
-                    name="Choose a location"
-                    file={settings?.partitionFile}
-                    onChange={file => onChange?.({ ...settings, partitionFile: file })}
-                    />
+    <b className="pb-2">
+        Partition file
+    </b>
+    <div className="flex flex-row items-center gap-2">
+        <SettingRowFile
+            isFile
+            name="Choose a location"
+            file={settings?.partitionFile}
+            onChange={file => onChange?.({ ...settings, partitionFile: file })}
+        />
+        {(settings?.partitionFile) && (
+            <div>
+                <button
+                    className="bg-pink-600 p-1 rounded-md"
+                    onClick={() => {
+                        onChange?.({ ...settings, partitionFile:undefined });
+                    }}>
+                    <div className="h-6 w-6 mr-px">
+                        <MinusLogo />
+                    </div>
+                </button>
             </div>
+        )}
+    </div>
+</div>
+
             <DisableWrap disabled={!multipleGenes} disableText="Available for multiple genes">
                 <div>
                     <b className="pb-2">

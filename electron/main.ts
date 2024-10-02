@@ -10,6 +10,8 @@ function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
         height: 600,
+        minWidth: 1000, 
+        minHeight: 400, 
         webPreferences: {
             contextIsolation: false,
             preload: path.join(__dirname, 'preload.js'),
@@ -17,26 +19,18 @@ function createWindow() {
             nodeIntegrationInWorker: true,
         },
         frame: false
-    })
-    // win.maximize();
+    });
+    
     require('@electron/remote/main').enable(win.webContents);
 
     if (app.isPackaged) {
-        // 'build/index.html'
         win.loadURL(`file://${__dirname}/../index.html`);
     } else {
         win.loadURL('http://localhost:3000/');
-
         win.webContents.openDevTools();
-
-        // Hot Reloading on 'node_modules/.bin/electronPath'
+        
         require('electron-reload')(__dirname, {
-            electron: path.join(__dirname,
-                '..',
-                '..',
-                'node_modules',
-                '.bin',
-                'electron' + (process.platform === "win32" ? ".cmd" : "")),
+            electron: path.join(__dirname, '..', '..', 'node_modules', '.bin', 'electron' + (process.platform === "win32" ? ".cmd" : "")),
             forceHardReset: true,
             hardResetMethod: 'exit'
         });
@@ -44,7 +38,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-    // DevTools
     installExtension(REACT_DEVELOPER_TOOLS)
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err));
@@ -56,11 +49,10 @@ app.whenReady().then(() => {
         ]
     }, (details, callback) => {
         let { responseHeaders = {} } = details;
-            responseHeaders['Access-Control-Allow-Origin'] = ['*'];
-
+        responseHeaders['Access-Control-Allow-Origin'] = ['*'];
         callback({ responseHeaders: responseHeaders });
+    });
 
-    })
     createWindow();
 
     app.on('activate', () => {

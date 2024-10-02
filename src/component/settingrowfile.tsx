@@ -9,9 +9,10 @@ function SettingRowFile({ name, file, isFile, onChange }
         <div className="w-full p-2 input-bordered flex flex-row items-center gap-2">
             <input
                 className="flex-grow"
-                value={file || undefined}
+                value={file || ""}
                 onChange={e => onChange?.(e.target.value)}
-                placeholder={name} />
+                placeholder={name}
+            />
             <button
                 className="font-bold"
                 onClick={() => {
@@ -32,4 +33,4 @@ function SettingRowFile({ name, file, isFile, onChange }
     )
 }
 
-export default SettingRowFile
+export default SettingRowFile;

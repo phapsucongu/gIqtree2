@@ -8,6 +8,7 @@ import { NegativeButton, PositiveButton } from "../components/actionButton";
 import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
 import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
+import { DateInfoType } from "../../../../interfaces/datingSettings";
 
 interface WordWrapSettings {
     enabled: boolean,
@@ -20,11 +21,12 @@ interface ActionButtonsConfig {
     preparedCommandWithRedo: string[][],
     onSaveSettings?: () => void | undefined,
     wordWrap?: WordWrapSettings,
-    canSaveSettings?: boolean
+    canSaveSettings?: boolean,
+    datingSettings?: { dateInfoType: string; dateFile?: string; }
 }
 
 function useActionButtons(
-    { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings } : ActionButtonsConfig
+    { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings, datingSettings } : ActionButtonsConfig
 ) {
     let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
@@ -44,18 +46,26 @@ function useActionButtons(
                     <WrapLogoOpaque /> Word wrap
                 </div>
             </NegativeButton>
-        )
+        );
 
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
+            const isDating = datingSettings?.dateInfoType === DateInfoType.Ancestral && !datingSettings?.dateFile;
+
             return (
                 <>
                     <NegativeButton onClick={() => navigate(-1)}>
                         Cancel
                     </NegativeButton>
                     <PositiveButton
-                        disabled={!canSaveSettings}
+                        disabled={!canSaveSettings || isDating} // Disable if required condition is not met
                         onClick={() => {
+                            console.log(datingSettings?.dateInfoType);
+                            console.log(datingSettings?.dateFile);
+                            if (isDating) {
+                                alert("Date File is required");
+                                return;
+                            }
                             onSaveSettings?.();
                             setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy });
                         }}>

@@ -7,6 +7,7 @@ import DatingSetting from './dating';
 import OtherSetting from './other';
 import { Settings } from "../../../../interfaces";
 import { isMultipleGene } from "../../../../interfaces/dataSettings";
+import { DateInfoType } from "../../../../interfaces/datingSettings";
 
 enum CurrentSetting {
     Data = 1,
@@ -21,14 +22,14 @@ function SettingsSubPage(
     { setting, onChange, onReset }:
     { setting: Settings, onChange?: (newSetting: Settings) => void, onReset?: () => void }
 ) {
-    let [current, setCurrent] = useState(CurrentSetting.Data);
+    const [current, setCurrent] = useState(CurrentSetting.Data);
     useEffect(() => {
         return () => {
             onReset?.();
         }
     }, [onReset])
 
-    let settingCategories = [
+    const settingCategories = [
         {
             name: 'Data',
             setting: CurrentSetting.Data,
@@ -89,7 +90,19 @@ function SettingsSubPage(
         }
     ]
 
-    let currentPage = settingCategories.find(f => f.setting === current);
+    const currentPage = settingCategories.find(f => f.setting === current);
+
+    const handleChangePage = (newSetting: CurrentSetting) => {
+        if (current === CurrentSetting.Dating) {
+            const datingSettings = setting.dating;
+            if (datingSettings.dateInfoType === DateInfoType.Ancestral && !datingSettings.dateFile) {
+                alert("Date File is required");
+                return;
+            }
+        }
+        setCurrent(newSetting);
+    };
+
     return (
         <div className="h-full">
             <div className="flex flex-row gap-4 h-full px-6">
@@ -97,12 +110,12 @@ function SettingsSubPage(
                     {settingCategories.map(r => {
                         return (
                             <button
-                                onClick={() => setCurrent(r.setting)}
+                                onClick={() => handleChangePage(r.setting)}
                                 key={r.setting}
                                 className={
                                     "font-bold text-left w-full"
                                     + (r.setting === current ? ' text-pink-500' : '')
-                                    }>
+                                }>
                                 {r.name}
                             </button>
                         )
