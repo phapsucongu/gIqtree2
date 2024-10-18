@@ -33,15 +33,10 @@ function Copy({ files, onReady } : { files: { source: string, destination: strin
                     rimraf(destination);
                     copySync(source, destination);
                 }
-
-                setCopied(
-                    c = new Map([
-                        ...copied,
-                        [source, destination]
-                    ])
-                );
+                
+                c.set(source, destination)
             }
-
+            setCopied(c)
             onReady?.(c);
         } catch (e) {
             setErr(`${e}`);
