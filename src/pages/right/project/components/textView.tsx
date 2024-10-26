@@ -46,12 +46,12 @@ function TextView({ content, autoscroll, wrap }: { content: string, autoscroll: 
 
         const results: { line: number, index: number }[] = [];
         const lines = content.split("\n");
-        const lowerSearchTerm = searchTerm.toLowerCase(); // Chuyển đổi từ khóa tìm kiếm thành chữ thường
+        const lowerSearchTerm = searchTerm.toLowerCase();
 
         lines.forEach((line, lineIndex) => {
             let startIndex = 0;
             while (startIndex < line.length) {
-                const index = line.toLowerCase().indexOf(lowerSearchTerm, startIndex); // Tìm kiếm không phân biệt chữ hoa chữ thường
+                const index = line.toLowerCase().indexOf(lowerSearchTerm, startIndex);
                 if (index === -1) break;
                 results.push({ line: lineIndex, index });
                 startIndex = index + lowerSearchTerm.length;
@@ -107,7 +107,7 @@ function TextView({ content, autoscroll, wrap }: { content: string, autoscroll: 
                         type="text"
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        placeholder="Tìm kiếm..."
+                        placeholder="Search..."
                         className="border p-1 w-full"
                     />
                     <span className="text-gray-600">

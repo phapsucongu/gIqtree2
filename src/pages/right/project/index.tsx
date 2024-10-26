@@ -2,6 +2,7 @@ import { basename, join, normalize } from "path";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useMatch, useSearchParams } from "react-router-dom";
 import { Settings } from "../../../interfaces";
+import { DateInfoType } from "../../../interfaces/datingSettings";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import { readSettingsFileSync, writeSettingsFileSync } from "../../../utils/settingsFile";
@@ -118,7 +119,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                 enabled: wordWrap,
                 onChange: (e) => setWordWrap(e)
             },
-            canSaveSettings: originalSettings !== settings
+            canSaveSettings: (originalSettings !== settings&& !(settings?.dating.dateInfoType == DateInfoType.Ancestral  && !settings?.dating.dateFile)),
         },
     );
 

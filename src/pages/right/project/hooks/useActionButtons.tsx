@@ -31,8 +31,8 @@ function useActionButtons(
     let [params, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
-
     let wordWrapButton = wordWrap?.enabled
+    
         ? (
             <PositiveButton onClick={() => wordWrap?.onChange(!wordWrap?.enabled)}>
                 <div className="flex flex-row gap-4">
@@ -60,8 +60,7 @@ function useActionButtons(
                     <PositiveButton
                         disabled={!canSaveSettings || isDating} // Disable if required condition is not met
                         onClick={() => {
-                            console.log(datingSettings?.dateInfoType);
-                            console.log(datingSettings?.dateFile);
+                            console.log(datingSettings);
                             if (isDating) {
                                 alert("Date File is required");
                                 return;
