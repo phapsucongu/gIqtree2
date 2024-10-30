@@ -1,6 +1,6 @@
 import { Settings } from "../interfaces";
-import { BootstrapMethod } from "../interfaces/assessmentSettings";
-import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop } from "../interfaces/treeSearchSettings";
+import { BootstrapMethod } from "../interfaces/settings/assessmentSettings";
+import { DefaultPertubationStrength, DefaultUnsuccessfulIterationStop } from "../interfaces/settings/treeSearchSettings";
 
 function prepare({ treeSearch, assessment } : Settings) {
     let { enabled, unsuccessfulIterationsStop, pertubationStrength, constrainedTreeFile, referenceTreeFile, outgroupTaxa } = treeSearch;

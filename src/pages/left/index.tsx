@@ -8,6 +8,7 @@ function Left() {
         <Routes>
             <Route path={AppRoute.Dashboard} element={<Dashboard />} />
             <Route path={normalize(AppRoute.Project + '/:path')}  element={<Project />} />
+            <Route path={AppRoute.FolderSelector} element={<></>} />
         </Routes>
     )
 }

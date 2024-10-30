@@ -3,6 +3,12 @@ import * as path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import './processManager';
 import './sqlite';
+import './files';
+import './filesRemote';
+import './filesTree';
+import './ssh';
+import './binaryDecompress';
+import './processManagerRemote';
 
 require('@electron/remote/main').initialize();
 

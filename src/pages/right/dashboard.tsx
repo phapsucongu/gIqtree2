@@ -1,4 +1,3 @@
-import { ipcRenderer } from "electron-better-ipc";
 import { basename, normalize, sep } from "path";
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -7,9 +6,13 @@ import { CloseLogo, MagnifierLogo } from "../../icons";
 import { ParamKey, ProjectScreen } from "../../paramKey";
 import { AppRoute } from "../../routes";
 import { TemplateTypes } from "../../templates"
-import { readSettingsFileSync } from "../../utils/settingsFile";
 import { ClockIcon, FileIcon } from "./icons";
-import type { RecentRecord } from "../../record";
+import { LocalNative } from "../../natives";
+import { RecentRecord } from "../../interfaces/natives";
+import { connectionKey } from "../../utils/connectionKey";
+import { SettingsFile } from "../../utils/settingsFile";
+import { faLink } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const types = [
     { name: "Blank Project", type: 0 },
@@ -20,14 +23,38 @@ function Dashboard() {
     let [records, setRecord] = useState<RecentRecord[]>([]);
     let [search, setSearch] = useState('');
     let buttons = useWindowsButtons();
+    let [validProjects, setValidProjects] = useState<Map<string, boolean>>(new Map());
+
+    let nativeIntegration = new LocalNative();
 
     let load = () => {
-        ipcRenderer.callMain('db_list')
-            .then(r => setRecord(
-                (r as RecentRecord[]).sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
-            ))
+        nativeIntegration.database_recent_list()
+            .then(r => {
+                setRecord(
+                    r.sort((r1, r2) => r2.timestamp.localeCompare(r1.timestamp))
+                );
+
+                return r;
+            })
+            .then(async r => {
+                let valid = r.map(record => {
+                    if (!record.connectionId) {
+                        let f = new SettingsFile(nativeIntegration);
+                        return f.readFile({ path: record.path, host: '' })
+                            .then(() => [record.path, true] as const)
+                            .catch(() => [record.path, false] as const)
+                    }
+                    return Promise.resolve([] as const)
+                });
+
+                let p = await Promise.all(valid);
+                setValidProjects(new Map(
+                    p.filter(r => r.length !== 0) as [string, boolean][]
+                ));
+            })
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(load, []);
     let filteredRecord = useMemo(() => {
         return records.filter(r => {
@@ -82,20 +109,21 @@ function Dashboard() {
             </div>
             <div className="flex flex-col gap-2 flex-grow overflow-y-auto my-2">
                 {filteredRecord.map(r => {
-                    let valid = true;
-                    try {
-                        readSettingsFileSync(r.path);
+                    let valid = validProjects.get(r.path) || false;
+                    let isRemote = !!r.connectionId;
+
+                    if (isRemote) {
+                        valid = true;
                     }
-                    catch { valid = false };
 
                     let content = (
                         <div className="p-6 bg-gray-200" key={r.path}>
                             <div className="flex flex-row gap-2 items-center">
                                 <div className="flex-grow">
                                     <div className={valid ? '' : 'opacity-50 line-through'}>
-                                        {basename(r.path)}
+                                        {basename(r.path)} {isRemote ? <FontAwesomeIcon icon={faLink} /> : <></>}
                                     </div>
-                                    {!valid && (
+                                    {!valid && !isRemote && (
                                         <span className='font-bold text-red-400'>
                                             Could not read from the setting file (project setting corrupt?)
                                         </span>
@@ -104,7 +132,7 @@ function Dashboard() {
                                 <button onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    ipcRenderer.callMain('db_remove', r.path)
+                                    nativeIntegration.database_recent_delete(r.id)
                                         .then(() => load())
                                 }}>
                                     <CloseLogo />
@@ -126,11 +154,23 @@ function Dashboard() {
                         </div>
                     )
 
+                    let link = normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))
+                            + `?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`;
+                    if (isRemote) {
+                        let c = r.connection!
+                        link += `&${ParamKey.SshConnection}=${connectionKey(
+                            c.host,
+                            c.port,
+                            c.username,
+                            c.password
+                        )}&${ParamKey.ConnectionId}=${r.connectionId}`;
+                    }
+
+
                     return (
-                        valid
+                        (valid || isRemote)
                         ? (
-                            <Link key={r.path}
-                                to={normalize(AppRoute.Project + "/" + encodeURIComponent(r.path)) + `?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`}>
+                            <Link key={r.path} to={link}>
                                 {content}
                             </Link>
                         )

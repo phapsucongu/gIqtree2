@@ -1,58 +1,40 @@
 import { Tree } from "react-arborist";
-import { statSync, readdirSync } from "fs";
-import { basename, join } from "path";
-import { memo, useContext, useEffect, useState } from "react";
+import { basename } from "path";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { LeftPaneWidthContext } from "../../../App";
 import { Link, useSearchParams } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { diff } from 'deep-object-diff';
+import useSsh from "../../../hooks/useSsh";
+import { NativeContext } from "../../../natives/nativeContext";
 
-type Node = {
-    id: string;
-    path: string;
-    children?: Node[];
-    name: string;
-    isFolder: boolean;
-}
-
-function recurse(path: string) {
-    const baseNode: Node = { id: path, name: basename(path), path, isFolder: false }
-
-    try {
-        if (statSync(path).isDirectory()) {
-            baseNode.isFolder = true;
-            baseNode.children = readdirSync(path)
-                .map(dir => join(path, dir))
-                .map(recurse);
-        }
-    } catch (e: any) {
-        if (e.code !== 'ENOENT') {
-            // ENOENTs happen because the statSync call may run when the file is gone
-            throw e;
-        }
-    }
-
-    return baseNode;
-}
-
-function Files({ path, current,  height, width }: { path: string, current: string, height: number, width: number }) {
+function Files({ path, current, height, width }: { path: string, current: string, height: number, width: number }) {
+    let ssh = useSsh();
+    let native = useContext(NativeContext);
     let [tree, setTree] = useState({ id: path, name: basename(path), path, isFolder: false });
 
-    useEffect(() => {
-        setTree(recurse(path));
-    }, [path])
+    let recurse = useCallback(path => {
+        return native.recurse({ path, host: ssh })
+    }, [native, ssh]);
 
     useEffect(() => {
-        let interval = setInterval(() => {
+        (async function () {
+            let r = await recurse(path);
+            setTree(r);
+        })();
+    }, [path, ssh, native, recurse]);
+
+    useEffect(() => {
+        let interval = setInterval(async () => {
             let old = tree;
             let current = recurse(path);
             if (Object.keys(diff(old, current)).length)
             {
-                setTree(recurse(path));
+                setTree(await recurse(path));
             }
-        }, 1500);
+        }, 5000);
         return () => clearInterval(interval);
-    }, [path, tree]);
+    }, [path, tree, ssh, recurse]);
 
     return (
         <div>
@@ -67,7 +49,7 @@ function Files({ path, current,  height, width }: { path: string, current: strin
                     let chosen = current === data.path;
                     let link = (
                         <Link
-                            to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}`}
+                            to={`?${ParamKey.ProjectFile}=${encodeURIComponent(data.path)}&${ParamKey.ProjectScreen}=${ProjectScreen.File}&${ParamKey.SshConnection}=${ssh || ''}`}
                             className={chosen ? ' bg-pink-600 p-0.5 rounded-md text-white' : ''}>
                             {data.name}
                         </Link>

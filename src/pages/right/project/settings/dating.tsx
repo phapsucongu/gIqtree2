@@ -1,4 +1,4 @@
-import { DateInfoType, DateInfoTypes, DatingSettings } from "../../../../interfaces/datingSettings";
+import { DateInfoType, DateInfoTypes, DatingSettings } from "../../../../interfaces/settings/datingSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 

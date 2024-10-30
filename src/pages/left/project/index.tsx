@@ -6,6 +6,10 @@ import { ConsoleLogo, HomeLogo, IQTREELogo, SettingsLogo } from "../../../icons"
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
 import Tree from "./tree";
+import useSsh from "../../../hooks/useSsh";
+import { NativeContext } from "../../../natives/nativeContext";
+import { RemoteNative } from "../../../natives/remote";
+import { LocalNative } from "../../../natives";
 
 let useResizeObserverOptions = {
     box: 'border-box' as const
@@ -18,54 +22,59 @@ function Project({ path } : { path: string }) {
     let { ref: inputTitleRef, height: inputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
     let { ref: outputTitleRef, height: outputTitleHeight = 0 } = useResizeObserver(useResizeObserverOptions);
 
+    let key = useSsh();
+    let integration = key ? new RemoteNative(key) : new LocalNative();
+
     let remaining = containerHeight - upperHeight - lowerHeight - inputTitleHeight - outputTitleHeight;
 
     return (
-        <div className='pl-6 flex flex-col h-full' ref={containerRef}>
-            <div className='flex flex-row items-center gap-2 py-6 font-arvo' ref={upperRef}>
-                <IQTREELogo />
-                <b className="text-lg font-arvo">IQ-TREE</b>
-            </div>
-            <div className="flex flex-col font-arvo">
-                <div ref={inputTitleRef}>
-                    <b>Input</b>
+        <NativeContext.Provider value={integration}>
+            <div className='pl-6 flex flex-col h-full' ref={containerRef}>
+                <div className='flex flex-row items-center gap-2 py-6 font-arvo' ref={upperRef}>
+                    <IQTREELogo />
+                    <b className="text-lg font-arvo">IQ-TREE</b>
                 </div>
-                <Tree height={remaining / 2} path={join(path!, 'input')} />
-            </div>
-            <div className="flex flex-col font-arvo">
-                <div ref={outputTitleRef}>
-                    <b>Output</b>
+                <div className="flex flex-col font-arvo">
+                    <div ref={inputTitleRef}>
+                        <b>Input</b>
+                    </div>
+                    <Tree height={remaining / 2} path={join(path!, 'input')} />
                 </div>
-                <Tree height={remaining / 2} path={join(path!, 'output')} />
+                <div className="flex flex-col font-arvo">
+                    <div ref={outputTitleRef}>
+                        <b>Output</b>
+                    </div>
+                    <Tree height={remaining / 2} path={join(path!, 'output')} />
+                </div>
+                <div className="flex-grow"></div>
+                <div ref={lowerRef}>
+                    <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Log}&${ParamKey.SshConnection}=${key}`} className='flex flex-row items-center gap-2 pb-3'>
+                        <div className='p-2'>
+                            <ConsoleLogo />
+                        </div>
+                        <div className="mt-1">
+                            Console
+                        </div>
+                    </Link>
+                    <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Setting}&${ParamKey.SshConnection}=${key}`} className='flex flex-row items-center gap-2 pb-3'>
+                        <div className='p-2'>
+                            <SettingsLogo />
+                        </div>
+                        <div className="mt-1">
+                            Settings
+                        </div>
+                    </Link>
+                    <Link to="/" className='flex flex-row items-center gap-2 pb-3'>
+                        <div className='p-2'>
+                            <HomeLogo />
+                        </div>
+                        <div className="mt-1">
+                            Home
+                        </div>
+                    </Link>
+                </div>
             </div>
-            <div className="flex-grow"></div>
-            <div ref={lowerRef}>
-                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`} className='flex flex-row items-center gap-2 pb-3'>
-                    <div className='p-2'>
-                        <ConsoleLogo />
-                    </div>
-                    <div className="mt-1">
-                        Console
-                    </div>
-                </Link>
-                <Link to={`?${ParamKey.ProjectScreen}=${ProjectScreen.Setting}`} className='flex flex-row items-center gap-2 pb-3'>
-                    <div className='p-2'>
-                        <SettingsLogo />
-                    </div>
-                    <div className="mt-1">
-                        Settings
-                    </div>
-                </Link>
-                <Link to="/" className='flex flex-row items-center gap-2 pb-3'>
-                    <div className='p-2'>
-                        <HomeLogo />
-                    </div>
-                    <div className="mt-1">
-                        Home
-                    </div>
-                </Link>
-            </div>
-        </div>
+        </NativeContext.Provider>
     )
 }
 

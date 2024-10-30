@@ -1,13 +1,14 @@
-import { ipcRenderer } from "electron-better-ipc";
 import { join } from "path";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import rimraf from "rimraf";
 import { ParamKey, ProjectScreen } from "../../../../paramKey";
-import { getBinaryPath } from "../../../../platform";
+import { getBinaryPath, getBinaryPathRemote } from "../../../../platform";
 import { NegativeButton, PositiveButton } from "../components/actionButton";
 import { getOutputFolder } from "../folder";
 import useExecutionState from "./useExecutionState";
 import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
+import useSsh from "../../../../hooks/useSsh";
+import { useContext } from "react";
+import { NativeContext } from "../../../../natives/nativeContext";
 import { DateInfoType } from "../../../../interfaces/datingSettings";
 
 interface WordWrapSettings {
@@ -28,9 +29,12 @@ interface ActionButtonsConfig {
 function useActionButtons(
     { path, preparedCommand, preparedCommandWithRedo, onSaveSettings, wordWrap, canSaveSettings, datingSettings } : ActionButtonsConfig
 ) {
-    let [params, setSearchParams] = useSearchParams();
+    let [params, ] = useSearchParams();
     let navigate = useNavigate();
     let [executing, refresh] = useExecutionState(path);
+    let ssh = useSsh();
+    let native = useContext(NativeContext);
+
     let wordWrapButton = wordWrap?.enabled
     
         ? (
@@ -66,7 +70,6 @@ function useActionButtons(
                                 return;
                             }
                             onSaveSettings?.();
-                            setSearchParams({ ...params, [ParamKey.ProjectScreen]: ProjectScreen.Copy });
                         }}>
                         Save
                     </PositiveButton>
@@ -80,7 +83,7 @@ function useActionButtons(
                         <NegativeButton
                             disabled={!executing}
                             onClick={() => {
-                                ipcRenderer.callMain('kill', path);
+                                native.killAllTask(path);
                             }}>
                             Pause
                         </NegativeButton>
@@ -89,12 +92,15 @@ function useActionButtons(
                         <NegativeButton
                             disabled={executing}
                             onClick={async () => {
-                                await ipcRenderer.callMain('spawn', {
-                                    id: path,
-                                    arguments: preparedCommand,
-                                    binary: getBinaryPath(),
-                                    cwd: path
-                                });
+                                native.spawn(preparedCommand.map(command => {
+                                    return {
+                                        id: path,
+                                        arguments: command,
+                                        binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
+                                        cwd: ssh ? '' : path,
+                                        host: ssh
+                                    }
+                                }))
                                 refresh();
                             }}>
                             Continue
@@ -103,13 +109,21 @@ function useActionButtons(
                     <PositiveButton
                         disabled={executing}
                         onClick={async () => {
-                            rimraf.sync(join(getOutputFolder(path), '*'));
-                            await ipcRenderer.callMain('spawn', {
-                                id: path,
-                                arguments: preparedCommandWithRedo,
-                                binary: getBinaryPath(),
-                                cwd: path
-                            });
+                            native.rimraf({
+                                path: join(getOutputFolder(path), '*'),
+                                host: ssh
+                            })
+                                .then(() => {
+                                    native.spawn(preparedCommandWithRedo.map(command => {
+                                        return {
+                                            id: path,
+                                            arguments: command,
+                                            binary: ssh ? getBinaryPathRemote() : getBinaryPath()!,
+                                            cwd: ssh ? '' : path,
+                                            host: ssh
+                                        }
+                                    }))
+                                })
                             refresh();
                         }}>
                         Execute

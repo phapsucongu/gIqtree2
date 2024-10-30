@@ -1,7 +1,7 @@
 import { getAutoMergePartitionCommand, getSubstitutionModelCommand } from "../../../../command/modelSetting";
 import BinaryOptions from "../../../../component/binaryoptions";
-import { SequenceType } from "../../../../interfaces/dataSettings";
-import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels, autoMergePartitionsThreshold } from "../../../../interfaces/modelSettings";
+import { SequenceType } from "../../../../interfaces/settings/dataSettings";
+import { AutoMergePartitions, AutoMergePartitionsAlgorithms, DefaultRateCategories, getAvailableFrequencies, ModelSettings, RHASModel, RHASModels, StateFrequency, SubstitutionModel, SubstitutionModels } from "../../../../interfaces/settings/modelSettings";
 import { DisableWrap } from "../components/opaqueWrapping";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 

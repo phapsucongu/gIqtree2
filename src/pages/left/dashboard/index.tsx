@@ -6,6 +6,7 @@ import { CreateLogo, FolderLogo, HomeLogo, IQTREELogo } from '../../../icons';
 import { ParamKey } from '../../../paramKey';
 import { AppRoute } from '../../../routes';
 import CreateModal from './createModal';
+import SshModal from './sshModal';
 
 function Dashboard() {
     let window = useWindow();
@@ -27,6 +28,12 @@ function Dashboard() {
                 onClose={() => setSearchParams({ ...Object.fromEntries(params), [ParamKey.NewDialog]: '0' })}
                 onSetTemplate={t => setSearchParams({ ...Object.fromEntries(params), [ParamKey.NewTemplate]: t.toString() })} />
 
+            <SshModal
+                className="absolute top-1/4 left-1/4 w-1/2 h-1/2"
+                isOpen={params.get(ParamKey.SshDialog) === '1'}
+                onClose={() => setSearchParams({ ...Object.fromEntries(params), [ParamKey.SshDialog]: '0' })}
+            />
+
             <div className='pr-6 font-helvetica'>
                 <div className='flex flex-row items-center gap-2 pb-3'>
                     <div className='p-2 bg-white rounded drop-shadow-md'>
@@ -44,6 +51,19 @@ function Dashboard() {
                         </div>
                         <div className='opacity-40 hover:opacity-100'>
                             Create
+                        </div>
+                    </div>
+                </Link>
+                <Link
+                    to={`?${ParamKey.SshDialog}=1`}
+                    onClick={() => setSearchParams({ [ParamKey.NewDialog]: '0', [ParamKey.SshDialog]: '1' })}
+                    >
+                    <div className='mx-auto flex flex-row items-center gap-2 pb-3'>
+                        <div className='p-2'>
+                            <CreateLogo />
+                        </div>
+                        <div className='opacity-40 hover:opacity-100'>
+                            Connect to SSH
                         </div>
                     </div>
                 </Link>

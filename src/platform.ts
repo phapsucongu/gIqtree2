@@ -41,3 +41,7 @@ export function getBinaryPath() {
     if (isPlatformSupported())
         return join(downloadPath, getCompressedPath()!);
 }
+
+export function getBinaryPathRemote() {
+    return join('.config/gIqtree/bin', CompressedPath.Linux);
+}

@@ -1,4 +1,4 @@
-import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/dataSettings";
+import { Codon, Codons, DataSettings, isMultipleGene, PartitionType, PartitionTypes, SequenceType, SequenceTypes } from "../../../../interfaces/settings/dataSettings";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 import SettingRowFile from "../../../../component/settingrowfile";
 import { MinusLogo, PlusLogo } from "../../../../icons";
@@ -143,7 +143,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                                         }}
                                         />
                                     {((settings?.alignmentFiles?.length ?? 0) > 1) && (isFile) && (
-                                        <div className={index ? '' : 'invisible pointer-events-none'}>
+                                        <div>
                                             <button
                                                 className="bg-pink-600 p-1 rounded-md"
                                                 onClick={() => {
@@ -221,7 +221,7 @@ function DataSetting({ settings, onChange }: SettingCategoryCommonProp<DataSetti
                             PartitionTypes
                                 .map(option => {
                                     return (
-                                        <option value={option.type}>
+                                        <option value={option.type} key={option.name}>
                                             {option.name}
                                         </option>
                                     )

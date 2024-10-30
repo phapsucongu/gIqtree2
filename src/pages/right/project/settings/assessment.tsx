@@ -1,6 +1,6 @@
 import BinaryOptions from "../../../../component/binaryoptions";
 import SettingRowFile from "../../../../component/settingrowfile";
-import { AssessmentSettings, BootstrapMethod, BootstrapMethods, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, MultiPartitionSamplingStrategies, MultiPartitionSamplingStrategy, SingleBranchTest, SingleBranchTests } from "../../../../interfaces/assessmentSettings";
+import { AssessmentSettings, BootstrapMethod, BootstrapMethods, DefaultALRTReplicate, DefaultBootstrapMethodReplicate, DefaultLocalBootstrapReplicate, DefaultMultiPartitionSamplingStrategy, MultiPartitionSamplingStrategies, MultiPartitionSamplingStrategy, SingleBranchTest, SingleBranchTests } from "../../../../interfaces/settings/assessmentSettings";
 import { DisableWrap } from "../components/opaqueWrapping";
 import { SettingCategoryCommonProp } from "./settingCategoryCommonProps";
 

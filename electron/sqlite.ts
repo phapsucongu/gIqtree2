@@ -5,7 +5,7 @@ import { ipcMain } from 'electron-better-ipc';
 import init, { Database } from 'sql.js';
 import { readFileSync, writeFileSync } from 'fs';
 
-const dbFileName = 'projects.sqlite';
+const dbFileName = 'projects2.sqlite';
 
 const filePath = join(app.getPath('userData'), dbFileName);
 console.log('Reading from file @', filePath)
@@ -15,6 +15,19 @@ app.on('will-quit', writeToDisk)
 
 function writeToDisk() {
     if (database) writeFileSync(filePath, database.export())
+}
+
+interface Record {
+    id: number;
+    path: string;
+    timestamp: string;
+    connectionId: number;
+    connection?: {
+        host: string;
+        port: number;
+        username: string;
+        password: string;
+    }
 }
 
 async function ensureDatabaseOpen() {
@@ -27,7 +40,8 @@ async function ensureDatabaseOpen() {
 
     let initSql = await init();
     let db = new initSql.Database(file);
-    db.run('CREATE TABLE IF NOT EXISTS project (id TEXT PRIMARY KEY, timestamp TEXT)');
+    db.run('CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY AUTOINCREMENT, path TEXT, timestamp TEXT, connectionId INTEGER)');
+    db.run('CREATE TABLE IF NOT EXISTS connections (id INTEGER PRIMARY KEY AUTOINCREMENT, host TEXT, port INTEGER, username TEXT, password TEXT)');
     return database = db;
 }
 
@@ -37,20 +51,92 @@ ipcMain.answerRenderer('db_list', async () => {
 
     if (a.length === 0) return [];
 
-    return a[0].values.map(row => ({
-        path: row[0]?.toString()!,
-        timestamp: row[1]?.toString()!
-    }))
+    return a[0].values.map(row => {
+        let out = ({
+            id: +row[0]?.toString()!,
+            path: row[1]?.toString()!,
+            timestamp: row[2]?.toString()!
+        }) as Record;
+
+        let cId = row[3];
+        if (cId) {
+            let connection = database.exec('SELECT * FROM connections WHERE id = ?', [cId]);
+            if (connection.length) {
+                let c = connection[0];
+
+                let r = {
+                    host: c.values[0][1],
+                    port: +c.values[0][2]!,
+                    username: c.values[0][3],
+                    password: c.values[0][4],
+                } as Record['connection'];
+                out.connection = r;
+                out.connectionId = +cId;
+            }
+        }
+        return out;
+    }).sort((a, b) => {
+        let _1 = +new Date(a.timestamp), _2 = +new Date(b.timestamp);
+        return _2 - _1;
+    })
 })
 
-ipcMain.answerRenderer('db_record', async (path: string) => {
+ipcMain.answerRenderer('db_connection', async (id: number) => {
     let database = await ensureDatabaseOpen();
-    database.run(`INSERT OR REPLACE INTO project (id, timestamp) VALUES (?, ?)`, [path, new Date().toJSON()]);
+    let r = database.exec(`SELECT host, port, username, password FROM connections WHERE id = ?`, [id]);
+    if (r.length === 0) return null;
+
+    let record = r[0].values[0];
+    return {
+        host: record[0],
+        port: record[1],
+        username: record[2],
+        password: record[3]
+    };
+})
+
+ipcMain.answerRenderer('db_record', async (record: Record) => {
+    let database = await ensureDatabaseOpen();
+
+    let r = database.exec(`SELECT id FROM project WHERE path = ? AND connectionId = ?`, [record.path, record.connectionId]);
+    console.log(`Found ${r.length} record with path ${record.path} & connectionId ${record.connectionId}`);
+    if (r.length === 0) {
+        let c = record.connection;
+        let cid = 0;
+        if (c) {
+            database.exec(`INSERT INTO connections (host, port, username, password) VALUES (?, ?, ?, ?)`, [
+                c.host,
+                c.port,
+                c.username,
+                c.password
+            ]);
+            let r2 = database.exec(`SELECT id FROM connections ORDER BY id DESC LIMIT 1`);
+            cid = +r2[0].values[0][0]!;
+            console.log('New connectionId is', cid);
+        }
+
+        database.exec(`INSERT INTO project (path, timestamp, connectionId) VALUES (?, ?, ?)`, [
+            record.path,
+            new Date().toJSON(),
+            cid
+        ]);
+    } else {
+        let id = r[0].values[0][0];
+        database.exec(`UPDATE project SET timestamp = ? WHERE id = ?`, [new Date().toJSON(), id]);
+        let c = database.exec(`SELECT connectionId FROM project WHERE id = ?`, [id]);
+        let cid = c[0].values[0][0];
+        if (cid && record.connection) {
+            let conn = record.connection!;
+            database.exec(`UPDATE connections SET host = ?, port = ?, username = ?, password = ? WHERE id = ?`, [
+                conn.host, +conn.port, conn.username, conn.password
+            ]);
+        }
+    }
     writeToDisk();
 })
 
-ipcMain.answerRenderer('db_remove', async (path: string) => {
+ipcMain.answerRenderer('db_remove', async (id: number) => {
     let database = await ensureDatabaseOpen();
-    database.run(`DELETE FROM project WHERE id = ?`, [path]);
+    database.run(`DELETE FROM project WHERE id = ?`, [id]);
     writeToDisk();
 })

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/rimraf/index.d.ts b/node_modules/@types/rimraf/index.d.ts
+index 4f89241..f6ea2c2 100755
+--- a/node_modules/@types/rimraf/index.d.ts
++++ b/node_modules/@types/rimraf/index.d.ts
+@@ -7,8 +7,6 @@
+ //                 Piotr Błażejewicz <https://github.com/peterblazejewicz>
+ // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+ 
+-/// <reference types="node" />
+-
+ import glob = require('glob');
+ import fs = require('fs');
+ 

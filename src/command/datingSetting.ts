@@ -1,5 +1,5 @@
 import { Settings } from "../interfaces";
-import { DateInfoType } from "../interfaces/datingSettings";
+import { DateInfoType } from "../interfaces/settings/datingSettings";
 
 function prepare({ dating }: Settings) {
     let { dateFile, dateInfoType } = dating;

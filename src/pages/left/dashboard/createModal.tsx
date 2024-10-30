@@ -1,18 +1,17 @@
 import { dialog } from "@electron/remote";
-import { ipcRenderer } from "electron-better-ipc";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { useWindow } from "../../../hooks/useWindow";
 import { getTemplateSettings, TemplateType, TemplateTypes } from "../../../templates";
 import { normalize, join } from 'path';
-import { accessSync, constants, existsSync, lstatSync, mkdirSync } from "fs";
-import { hasSettingsFileSync, writeSettingsFileSync } from "../../../utils/settingsFile";
 import Select from 'react-select';
 import './createModal.css';
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "../../../routes";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
-import { RecentRecord } from "../../../record";
+import { LocalNative } from "../../../natives";
+import { SettingsFile } from "../../../utils/settingsFile";
+import { ipcRenderer } from "electron-better-ipc";
 
 interface ModalProps extends ReactModal.Props {
     template: TemplateType | 0;
@@ -38,43 +37,66 @@ function CreateModal (props: ModalProps) {
     let navigate = useNavigate();
     let [name, setName] = useState('');
     let [basePath, setBasePath] = useState('');
+    let [tolerable, setTolerable] = useState(false);
+    let [error, setError] = useState('');
+    let [validPath, setValidPath] = useState(false);
 
     let { template, onClose, onSetTemplate } = props;
 
+    let native = new LocalNative();
+
     useEffect(() => {
-        ipcRenderer.callMain('db_list')
+        native.database_recent_list()
             .then(r => {
-                let record = (r as RecentRecord[]);
-                if (record.length !== 0)
-                    setBasePath(normalize(join(record[0].path, '..')));
+                if (r.length !== 0)
+                    setBasePath(normalize(join(r[0].path, '..')));
             })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    let validPath = false;
-    let error = '', tolerable = false;
+    // let validPath = false;
+    // let error = '', tolerable = false;
     let pathToMakeAndNavigate = join(...(name ? [basePath, name] : [basePath]));
-    try {
-        if (basePath) {
-            let lstat = lstatSync(basePath);
-            accessSync(basePath, constants.W_OK | constants.R_OK);
 
-            validPath = lstat.isDirectory();
-            if (!lstat.isDirectory()) {
-                error = 'Path is not a directory!';
+    let check = useCallback(async () => {
+        setValidPath(false);
+        setError('');
+        setTolerable(false);
+        try {
+            if (basePath) {
+                let result : { result: boolean, is_dir: boolean } = await ipcRenderer.callMain('check_directory_writable', basePath);
+                if (!result.result) {
+                    throw new Error('project not writable or not existent');
+                }
+
+                setValidPath(result.is_dir);
+                if (!result.is_dir) {
+                    setError('Path is not a directory!');
+                }
+                // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
+                // eslint-disable-next-line
+                if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
+                    setError('Path needs to consist of ASCII characters only!')
+                }
+
+                let hasSetting = await native.file_exists({ path: pathToMakeAndNavigate, host: '' });
+
+                if (hasSetting) {
+                    setError('Folder ALREADY contains a project - creating a new one WILL OVERWRITE IT!');
+                    setTolerable(true);
+                }
             }
-            // ASCII test - iqtree2 does not seem to be able to handle Unicode on Windows?
-            // eslint-disable-next-line
-            if (!/^[\x00-\x7F]*$/.test(pathToMakeAndNavigate) && process.platform === 'win32') {
-                error = 'Path needs to consist of ASCII characters only!'
-            }
-            if (hasSettingsFileSync(pathToMakeAndNavigate)) {
-                error = 'Folder ALREADY contains a project - creating a new one WILL OVERWRITE IT!';
-                tolerable = true;
-            }
-        }
-    } catch {
-        error = `Couldn't check the project path. Make sure the directory exists & it is writable.`;
-    };
+        } catch {
+            setError(`Couldn't check the project path. Make sure the directory exists & it is writable.`);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [basePath, pathToMakeAndNavigate])
+
+    useEffect(() => {
+        check();
+    }, [pathToMakeAndNavigate, check]);
+
+
 
     return (
         <ReactModal
@@ -157,17 +179,21 @@ function CreateModal (props: ModalProps) {
                     <button
                         disabled={(!!error && !tolerable) || !validPath}
                         className={buttonBaseStyles + " bg-pink-600 disabled:bg-pink-300"}
-                        onClick={() => {
-                            if (!existsSync(pathToMakeAndNavigate)) {
-                                mkdirSync(pathToMakeAndNavigate);
-                            }
-                            writeSettingsFileSync(pathToMakeAndNavigate, getTemplateSettings(template || undefined));
-                            navigate({
-                                pathname: normalize(
-                                    AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
-                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
-                                )
-                            })
+                        onClick={async () => {
+                            await native.directory_create({ path: pathToMakeAndNavigate, host: '' }, true);
+                            let settingsFile = new SettingsFile(native);
+                            settingsFile.writeFile({
+                                path: pathToMakeAndNavigate,
+                                host: ''
+                            }, getTemplateSettings(template || undefined))
+                                .then(() => {
+                                    navigate({
+                                        pathname: normalize(
+                                            AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
+                                            + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                        )
+                                    })
+                                });
                         }}>
                         Create
                     </button>

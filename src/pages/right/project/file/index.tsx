@@ -1,17 +1,19 @@
-import { readFileSync } from "fs-extra";
 import { extname } from "path";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
 import BinaryOptions from "../../../../component/binaryoptions";
 import { ParamKey } from "../../../../paramKey";
 import TextView from "../components/textView";
 import TreeView from "../components/treeView";
+import useSsh from "../../../../hooks/useSsh";
+import { NativeContext } from "../../../../natives/nativeContext";
 import PhylipView from "../components/phylipView";
 import FastaView from "../components/fastaView";
 import ClustalView from "../components/clustalView";
 
 function File({ wrap } : { wrap?: boolean }) {
+    let native = useContext(NativeContext);
     let [params] = useSearchParams();
     let file = params.get(ParamKey.ProjectFile)!;
     let [content, setContent] = useState('');
@@ -19,6 +21,7 @@ function File({ wrap } : { wrap?: boolean }) {
     let [loading, setLoading] = useState(false);
     let [isTree, setIsTree] = useState(false);
     let { ref: containerRef } = useResizeObserver();
+    let ssh = useSsh();
 
     let isTreeFile = ['.treefile', '.phy', '.fasta', '.aln'].some(ext => extname(file).toLowerCase() === ext);
     if (!isTreeFile) isTree = false;
@@ -74,16 +77,18 @@ function File({ wrap } : { wrap?: boolean }) {
     }, [content, file, error, isTree, wrap]);
 
     useEffect(() => {
-        try {
-            setLoading(true);
-            setContent(readFileSync(file, 'utf8'));
-            setError('');
-            setLoading(false);
-        } catch (e) {
-            setError(`${e}`);
-            setLoading(false);
-        }
-    }, [file]);
+        (async () => {
+            try {
+                setLoading(true);
+                setContent(await native.file_read_string({ path: file, host: ssh }));
+                setError('');
+                setLoading(false);
+            } catch (e) {
+                setError(`${e}`);
+                setLoading(false);
+            }
+        })();
+    }, [file, ssh, native]);
 
     return (
         <div ref={containerRef} className="h-full">

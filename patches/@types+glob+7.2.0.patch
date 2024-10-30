@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/glob/index.d.ts b/node_modules/@types/glob/index.d.ts
+index ac89b93..5ff9bad 100755
+--- a/node_modules/@types/glob/index.d.ts
++++ b/node_modules/@types/glob/index.d.ts
+@@ -6,8 +6,6 @@
+ //                 Piotr Błażejewicz <https://github.com/peterblazejewicz>
+ // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+ 
+-/// <reference types="node" />
+-
+ import events = require("events");
+ import minimatch = require("minimatch");
+ import fs = require("fs");

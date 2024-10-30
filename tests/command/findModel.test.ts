@@ -3,6 +3,7 @@ import { getTemplateSettings, TemplateType } from '../../src/templates';
 import { prepareCommand } from '../../src/command';
 import { parseCommand } from './common';
 import { PartitionType } from '../../src/interfaces/dataSettings';
+import { RHASModel } from '../../src/interfaces/modelSettings';
 
 const outputPrefix = 'output';
 let cfg = getTemplateSettings(TemplateType.FindModel);
@@ -93,6 +94,30 @@ test('infer tree : demo 1.2.3', () => {
         s: 'input/test_folder',
         S: 'input/example.nex',
         m: 'MFP',
+        n: 0,
+        T: 'AUTO',
+        prefix: outputPrefix,
+        redo: !resume
+    }
+
+    expect(removed).toEqual(output);
+})
+
+test('infer tree : demo 1.2.3 with RHAS model Gamma', () => {
+    let resume = false;
+
+    cfg.data.alignmentFiles = [];
+    cfg.data.alignmentFolder = 'input/test_folder';
+    cfg.data.partitionFile = 'input/example.nex';
+    if (!cfg.model) cfg.model = {};
+    cfg.model.rhasModel = RHASModel.Gamma;
+
+    let removed = parseSingleCommand(resume);
+
+    let output = {
+        s: 'input/test_folder',
+        S: 'input/example.nex',
+        m: 'TEST',
         n: 0,
         T: 'AUTO',
         prefix: outputPrefix,

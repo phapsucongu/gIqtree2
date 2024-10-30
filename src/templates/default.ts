@@ -1,6 +1,6 @@
 
 import { Settings } from "../interfaces";
-import { PartitionType } from "../interfaces/dataSettings";
+import { PartitionType } from "../interfaces/settings/dataSettings";
 // import { AutoMergePartitions } from "../interfaces/modelSettings";
 
 function defaultSettings(): Settings {

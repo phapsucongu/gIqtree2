@@ -1,0 +1,9 @@
+diff --git a/node_modules/node-ssh/lib/typings/index.d.ts b/node_modules/node-ssh/lib/typings/index.d.ts
+index e2a24d6..9e2cd9e 100644
+--- a/node_modules/node-ssh/lib/typings/index.d.ts
++++ b/node_modules/node-ssh/lib/typings/index.d.ts
+@@ -1,4 +1,3 @@
+-/// <reference types="node" />
+ import stream from 'stream';
+ import SSH2, { ConnectConfig, ClientChannel, SFTPWrapper, ExecOptions, PseudoTtyOptions, ShellOptions, Channel, TcpConnectionDetails, AcceptConnection, RejectConnection, UNIXConnectionDetails } from 'ssh2';
+ import { Prompt, TransferOptions } from 'ssh2-streams';
