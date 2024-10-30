@@ -9,7 +9,7 @@ import { WrapLogoLight, WrapLogoOpaque } from "../../../../icons";
 import useSsh from "../../../../hooks/useSsh";
 import { useContext } from "react";
 import { NativeContext } from "../../../../natives/nativeContext";
-import { DateInfoType } from "../../../../interfaces/datingSettings";
+import { DateInfoType } from "../../../../interfaces/settings/datingSettings";
 
 interface WordWrapSettings {
     enabled: boolean,

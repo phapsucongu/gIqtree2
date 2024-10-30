@@ -1,5 +1,5 @@
 diff --git a/node_modules/@types/ssh2/index.d.ts b/node_modules/@types/ssh2/index.d.ts
-index 8b1445b..f19b075 100644
+index 6b83d5f..1ad64be 100644
 --- a/node_modules/@types/ssh2/index.d.ts
 +++ b/node_modules/@types/ssh2/index.d.ts
 @@ -1,5 +1,3 @@

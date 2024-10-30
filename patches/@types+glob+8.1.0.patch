@@ -1,5 +1,5 @@
 diff --git a/node_modules/@types/glob/index.d.ts b/node_modules/@types/glob/index.d.ts
-index ac89b93..5ff9bad 100755
+index fee3cf3..866edb1 100755
 --- a/node_modules/@types/glob/index.d.ts
 +++ b/node_modules/@types/glob/index.d.ts
 @@ -6,8 +6,6 @@

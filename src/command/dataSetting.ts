@@ -1,5 +1,5 @@
 import { Settings } from "../interfaces";
-import { isMultipleGene, PartitionType, SequenceType } from "../interfaces/dataSettings";
+import { isMultipleGene, PartitionType, SequenceType } from "../interfaces/settings/dataSettings";
 import fs from 'fs';
 import path from 'path';
 

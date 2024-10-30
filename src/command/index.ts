@@ -8,7 +8,7 @@ import treeSearchSetting from "./treeSearchSetting";
 import othersSetting from "./otherSetting";
 import datingSetting from "./datingSetting";
 import modelSetting from "./modelSetting";
-import { PartitionType } from "../interfaces/dataSettings";
+import { PartitionType } from "../interfaces/settings/dataSettings";
 import fs from 'fs';
 import path from 'path';
 
