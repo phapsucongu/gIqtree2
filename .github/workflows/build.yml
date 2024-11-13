@@ -1,6 +1,8 @@
 name: Build
 on:
   push:
+    branches:
+      - master
   workflow_dispatch:
   repository_dispatch:
 
@@ -10,55 +12,69 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
       - name: Install dependencies
-        run: yarn install 
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:linux -p never
       - name: Publish AppImage
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-appimage
           path: dist/gIqtree-0.1.0.AppImage
       - name: Publish Snap
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-snap
           path: dist/gIqtree_0.1.0_amd64.snap
       - name: Publish gzipped tar
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-targz
           path: dist/gIqtree-0.1.0.tar.gz
+
   build-windows:
     name: Build for Windows
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
       - name: Install dependencies
-        run: yarn install 
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:win -p never
       - name: Publish portable version
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-portable
           path: dist\gIqtree 0.1.0.exe
       - name: Publish installer
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-setup
           path: dist\gIqtree Setup 0.1.0.exe
+
   build-mac:
     name: Build for Mac
     runs-on: macos-11
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
       - name: Install dependencies
-        run: yarn install 
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn electron:build:mac -p never
       - name: Publish DMG
-        uses: actions/upload-artifact@v3.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: gIqtree-dmg
           path: dist/gIqtree-0.1.0.dmg
