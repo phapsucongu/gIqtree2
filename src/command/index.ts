@@ -9,8 +9,6 @@ import othersSetting from "./otherSetting";
 import datingSetting from "./datingSetting";
 import modelSetting from "./modelSetting";
 import { PartitionType } from "../interfaces/dataSettings";
-import fs from 'fs';
-import path from 'path';
 
 export function prepareCommand (setting: Settings, basename: string, outputPath?: string, resume?: boolean) : string[][] {
     let final = [

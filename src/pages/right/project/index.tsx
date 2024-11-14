@@ -119,7 +119,7 @@ function Project({ onOpenProject } : { onOpenProject?: (path: string) => void })
                 enabled: wordWrap,
                 onChange: (e) => setWordWrap(e)
             },
-            canSaveSettings: (originalSettings !== settings&& !(settings?.dating.dateInfoType == DateInfoType.Ancestral  && !settings?.dating.dateFile)),
+            canSaveSettings: (originalSettings !== settings&& !(settings?.dating.dateInfoType === DateInfoType.Ancestral  && !settings?.dating.dateFile)),
         },
     );
 
