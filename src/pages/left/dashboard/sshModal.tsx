@@ -5,7 +5,7 @@ import { ipcRenderer } from "electron-better-ipc";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
 import { AppRoute } from "../../../routes";
-import { normalize } from 'path';
+import { posix as pathPosix } from 'path';
 import { connectionKey } from "../../../utils/connectionKey";
 
 type TunnelOption = Parameters<NodeSSH['connect']>[0]
@@ -121,7 +121,7 @@ function SshModal(props: ModalProps) {
                                             localStorage.setItem('user', user);
                                             localStorage.setItem('pass', password);
 
-                                            console.log(normalize(
+                                            console.log(pathPosix.normalize(
                                                 AppRoute.FolderSelector
                                                     + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
                                                     + '&' + p.toString()
@@ -130,7 +130,7 @@ function SshModal(props: ModalProps) {
                                             
                                             try {
                                                 navigate({
-                                                    pathname: normalize(
+                                                    pathname: pathPosix.normalize(
                                                         AppRoute.FolderSelector
                                                             + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
                                                             + '&' + p.toString()
