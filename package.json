@@ -84,7 +84,8 @@
     "appId": "com.giqtree2",
     "mac": {
       "category": "public.app-category.reference",
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "identity": null
     },
     "win": {
       "icon": "build/icon.png",
