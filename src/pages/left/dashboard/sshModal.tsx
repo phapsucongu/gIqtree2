@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactModal from "react-modal";
 import type {NodeSSH} from 'node-ssh';
 import { ipcRenderer } from "electron-better-ipc";
@@ -99,9 +99,10 @@ function SshModal(props: ModalProps) {
                             onClick={() => {
                                 setConnecting(true);
                                 setError('');
+                                
 
                                 let key = connectionKey(server, port, user, password);
-
+                                
                                 connect(key, {
                                     username: user,
                                     port: port,
@@ -120,14 +121,25 @@ function SshModal(props: ModalProps) {
                                             localStorage.setItem('user', user);
                                             localStorage.setItem('pass', password);
 
-                                            navigate({
-                                                pathname: normalize(
-                                                    AppRoute.FolderSelector
-                                                        + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
-                                                        + '&' + p.toString()
-                                                        // + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
-                                                )
-                                            })
+                                            console.log(normalize(
+                                                AppRoute.FolderSelector
+                                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                                    + '&' + p.toString()
+                                                    // + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
+                                            ))
+                                            
+                                            try {
+                                                navigate({
+                                                    pathname: normalize(
+                                                        AppRoute.FolderSelector
+                                                            + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
+                                                            + '&' + p.toString()
+                                                            // + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
+                                                    )
+                                                })
+                                            } catch (e) {
+                                                console.error(e);
+                                            }
 
 
                                             // await native.database_recent_push({
