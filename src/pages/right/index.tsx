@@ -1,4 +1,4 @@
-import { normalize } from "path"
+import { posix as pathPosix } from 'path';
 import { Routes, Route } from "react-router-dom"
 import { AppRoute } from "../../routes"
 import Dashboard from "./dashboard"
@@ -10,7 +10,7 @@ function App() {
         <Routes>
             <Route path={AppRoute.Dashboard} element={<Dashboard />} />
             <Route
-                path={normalize(AppRoute.Project + '/:path')}
+                path={pathPosix.normalize(AppRoute.Project + '/:path')}
                 element={<Project />} />
             <Route path={AppRoute.FolderSelector} element={<Selector />} />
         </Routes>

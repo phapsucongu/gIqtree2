@@ -1,4 +1,5 @@
-import { basename, join, normalize } from "path";
+import { basename, join } from "path";
+import { posix as pathPosix } from 'path';
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useMatch, useSearchParams } from "react-router-dom";
 import { Settings } from "../../../interfaces";
@@ -29,7 +30,7 @@ function Project() {
     let ssh = useSsh();
     let { ref: titleRef, height: titleHeight } = useResizeObserver();
 
-    let { params: { path = '' } } = useMatch(normalize(AppRoute.Project + '/:path'))!;
+    let { params: { path = '' } } = useMatch(pathPosix.normalize(AppRoute.Project + '/:path'))!;
     let [params, setSearchParams] = useSearchParams();
     let [settings, setSettings] = useState<Settings | null>();
     let [originalSettings, setOriginalSettings] = useState<Settings | null>(null);

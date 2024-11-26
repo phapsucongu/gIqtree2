@@ -1,4 +1,5 @@
-import { basename, normalize, sep } from "path";
+import { basename, sep } from "path";
+import { posix as pathPosix } from 'path';
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import useWindowsButtons from "../../hooks/useWindowsButtons";
@@ -154,7 +155,7 @@ function Dashboard() {
                         </div>
                     )
 
-                    let link = normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))
+                    let link = pathPosix.normalize(AppRoute.Project + "/" + encodeURIComponent(r.path))
                             + `?${ParamKey.ProjectScreen}=${ProjectScreen.Log}`;
                     if (isRemote) {
                         let c = r.connection!

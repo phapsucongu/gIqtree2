@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { useWindow } from "../../../hooks/useWindow";
 import { getTemplateSettings, TemplateType, TemplateTypes } from "../../../templates";
-import { normalize, join } from 'path';
+import { join } from 'path';
+import { posix as pathPosix } from 'path';
 import Select from 'react-select';
 import './createModal.css';
 import { useNavigate } from "react-router-dom";
@@ -49,7 +50,7 @@ function CreateModal (props: ModalProps) {
         native.database_recent_list()
             .then(r => {
                 if (r.length !== 0)
-                    setBasePath(normalize(join(r[0].path, '..')));
+                    setBasePath(pathPosix.normalize(join(r[0].path, '..')));
             })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -188,7 +189,7 @@ function CreateModal (props: ModalProps) {
                             }, getTemplateSettings(template || undefined))
                                 .then(() => {
                                     navigate({
-                                        pathname: normalize(
+                                        pathname: pathPosix.normalize(
                                             AppRoute.Project + '/' + encodeURIComponent(pathToMakeAndNavigate)
                                             + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
                                         )

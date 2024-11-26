@@ -1,4 +1,5 @@
-import { join, normalize } from "path";
+import { join } from "path";
+import { posix as pathPosix } from 'path';
 import { memo } from "react";
 import { Link, useMatch } from "react-router-dom";
 import useResizeObserver from "use-resize-observer";
@@ -80,7 +81,7 @@ function Project({ path } : { path: string }) {
 
 let Memoized = memo(Project);
 function MemoizedProject() {
-    let m = useMatch(normalize(AppRoute.Project + '/:path'))!;
+    let m = useMatch(pathPosix.normalize(AppRoute.Project + '/:path'))!;
     let { path } = m.params;
     return <Memoized path={path!} />;
 }

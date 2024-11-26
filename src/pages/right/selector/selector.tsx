@@ -1,7 +1,8 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import useSsh from "../../../hooks/useSsh";
 import { ipcRenderer } from "electron-better-ipc";
-import { join, normalize } from 'path';
+import { join } from 'path';
+import { posix as pathPosix } from 'path';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { LocalNative } from "../../../natives";
 import { ParamKey, ProjectScreen } from "../../../paramKey";
@@ -11,6 +12,10 @@ import { HeightContext } from "../../../App";
 
 function exec(key: string, command: string, args: string[]) {
     return ipcRenderer.callMain('ssh_exec', [key, { command, args }]) as Promise<string>;
+}
+
+function toPosixPath(path: string): string {
+    return path.replace(/\\/g, '/');
 }
 
 function list(key: string, path: string) {
@@ -31,10 +36,14 @@ async function ensureDirectoryInOut(key: string, path: string) {
 function Selector() {
     let height = useContext(HeightContext);
     let ssh = useSsh();
-    let [cwd, setCwd] = useState('');
+    let [cwd, setCwdRaw] = useState('');
     let [folder, setFolders] = useState<string[]>([]);
     let [params] = useSearchParams();
     let navigate = useNavigate();
+
+    const setCwd = useCallback((path: string) => {
+        setCwdRaw(toPosixPath(path));
+    }, []);
 
     let pwd = useCallback(() => {
         return exec(ssh, 'pwd', [])
@@ -98,7 +107,7 @@ function Selector() {
 
 
                             navigate({
-                                pathname: normalize(
+                                pathname: pathPosix.normalize(
                                     AppRoute.Project + '/' + encodeURIComponent(path)
                                     + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
                                     + '&' + p.toString()

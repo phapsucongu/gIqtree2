@@ -121,13 +121,6 @@ function SshModal(props: ModalProps) {
                                             localStorage.setItem('user', user);
                                             localStorage.setItem('pass', password);
 
-                                            console.log(pathPosix.normalize(
-                                                AppRoute.FolderSelector
-                                                    + '?' + ParamKey.ProjectScreen + '=' + ProjectScreen.Setting
-                                                    + '&' + p.toString()
-                                                    // + `&${ParamKey.ConnectionId}=${res[0].connectionId}`
-                                            ))
-                                            
                                             try {
                                                 navigate({
                                                     pathname: pathPosix.normalize(

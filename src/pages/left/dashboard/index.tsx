@@ -1,5 +1,5 @@
 import { dialog } from '@electron/remote';
-import { normalize } from 'path';
+import { posix as pathPosix } from 'path';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useWindow } from '../../../hooks/useWindow';
 import { CreateLogo, FolderLogo, HomeLogo, IQTREELogo } from '../../../icons';
@@ -78,7 +78,7 @@ function Dashboard() {
 
                         if (folder) {
                             navigate({
-                                pathname: normalize(AppRoute.Project + '/' + encodeURIComponent(folder[0])),
+                                pathname: pathPosix.normalize(AppRoute.Project + '/' + encodeURIComponent(folder[0])),
                             });
                         }
                     }}
