@@ -42,6 +42,8 @@ function Project() {
 
     let settingFile = useMemo(() => new SettingsFile(native), [native]);
 
+    console.log('Project', path, ssh, params.get(ParamKey.ProjectScreen));
+
     switch (params.get(ParamKey.ProjectScreen)) {
         case ProjectScreen.Setting: {
             content = settings
@@ -87,10 +89,12 @@ function Project() {
     }
 
     useEffect(() => {
+        console.log('ensureInputOutputFolder', path, ssh)
         new Folder(native).ensureInputOutputFolder({ path, host: ssh });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, ssh])
     useEffect(() => {
+        console.log('database_recent_push', path, connectionId);
         native.database_recent_push({
             path: path,
             connectionId: connectionId
@@ -98,6 +102,7 @@ function Project() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [path, connectionId]);
     useEffect(() => {
+        console.log('Project', path, ssh);
         async function read() {
             try {
                 let setting = await settingFile.readFile({ path, host: ssh });

@@ -21,12 +21,20 @@ export class Folder {
     }
 }
 
-export function getOutputFolder(projectPath: string) {
-    let folder = join(projectPath, 'output');
-    return folder + sep;
+function toPosixPath(path: string): string {
+    return path.replace(/\\/g, '/');
 }
 
+//temporary fix
+export function getOutputFolder(projectPath: string) {
+    console.log(toPosixPath(join(projectPath, 'output')))
+    let folder = toPosixPath(join(projectPath, 'output'));
+    return folder + '/';
+}
+
+//temporary fix
 export function getInputFolder(projectPath: string) {
-    let folder = join(projectPath, 'input');
-    return folder + sep;
+    console.log(toPosixPath(join(projectPath, 'input')))
+    let folder = toPosixPath(join(projectPath, 'input'));
+    return folder + '/';
 }

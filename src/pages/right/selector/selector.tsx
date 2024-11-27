@@ -41,6 +41,7 @@ function Selector() {
     let [params] = useSearchParams();
     let navigate = useNavigate();
 
+    //temporary fix
     const setCwd = useCallback((path: string) => {
         setCwdRaw(toPosixPath(path));
     }, []);
